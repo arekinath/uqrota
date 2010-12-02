@@ -31,4 +31,10 @@ describe 'The fetcher' do
     text.should.include?('Undergraduate Program')
     text.should.include?('Science')
   end
+  
+  it 'should fetch the semesters list' do
+    @f.update_semesters
+    Setting.get('current_semester').should.not.nil?
+    Semester.all.size.should.be > 1
+  end
 end

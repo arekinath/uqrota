@@ -1,0 +1,2299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html dir="ltr" lang="en">
+<!-- Copyright (c) 2000, 2009, Oracle. All rights reserved. --><!-- FIREFOX/3.6/WINXP; ToolsRel=8.50.03; Page=UQMY_TM_TBL_GUEST; Component=UQMY_TM_TBL_GUEST; Menu=UQMY_GUEST; User=w2Lox#1Mw39hTW@7dDF0g76jw2wcoP; DB=SA89PROD/ORACLE; AppServ=//130.102.3.170:9000; --><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script language="JavaScript">
+var  totalTimeoutMilliseconds = 2073600000; 
+var  warningTimeoutMilliseconds = 2073600000; 
+var timeOutURL = 'https://www.sinet.uq.edu.au/psp/ps/EMPLOYEE/HRMS/?cmd=expire';
+var timeoutWarningPageURL = 'https://www.sinet.uq.edu.au/psc/ps/EMPLOYEE/HRMS/s/WEBLIB_TIMEOUT.PT_TIMEOUTWARNING.FieldFormula.IScript_TIMEOUTWARNING';
+</script><link rel="stylesheet" type="text/css" href="/cs/ps/cache/8.50.03/PSSTYLEREQ_2.css">
+<link rel="stylesheet" type="text/css" href="/cs/ps/cache/8.50.03/UQMY_STYLEDEF_2.css">
+<title>mySI-net Timetable Course View</title>
+<script language="JavaScript">
+var baseKey_win0 = "\x1b";
+var altKey_win0 = "05678\xbc\xbe\xbf\xde";
+var ctrlKey_win0 = "JK";
+var saveWarningKeys_win0 = "";
+var bAccessibility_win0 =false;
+var bPromptPage_win0 = false;
+var bModalPage_win0 = false;
+var bTabOverTB_win0 = false;
+var bTabOverPg_win0 = false;
+var bTabOverNonPS_win0 = false;
+var strCurrUrl='https://www.sinet.uq.edu.au/psp/ps/EMPLOYEE/HRMS/c/UQMY_GUEST.UQMY_TM_TBL_GUEST.GBL';
+</script><script language="JavaScript">
+var PFieldList_win0 = [['TERM_VAL_TBL_DESCR',1],
+['UQ_CLASS_VW_UQ_CRSE_CODE',1],
+['UQ_CLASS_VW_DESCR',1],
+['UQ_FCLT_BLDG_VW_DESCRSHORT3',28],
+['UQ_FCLT_BLDG_VW_DESCR',28],
+['UQ_FCLT_BLDG_VW_ROOM',28]];
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_SCRIPTGENERIC_1.js">
+</script><script language="JavaScript">
+try {
+document.domain = "sinet.uq.edu.au";
+}
+catch(err) {;}
+</script><script language="JavaScript" src="/ps/ckeditor/ckeditor.js"></script><script language="JavaScript" src="/ps/ckeditor/pt_rte_fillcache.js"></script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_PAGESCRIPT_win0_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_EDITSCRIPT_win0_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_EDITSCRIPT2_win0_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_COPYURL_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_ISCROSSDOMAIN_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_SAVEWARNINGSCRIPT_win0_2.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_COMMON_win0_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_EVENT_JS_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_UTILITIES_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_AJAX_NET_win0_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_POPUPSCRIPT_win0_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_GRIDSCRIPT_win0_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_GRIDSCRIPT2_win0_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_TYPEAHEAD_win0_1.js">
+</script><script language="JavaScript">
+var nResubmit=0;
+var nLastAction=0;
+var loader=null;
+setupTimeout();
+ var postUrl='../../../EMPLOYEE/HRMS/c/UQMY_GUEST.UQMY_TM_TBL_GUEST.GBL';
+function aAction_win0(form, name, params, bAjax, bPrompt)
+{
+if ((!popupObj_win0.isModalWidget) && (name != '#ICSave') && (!popupObj_win0.updatePromptActn))
+processing_win0(1,3000);
+if (ptGridObj_win0)
+ptGridObj_win0.saveScrollPos();
+ptCommonObj.cleanUpModalElement(name);
+if (popupObj_win0.isShown && !popupObj_win0.isModalWidget && (!popupObj_win0.bPromptPageOpen || popupObj_win0.bPromptMessageOpen))
+popupObj_win0.hidePopup();
+form.ICResubmit.value=nResubmit;
+form.ICAction.value=name;
+form.ICXPos.value=getScrollX();
+form.ICYPos.value=getScrollY();
+if (typeof params == "undefined" || !params)
+loader=new net.ContentLoader(postUrl,form,name,null,null,null,null,null,bAjax, bPrompt);
+else 
+ loader=new net.ContentLoader(postUrl,form,name,null,null,null,params,null,bAjax, bPrompt);
+}
+function pAction_win0(form, name, efieldname)
+{
+if (typeof bPSHTMLtemplate != "undefined" && bPSHTMLtemplate == true && window.parent.popupObj_win0 != "undefined" && !window.parent.popupObj_win0.isShown) {
+submitAction_win0(form, name);
+return;
+}
+if (bPromptPage_win0) {
+aAction_win0(form, name);
+window.parent.popupObj_win0.nChildPrompts++;
+return;
+}
+if ((loader != null) && (loader.GetInProcess())) return;
+form.ICAction.value=name;
+form.ICXPos.value=getScrollX();
+form.ICYPos.value=getScrollY();
+popupObj_win0.showPrompt(name,form,postUrl,efieldname);
+}
+function mAction_win0(form, name, height, width, title, bModalElement, bSizeOnLoad)
+{
+if (typeof bModalElement == 'undefined' || bModalElement == null) {
+form.ICAction.value=name;
+form.ICXPos.value=getScrollX();
+form.ICYPos.value=getScrollY();
+if (typeof bSizeOnLoad == 'undefined')
+var options = [true, true, true, null, height, width, title, true, null];
+else
+var options = [true, true, true, null, height, width, title, true, null, true];
+popupObj_win0.showModalCntrl(form, name, postUrl, options);
+}
+else {
+document.win0.ICModalWidget.value = 1;
+document.win0.ICZoomGrid.value = 1;
+popupModalObj_win0.modalTitle = title;
+popupModalObj_win0.isModalElement = true;
+aAction_win0(form, name, null, true, false);
+}
+}
+function submitAction_win0(form, name)
+{
+var spellcheckpos = name.indexOf('$spellcheck');
+if ((spellcheckpos != -1) && (name.indexOf('#KEYA5') != -1)) name = name.substring(0,spellcheckpos);
+if (!popupObj_win0.updatePromptActn) { processing_win0(1,3000); }
+if ((name.indexOf('$delete')>0 || name.indexOf('$srt')>0) && typeof(preID_win0)!='undefined' && preID_win0 != null) preID_win0 = null;
+if (form == null)
+{
+form=document.forms['win0'];
+form.style.display='block';
+}
+if (name.indexOf('#ICOKZG')==0)
+{
+form.ICModalWidget.value=0;
+form.ICZoomGrid.value=0;
+var oStateNum = document.getElementById(popupModalObj_win0.stateNumName);
+var oElemNum = document.getElementById(popupModalObj_win0.elemNumName);
+if (typeof oStateNum != 'undefined')
+oStateNum.value = form[popupModalObj_win0.stateNumName].value;
+if (typeof oElemNum != 'undefined')
+oElemNum.value = form[popupModalObj_win0.elemNumName].value;
+}
+form.ICAction.value=name;
+form.ICXPos.value=getScrollX();
+form.ICYPos.value=getScrollY();
+if(typeof CKEDITOR != 'undefined')UpdateEditorLinkedField();if ((spellcheckpos!=-1)||((!ptCommonObj.isAJAXReq(name) && !ptCommonObj.isPromptReq(name)) || !(typeof bPSHTMLtemplate == "undefined" || !bPSHTMLtemplate)))
+{
+if (nLastAction == 1 && nResubmit > 0) return;
+form.ICResubmit.value=nResubmit;
+form.submit();
+nResubmit++;
+}
+else if (ptCommonObj.isPromptReq(name))
+pAction_win0(form, name, arguments[2]);
+else
+aAction_win0(form, name);}
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_CALENDARSCRIPT1_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_CALENDARSCRIPT2_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_CALENDARSCRIPT3_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_CALENDARSCRIPT4_1.js">
+</script><script language="JavaScript" type="text/javascript" src="/cs/ps/cache/8.50.03/PT_CALENDARSCRIPT_win0_1.js">
+</script><script language="javascript">
+function dateitemrefs()
+{
+this.pt_dateheader = "/cs/ps/cache/8.50.03/PT_DATE_HEADER_1.gif";
+this.pt_datering = "/cs/ps/cache/8.50.03/PT_CURRENT_DATE_1.gif";
+this.pt_datesel = "/cs/ps/cache/8.50.03/PT_SELECTED_DATE_1.gif";
+this.pt_nextmonth = "/cs/ps/cache/8.50.03/PT_RIGHT_SCROLL_1.gif";
+this.pt_prevmonth= "/cs/ps/cache/8.50.03/PT_LEFT_SCROLL_1.gif";
+this.pt_daystitle_hijri = "/cs/ps/cache/8.50.03/PT_DATE_TITLE_S6_1.GIF";
+this.pt_daystitle_thai = "/cs/ps/cache/8.50.03/PT_DATE_TITLE_S0_1.GIF";
+this.pt_daystitle_s0 = "/cs/ps/cache/8.50.03/PT_DATE_TITLE_S0_1.GIF";
+this.pt_daystitle_m1 = "/cs/ps/cache/8.50.03/PT_DATE_TITLE_M1_1.GIF";
+this.pt_daystitle_t2 = "/cs/ps/cache/8.50.03/PT_DATE_TITLE_T2_1.GIF";
+this.pt_daystitle_w3 = "/cs/ps/cache/8.50.03/PT_DATE_TITLE_W3_1.GIF";
+this.pt_daystitle_t4 = "/cs/ps/cache/8.50.03/PT_DATE_TITLE_T4_1.GIF";
+this.pt_daystitle_f5 = "/cs/ps/cache/8.50.03/PT_DATE_TITLE_F5_1.gif";
+this.pt_daystitle_s6 = "/cs/ps/cache/8.50.03/PT_DATE_TITLE_S6_1.GIF";
+}
+ 
+function LoadCalendar()
+{
+var dateitems = new dateitemrefs();
+loadImages(dateitems);
+}
+function DatePrompt_win0(dtfield,promptfield,yrfmt,bsubmit)
+{
+setupTimeout();
+openDate(dtfield, promptfield, "DMY/"+yrfmt,bsubmit,"G",0);
+}
+</script><script language="JavaScript">
+if (typeof ptStyleSheet == "undefined") {
+var ptStyleSheet = 'UQMY_STYLEDEF';
+}
+function onLoadExt_win0() {popupObj_win0.init('/cs/ps/cache/8.50.03/PT_PORTAL_IC_CLOSE_1.gif','Close','/cs/ps/cache/8.50.03/PT_PORTAL_IC_COLLAPSE_1.gif','Click to minimize the prompt page','/cs/ps/cache/8.50.03/PT_PORTAL_IC_EXPAND_1.gif','Click to maximize the prompt page','/cs/ps/cache/8.50.03/PT_PROCESSING_1.gif','/cs/ps/cache/8.50.03/PT_RESIZE_IMG_1.gif','Drag to resize','Drag to move');
+ptEvent.add(window, 'resize', popupObj_win0.centerPromptWin);
+ptEvent.add(window,'scroll',popupObj_win0.centerPromptWin);
+popupModalObj_win0.init('/cs/ps/cache/8.50.03/PT_PORTAL_IC_CLOSE_1.gif','Close','/cs/ps/cache/8.50.03/PT_PORTAL_IC_COLLAPSE_1.gif','Click to minimize the prompt page','/cs/ps/cache/8.50.03/PT_PORTAL_IC_EXPAND_1.gif','Click to maximize the prompt page','/cs/ps/cache/8.50.03/PT_PROCESSING_1.gif','/cs/ps/cache/8.50.03/PT_RESIZE_IMG_1.gif','Drag to resize','Drag to move');
+ptEvent.add(window, 'resize', popupModalObj_win0.centerPromptWin);
+ptEvent.add(window,'scroll',popupModalObj_win0.centerPromptWin);
+setEventHandlers_win0('ICFirstAnchor_win0', 'ICLastAnchor_win0', false);
+processing_win0(0,3000);setKeyEventHandler_win0();ptEvent.add(window,'scroll',positionWAIT_win0);}
+ptEvent.load(onLoadExt_win0);
+</script>
+</head>
+<body tabindex="-1" class="PSPAGE">
+<div id="WAIT_win0" style="display:none;position:absolute;right:0;"><img id="processing" align="left" src="/cs/ps/cache/8.50.03/PT_PROCESSING_1.gif" alt="Processing... please wait" title="Processing... please wait"></div>
+ <div id="SAVED_win0" style="display:none;position:absolute;right:0;"><table border="0" cellpadding="0" cellspacing="0"><tr>
+<td><img src="/cs/ps/cache/8.50.03/PTPORTAL_POPBOX_LEFT_1.gif" width="7" height="39" border="0" alt=""></td>
+<td id="saveWait_win0" width="35" align="center" valign="middle" background="/cs/ps/cache/8.50.03/PTPORTAL_POPBOX_CENTER_1.gif"><img src="/cs/ps/cache/8.50.03/PT_LOADER_1.gif" width="24" height="24" alt=""></td>
+<td nowrap background="/cs/ps/cache/8.50.03/PTPORTAL_POPBOX_CENTER_1.gif"><span id="ptStatusText_win0" dir="ltr" class="PSPROCESSING"> </span></td>
+<td><img src="/cs/ps/cache/8.50.03/PTPORTAL_POPBOX_RIGHT_1.gif" width="6" height="39" alt=""></td>
+<td> </td>
+</tr></table></div>
+<a name="ICFirstAnchor_win0"></a>
+<form name="win0" method="post" action="../../../EMPLOYEE/HRMS/c/UQMY_GUEST.UQMY_TM_TBL_GUEST.GBL" autocomplete="off">
+<input type="hidden" name="ICType" value="Panel"><input type="hidden" name="ICElementNum" id="ICElementNum" value="0"><input type="hidden" name="ICStateNum" id="ICStateNum" value="4"><input type="hidden" name="ICAction" value="None"><input type="hidden" name="ICXPos" value="0"><input type="hidden" name="ICYPos" value="0"><input type="hidden" name="ICFocus" value=""><input type="hidden" name="ICSaveWarningFilter" value="0"><input type="hidden" name="ICChanged" value="0"><input type="hidden" name="ICResubmit" value="0"><input type="hidden" name="ICSID" value="y8M5WWv6XjKX"><input type="hidden" name="ICModalWidget" id="ICModalWidget" value="0"><input type="hidden" name="ICZoomGrid" id="ICZoomGrid" value="0"><input type="hidden" name="ICModalLongClosed" value=""><input type="hidden" name="ICActionPrompt" value="false"><input type="hidden" name="ICTypeAheadID" id="ICTypeAheadID" value=""><input type="hidden" name="ICFind" value=""><input type="hidden" name="ICAddCount" value=""><div id="PAGECONTAINER">
+<table class="PSPAGECONTAINER"><tr><td>
+<div id="win0divPSPAGECONTAINER" onmousemove="ptCommonObj.moveWindow(this)"><table border="0" id="ACE_width" cellpadding="0" cellspacing="0" class="PSPAGECONTAINER" cols="8" width="1133">
+<tr>
+<td width="4" height="0"></td>
+<td width="3"></td>
+<td width="1"></td>
+<td width="116"></td>
+<td width="40"></td>
+<td width="392"></td>
+<td width="378"></td>
+<td width="199"></td>
+</tr>
+<tr>
+<td height="18" colspan="2"></td>
+<td colspan="6" valign="top" align="left">
+<div id="win0divUQ_DERIVED_HELP_DESCR100">
+<span class="PAPAGETITLE" id="UQ_DERIVED_HELP_DESCR100">Course &amp; Timetable Info</span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="4" colspan="4"></td>
+<td valign="top" align="left">
+<div id="win0divUQ_DRV_TASK_WIZ_HTMLAREA">
+<div style="width:40px; height:4px; ">
+<!-- Begin HTML Area Name Undisclosed -->
+
+<!-- End HTML Area -->
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td height="15" colspan="3"></td>
+<td colspan="3" valign="top" align="left">
+<div id="win0divUQ_DERIVED_HELP_UQ_HELP_TEXT">
+<div style="width:548px; height:4px; ">
+<!-- Begin HTML Area Name Undisclosed -->
+<div class="UQ_TEXT">For help with course information on this page, <a href="http://www.uq.edu.au/myadvisor/index.html?page=2981" target="_blank" title="myAdvisor(opens in new window)"> click here.</a>
+For help with timetable information on this page, <a href="http://www.uq.edu.au/myadvisor/index.html?page=55405" target="_blank" title="myAdvisor(opens in new window)"> click here.</a>
+</div>
+<p>
+<!-- End HTML Area -->
+</p>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td height="1176"></td>
+<td colspan="6" valign="top" align="left">
+<div id="win0div$ICField0"><table border="0" id="ACE_$ICField0" cellpadding="0" cellspacing="0" cols="5" width="930" class="PSLEVEL1SCROLLAREABODY" style="border-style:none">
+<tr>
+<td width="8" height="0"></td>
+<td width="20"></td>
+<td width="129"></td>
+<td width="766"></td>
+<td width="7"></td>
+</tr>
+<tr>
+<td height="1140"></td>
+<td colspan="3" valign="top" align="left">
+<div id="win0div$ICField12$0"><table border="0" id="ACE_$ICField12$0" cellpadding="0" cellspacing="0" cols="14" width="915" class="PSLEVEL1SCROLLAREABODY" style="border-style:none">
+<tr>
+<td width="4" height="10"></td>
+<td width="5"></td>
+<td width="11"></td>
+<td width="69"></td>
+<td width="27"></td>
+<td width="5"></td>
+<td width="62"></td>
+<td width="18"></td>
+<td width="40"></td>
+<td width="22"></td>
+<td width="17"></td>
+<td width="117"></td>
+<td width="515"></td>
+<td width="3"></td>
+</tr>
+<tr>
+<td height="24" colspan="2"></td>
+<td colspan="12" valign="top" align="left">
+<div id="win0divTERM_VAL_TBL_DESCR">
+<span class="UQ_TEXT_BOLD" id="TERM_VAL_TBL_DESCR">Summer Semester, 2010</span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="34" colspan="2"></td>
+<td colspan="2" valign="top" align="left">
+<div id="win0divUQ_CLASS_VW_UQ_CRSE_CODE$0">
+<span class="UQ_TEXT_BOLD" id="UQ_CLASS_VW_UQ_CRSE_CODE$0">MATH2000</span>
+</div>
+</td>
+<td colspan="10" valign="top" align="left">
+<div id="win0divUQ_CLASS_VW_DESCR$0">
+<span class="UQ_TEXT_BOLD" id="UQ_CLASS_VW_DESCR$0">Calculus &amp; Linear Algebra II</span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="1" colspan="3"></td>
+<td colspan="3" rowspan="2" valign="top" align="left">
+<div id="win0divlblUQ_OTH_LINK_DRV_UQ_CONTACT_HRS$0">
+<label for="UQ_OTH_LINK_DRV_UQ_CONTACT_HRS$0" class="PSEDITBOXLABEL" id="UQ_OTH_LINK_DRV_UQ_CONTACT_HRS_LBL$0">Contact Hours:</label>
+</div>
+</td>
+<td></td>
+<td colspan="2" rowspan="2" valign="top" align="right">
+<div id="win0divlblUQ_OTH_LINK_DRV_UQ_UNITS$0">
+<label for="UQ_OTH_LINK_DRV_UQ_UNITS$0" class="PSEDITBOXLABEL" id="UQ_OTH_LINK_DRV_UQ_UNITS_LBL$0">Units:</label>
+</div>
+</td>
+<td colspan="2"></td>
+<td rowspan="2" valign="top" align="left">
+<div id="win0divlblUQ_OTH_LINK_DRV_DESCR5$0">
+<label for="UQ_OTH_LINK_DRV_DESCR5$0" class="PSEDITBOXLABEL" id="UQ_OTH_LINK_DRV_DESCR5_LBL$0">Campus/Location:</label>
+</div>
+</td>
+</tr>
+<tr>
+<td height="23" colspan="3"></td>
+<td valign="top" align="left">
+<div id="win0divUQ_OTH_LINK_DRV_UQ_CONTACT_HRS$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_OTH_LINK_DRV_UQ_CONTACT_HRS$0">3L1T(5L2T summer)</span>
+</div>
+</td>
+<td valign="top" align="right">
+<div id="win0divUQ_OTH_LINK_DRV_UQ_UNITS$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_OTH_LINK_DRV_UQ_UNITS$0">2</span>
+</div>
+</td>
+<td></td>
+<td colspan="2" valign="top" align="left">
+<div id="win0divUQ_OTH_LINK_DRV_DESCR5$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_OTH_LINK_DRV_DESCR5$0">St Lucia/St Lucia</span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="24" colspan="3"></td>
+<td colspan="3" valign="top" align="left">
+<div id="win0divlblUQ_OTH_LINK_DRV_CLASS_STAT$0">
+<label for="UQ_OTH_LINK_DRV_CLASS_STAT$0" class="PSDROPDOWNLABEL" id="UQ_OTH_LINK_DRV_CLASS_STAT_LBL$0">Class Status:</label>
+</div>
+</td>
+<td colspan="5" rowspan="2" valign="top" align="left">
+<div id="win0divUQ_OTH_LINK_DRV_CLASS_STAT$0">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_OTH_LINK_DRV_CLASS_STAT$0">Active</span>
+</div>
+</td>
+<td rowspan="2" valign="top" align="left">
+<div id="win0divlblUQ_OTH_LINK_DRV_INSTRUCTION_MODE$0">
+<label for="UQ_OTH_LINK_DRV_INSTRUCTION_MODE$0" class="PSDROPDOWNLABEL" id="UQ_OTH_LINK_DRV_INSTRUCTION_MODE_LBL$0">Instruction Mode:</label>
+</div>
+</td>
+<td colspan="2" rowspan="2" valign="top" align="left">
+<div id="win0divUQ_OTH_LINK_DRV_INSTRUCTION_MODE$0">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_OTH_LINK_DRV_INSTRUCTION_MODE$0">Internal</span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="1" colspan="3"></td>
+<td colspan="3" rowspan="2" valign="top" align="left">
+<div id="win0divlblUQ_DRV_TT_GUEST_ENRL_TOT$0">
+<label for="UQ_DRV_TT_GUEST_ENRL_TOT$0" class="PSEDITBOXLABEL" id="UQ_DRV_TT_GUEST_ENRL_TOT_LBL$0">Enrolled:</label>
+</div>
+</td>
+</tr>
+<tr>
+<td height="19" colspan="3"></td>
+<td colspan="8" valign="top" align="left">
+<div id="win0divUQ_DRV_TT_GUEST_ENRL_TOT$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TT_GUEST_ENRL_TOT$0">280</span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="4" colspan="5"></td>
+<td colspan="9" rowspan="2" valign="top" align="left">
+<div id="win0divUQ_OTH_LINK_DRV_UQ_DESCRLONG$0"><textarea name="UQ_OTH_LINK_DRV_UQ_DESCRLONG$0" id="UQ_OTH_LINK_DRV_UQ_DESCRLONG$0" class="PSLONGEDITBOX" style="width:408px; height:56px;  overflow:auto;" cols="55" rows="4" readonly wrap="virtual">Please note that the contact hours for summer semester is 5L2T. 
+Matrices, solution to linear systems, vector &amp; matrix norms. Numerical algorithms for eigensystems, optimisation. First &amp; linear second order differential equations, variation of parameters, applications, numerical methods. Surface &amp; volume integrals, Stoke's &amp; Green's Theorems, applications (flux, heat equations).</textarea></div>
+</td>
+</tr>
+<tr>
+<td height="64" colspan="3"></td>
+<td colspan="2" valign="top" align="left">
+<div id="win0divlblUQ_OTH_LINK_DRV_UQ_DESCRLONG$0">
+<label for="UQ_OTH_LINK_DRV_UQ_DESCRLONG$0" class="PSLONGEDITLABEL" id="UQ_OTH_LINK_DRV_UQ_DESCRLONG_LBL$0">Description:</label>
+</div>
+</td>
+</tr>
+<tr>
+<td height="1" colspan="3"></td>
+<td colspan="5" rowspan="2" valign="top" align="left">
+<div id="win0divlblUQ_OTH_LINK_DRV_UQ_COORDINATOR$0">
+<label for="UQ_OTH_LINK_DRV_UQ_COORDINATOR$0" class="PSEDITBOXLABEL" id="UQ_OTH_LINK_DRV_UQ_COORDINATOR_LBL$0">Coordinator:</label>
+</div>
+</td>
+</tr>
+<tr>
+<td height="23" colspan="3"></td>
+<td colspan="6" rowspan="2" valign="top" align="left">
+<div id="win0divUQ_OTH_LINK_DRV_UQ_COORDINATOR$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_OTH_LINK_DRV_UQ_COORDINATOR$0">Dr Phil Isaac (psi@maths.uq.edu.au)(Sem1); Dr Jon Links (jrl@maths.uq.edu.au)/Dr Tom Mollee (trm@maths.uq.edu.au) (Sem2); Dr Phil Isaac (Sum)</span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="1" colspan="3"></td>
+<td colspan="5" rowspan="2" valign="top" align="left">
+<div id="win0divlblUQ_OTH_LINK_DRV_UQ_PREREQUISITES$0">
+<label for="UQ_OTH_LINK_DRV_UQ_PREREQUISITES$0" class="PSEDITBOXLABEL" id="UQ_OTH_LINK_DRV_UQ_PREREQUISITES_LBL$0">Prerequisites:</label>
+</div>
+</td>
+</tr>
+<tr>
+<td height="23" colspan="3"></td>
+<td colspan="6" rowspan="2" valign="top" align="left">
+<div id="win0divUQ_OTH_LINK_DRV_UQ_PREREQUISITES$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_OTH_LINK_DRV_UQ_PREREQUISITES$0">(MATH1051) + (MATH1052)</span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="1" colspan="3"></td>
+<td colspan="5" rowspan="2" valign="top" align="left">
+<div id="win0divlblUQ_OTH_LINK_DRV_UQ_RECOM_PREREQ$0">
+<label for="UQ_OTH_LINK_DRV_UQ_RECOM_PREREQ$0" class="PSEDITBOXLABEL" id="UQ_OTH_LINK_DRV_UQ_RECOM_PREREQ_LBL$0">Recommended Prerequisites:</label>
+</div>
+</td>
+</tr>
+<tr>
+<td height="23" colspan="3"></td>
+<td colspan="6" rowspan="2" valign="top" align="left">
+<div id="win0divUQ_OTH_LINK_DRV_UQ_RECOM_PREREQ$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_OTH_LINK_DRV_UQ_RECOM_PREREQ$0"> </span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="1" colspan="3"></td>
+<td colspan="5" rowspan="2" valign="top" align="left">
+<div id="win0divlblUQ_OTH_LINK_DRV_UQ_COMPANIONS$0">
+<label for="UQ_OTH_LINK_DRV_UQ_COMPANIONS$0" class="PSEDITBOXLABEL" id="UQ_OTH_LINK_DRV_UQ_COMPANIONS_LBL$0">Companions:</label>
+</div>
+</td>
+</tr>
+<tr>
+<td height="23" colspan="3"></td>
+<td colspan="6" rowspan="2" valign="top" align="left">
+<div id="win0divUQ_OTH_LINK_DRV_UQ_COMPANIONS$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_OTH_LINK_DRV_UQ_COMPANIONS$0"> </span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="1" colspan="3"></td>
+<td colspan="5" rowspan="2" valign="top" align="left">
+<div id="win0divlblUQ_OTH_LINK_DRV_UQ_RECOM_COMPANION$0">
+<label for="UQ_OTH_LINK_DRV_UQ_RECOM_COMPANION$0" class="PSEDITBOXLABEL" id="UQ_OTH_LINK_DRV_UQ_RECOM_COMPANION_LBL$0">Recommended Companions:</label>
+</div>
+</td>
+</tr>
+<tr>
+<td height="23" colspan="3"></td>
+<td colspan="6" rowspan="2" valign="top" align="left">
+<div id="win0divUQ_OTH_LINK_DRV_UQ_RECOM_COMPANION$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_OTH_LINK_DRV_UQ_RECOM_COMPANION$0"> </span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="1" colspan="3"></td>
+<td colspan="5" rowspan="2" valign="top" align="left">
+<div id="win0divlblUQ_OTH_LINK_DRV_UQ_INCOMPATIBLES$0">
+<label for="UQ_OTH_LINK_DRV_UQ_INCOMPATIBLES$0" class="PSEDITBOXLABEL" id="UQ_OTH_LINK_DRV_UQ_INCOMPATIBLES_LBL$0">Incompatibles:</label>
+</div>
+</td>
+</tr>
+<tr>
+<td height="23" colspan="3"></td>
+<td colspan="6" rowspan="2" valign="top" align="left">
+<div id="win0divUQ_OTH_LINK_DRV_UQ_INCOMPATIBLES$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_OTH_LINK_DRV_UQ_INCOMPATIBLES$0"> </span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="1" colspan="3"></td>
+<td colspan="5" rowspan="2" valign="top" align="left">
+<div id="win0divlblUQ_OTH_LINK_DRV_UQ_RESTRICTIONS$0">
+<label for="UQ_OTH_LINK_DRV_UQ_RESTRICTIONS$0" class="PSEDITBOXLABEL" id="UQ_OTH_LINK_DRV_UQ_RESTRICTIONS_LBL$0">Restrictions:</label>
+</div>
+</td>
+</tr>
+<tr>
+<td height="23" colspan="3"></td>
+<td colspan="6" rowspan="2" valign="top" align="left">
+<div id="win0divUQ_OTH_LINK_DRV_UQ_RESTRICTIONS$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_OTH_LINK_DRV_UQ_RESTRICTIONS$0"> </span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="1" colspan="3"></td>
+<td colspan="5" rowspan="2" valign="top" align="left">
+<div id="win0divlblUQ_OTH_LINK_DRV_DESCR2$0">
+<label for="UQ_OTH_LINK_DRV_DESCR2$0" class="PSEDITBOXLABEL" id="UQ_OTH_LINK_DRV_DESCR2_LBL$0">Coordinating Unit:</label>
+</div>
+</td>
+</tr>
+<tr>
+<td height="23" colspan="3"></td>
+<td colspan="6" rowspan="2" valign="top" align="left">
+<div id="win0divUQ_OTH_LINK_DRV_DESCR2$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_OTH_LINK_DRV_DESCR2$0">Mathematics &amp; Physics School</span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="1" colspan="3"></td>
+<td colspan="5" rowspan="2" valign="top" align="left">
+<div id="win0divlblUQ_OTH_LINK_DRV_DESCR3$0">
+<label for="UQ_OTH_LINK_DRV_DESCR3$0" class="PSEDITBOXLABEL" id="UQ_OTH_LINK_DRV_DESCR3_LBL$0">Academic Career:</label>
+</div>
+</td>
+</tr>
+<tr>
+<td height="22" colspan="3"></td>
+<td colspan="6" valign="top" align="left">
+<div id="win0divUQ_OTH_LINK_DRV_DESCR3$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_OTH_LINK_DRV_DESCR3$0">Undergraduate</span>
+</div>
+</td>
+</tr>
+<tr>
+<td height="708"></td>
+<td colspan="12" valign="top" align="left">
+<div id="win0divUQ_TTBLE_GUEST$0"><table border="1" cellspacing="0" class="PSLEVEL2GRIDWBO" id="UQ_TTBLE_GUEST$scrolli$0" dir="ltr" cols="11" width="908" cellpadding="2">
+<tr><td class="PSLEVEL2GRIDLABEL" colspan="11" align="right"><div id="win0divGPUQ_TTBLE_GUEST$0"> | <a name="UQ_TTBLE_GUEST%24hmodal%240" id="UQ_TTBLE_GUEST$hmodal$0" tabindex="35" href="javascript:mAction_win0(document.win0,'UQ_TTBLE_GUEST%24hmodal%240',%20null,%20null,%20'',%20true);"><img src="/cs/ps/cache/8.50.03/PT_MODAL_CNTRL_OLD_1.GIF" name="UQ_TTBLE_GUEST$pt_modal_cntrl$img$0" alt="Zoom " title="Zoom " border="0" align="top"></a><a name="UQ_TTBLE_GUEST%24hexcel%240" id="UQ_TTBLE_GUEST$hexcel$0" tabindex="35" href="javascript:submitAction_win0(document.win0,'UQ_TTBLE_GUEST%24hexcel%240');" class="PSLEVEL2GRIDLABEL">Download in spreadsheet format (CSV)</a>        </div></td></tr>
+<tr>
+<th scope="col" width="44" align="left" class="PSLEVEL2GRIDCOLUMNHDR">Location</th>
+<th scope="col" width="35" align="left" class="PSLEVEL2GRIDCOLUMNHDR">Class</th>
+<th scope="col" width="66" align="left" class="PSLEVEL2GRIDCOLUMNHDR">Group Name</th>
+<th scope="col" width="23" align="left" class="PSLEVEL2GRIDCOLUMNHDR">Day</th>
+<th scope="col" width="55" align="left" class="PSLEVEL2GRIDCOLUMNHDR">Start</th>
+<th scope="col" width="54" align="left" class="PSLEVEL2GRIDCOLUMNHDR">End</th>
+<th scope="col" width="127" align="left" class="PSLEVEL2GRIDCOLUMNHDR">Building Name</th>
+<th scope="col" width="43" align="left" class="PSLEVEL2GRIDCOLUMNHDR">Building</th>
+<th scope="col" width="33" align="left" class="PSLEVEL2GRIDCOLUMNHDR">Room</th>
+<th scope="col" width="152" align="left" class="PSLEVEL2GRIDCOLUMNHDR">Start/End Date (DD/MM/YYYY)</th>
+<th scope="col" width="198" align="left" class="PSLEVEL2GRIDCOLUMNHDR">Not taught on these dates (DD/MM/YYYY)</th>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row1" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row1');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row1');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row1');">
+<td align="left" class="PSLEVEL2GRIDODDROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$0">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$0">L</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$0"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$0">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$0">Mon</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$0">10:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$0">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$0">Steele Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divBUILDING_NBR$0">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%240" id="BUILDING_NBR$0" tabindex="49" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%240');" class="PSHYPERLINK">03</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$0">206</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$0">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$0">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$0"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row2" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row2');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row2');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row2');">
+<td align="left" class="PSLEVEL2GRIDEVENROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$1">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$1">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$1">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$1">L</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$1">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$1"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$1">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$1">Tue</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$1">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$1">10:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$1">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$1">10:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$1">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$1">Abel Smith Lecture Theatre</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divBUILDING_NBR$1">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%241" id="BUILDING_NBR$1" tabindex="55" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%241');" class="PSHYPERLINK">23</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$1">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$1">1</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$1">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$1">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$1">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$1"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row3" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row3');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row3');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row3');">
+<td align="left" class="PSLEVEL2GRIDODDROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$2">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$2">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$2">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$2">L</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$2">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$2"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$2">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$2">Wed</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$2">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$2">09:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$2">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$2">09:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$2">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$2">Steele Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divBUILDING_NBR$2">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%242" id="BUILDING_NBR$2" tabindex="61" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%242');" class="PSHYPERLINK">03</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$2">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$2">206</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$2">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$2">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$2">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$2"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row4" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row4');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row4');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row4');">
+<td align="left" class="PSLEVEL2GRIDEVENROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$3">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$3">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$3">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$3">L</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$3">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$3"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$3">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$3">Wed</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$3">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$3">10:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$3">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$3">10:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$3">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$3">Steele Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divBUILDING_NBR$3">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%243" id="BUILDING_NBR$3" tabindex="67" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%243');" class="PSHYPERLINK">03</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$3">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$3">206</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$3">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$3">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$3">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$3"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row5" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row5');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row5');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row5');">
+<td align="left" class="PSLEVEL2GRIDODDROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$4">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$4">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$4">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$4">T1</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$4">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$4"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$4">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$4">Tue</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$4">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$4">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$4">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$4">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$4">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$4">Forgan Smith Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divBUILDING_NBR$4">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%244" id="BUILDING_NBR$4" tabindex="73" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%244');" class="PSHYPERLINK">01</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$4">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$4">E212</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$4">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$4">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$4">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$4"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row6" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row6');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row6');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row6');">
+<td align="left" class="PSLEVEL2GRIDEVENROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$5">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$5">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$5">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$5">T1</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$5">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$5"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$5">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$5">Wed</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$5">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$5">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$5">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$5">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$5">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$5">Forgan Smith Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divBUILDING_NBR$5">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%245" id="BUILDING_NBR$5" tabindex="79" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%245');" class="PSHYPERLINK">01</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$5">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$5">E212</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$5">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$5">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$5">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$5"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row7" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row7');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row7');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row7');">
+<td align="left" class="PSLEVEL2GRIDODDROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$6">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$6">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$6">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$6">T2</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$6">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$6"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$6">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$6">Tue</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$6">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$6">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$6">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$6">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$6">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$6">Priestley Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divBUILDING_NBR$6">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%246" id="BUILDING_NBR$6" tabindex="85" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%246');" class="PSHYPERLINK">67</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$6">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$6">343</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$6">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$6">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$6">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$6"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row8" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row8');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row8');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row8');">
+<td align="left" class="PSLEVEL2GRIDEVENROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$7">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$7">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$7">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$7">T2</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$7">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$7"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$7">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$7">Wed</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$7">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$7">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$7">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$7">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$7">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$7">Priestley Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divBUILDING_NBR$7">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%247" id="BUILDING_NBR$7" tabindex="91" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%247');" class="PSHYPERLINK">67</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$7">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$7">343</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$7">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$7">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$7">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$7"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row9" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row9');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row9');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row9');">
+<td align="left" class="PSLEVEL2GRIDODDROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$8">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$8">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$8">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$8">T3</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$8">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$8"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$8">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$8">Tue</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$8">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$8">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$8">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$8">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$8">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$8">Chamberlain Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divBUILDING_NBR$8">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%248" id="BUILDING_NBR$8" tabindex="97" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%248');" class="PSHYPERLINK">35</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$8">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$8">212</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$8">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$8">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$8">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$8"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row10" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row10');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row10');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row10');">
+<td align="left" class="PSLEVEL2GRIDEVENROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$9">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$9">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$9">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$9">T3</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$9">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$9"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$9">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$9">Wed</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$9">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$9">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$9">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$9">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$9">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$9">Chamberlain Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divBUILDING_NBR$9">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%249" id="BUILDING_NBR$9" tabindex="103" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%249');" class="PSHYPERLINK">35</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$9">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$9">212</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$9">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$9">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$9">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$9"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row11" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row11');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row11');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row11');">
+<td align="left" class="PSLEVEL2GRIDODDROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$10">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$10">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$10">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$10">T4</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$10">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$10"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$10">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$10">Tue</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$10">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$10">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$10">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$10">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$10">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$10">Chemistry Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divBUILDING_NBR$10">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2410" id="BUILDING_NBR$10" tabindex="109" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2410');" class="PSHYPERLINK">68</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$10">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$10">214</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$10">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$10">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$10">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$10"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row12" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row12');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row12');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row12');">
+<td align="left" class="PSLEVEL2GRIDEVENROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$11">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$11">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$11">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$11">T4</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$11">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$11"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$11">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$11">Wed</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$11">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$11">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$11">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$11">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$11">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$11">Chemistry Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divBUILDING_NBR$11">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2411" id="BUILDING_NBR$11" tabindex="115" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2411');" class="PSHYPERLINK">68</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$11">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$11">214</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$11">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$11">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$11">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$11"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row13" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row13');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row13');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row13');">
+<td align="left" class="PSLEVEL2GRIDODDROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$12">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$12">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$12">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$12">T5</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$12">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$12"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$12">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$12">Tue</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$12">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$12">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$12">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$12">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$12">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$12">Forgan Smith Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divBUILDING_NBR$12">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2412" id="BUILDING_NBR$12" tabindex="121" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2412');" class="PSHYPERLINK">01</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$12">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$12">E107</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$12">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$12">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$12">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$12"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row14" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row14');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row14');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row14');">
+<td align="left" class="PSLEVEL2GRIDEVENROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$13">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$13">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$13">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$13">T5</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$13">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$13"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$13">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$13">Wed</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$13">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$13">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$13">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$13">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$13">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$13">Chemistry Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divBUILDING_NBR$13">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2413" id="BUILDING_NBR$13" tabindex="127" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2413');" class="PSHYPERLINK">68</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$13">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$13">320</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$13">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$13">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$13">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$13"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row15" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row15');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row15');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row15');">
+<td align="left" class="PSLEVEL2GRIDODDROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$14">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$14">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$14">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$14">T6</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$14">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$14"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$14">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$14">Tue</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$14">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$14">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$14">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$14">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$14">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$14">Forgan Smith Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divBUILDING_NBR$14">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2414" id="BUILDING_NBR$14" tabindex="133" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2414');" class="PSHYPERLINK">01</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$14">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$14">E232</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$14">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$14">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$14">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$14"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row16" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row16');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row16');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row16');">
+<td align="left" class="PSLEVEL2GRIDEVENROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$15">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$15">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$15">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$15">T6</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$15">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$15"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$15">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$15">Wed</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$15">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$15">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$15">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$15">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$15">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$15">Social Sciences Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divBUILDING_NBR$15">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2415" id="BUILDING_NBR$15" tabindex="139" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2415');" class="PSHYPERLINK">24</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$15">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$15">S603</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$15">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$15">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$15">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$15"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row17" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row17');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row17');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row17');">
+<td align="left" class="PSLEVEL2GRIDODDROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$16">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$16">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$16">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$16">T7</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$16">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$16"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$16">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$16">Tue</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$16">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$16">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$16">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$16">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$16">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$16">Priestley Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divBUILDING_NBR$16">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2416" id="BUILDING_NBR$16" tabindex="145" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2416');" class="PSHYPERLINK">67</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$16">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$16">342</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$16">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$16">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$16">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$16"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row18" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row18');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row18');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row18');">
+<td align="left" class="PSLEVEL2GRIDEVENROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$17">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$17">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$17">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$17">T7</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$17">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$17"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$17">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$17">Wed</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$17">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$17">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$17">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$17">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$17">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$17">Priestley Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divBUILDING_NBR$17">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2417" id="BUILDING_NBR$17" tabindex="151" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2417');" class="PSHYPERLINK">67</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$17">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$17">342</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$17">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$17">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$17">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$17"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row19" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row19');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row19');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row19');">
+<td align="left" class="PSLEVEL2GRIDODDROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$18">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$18">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$18">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$18">T8</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$18">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$18"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$18">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$18">Tue</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$18">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$18">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$18">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$18">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$18">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$18">Sir Llew Edwards Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divBUILDING_NBR$18">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2418" id="BUILDING_NBR$18" tabindex="157" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2418');" class="PSHYPERLINK">14</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$18">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$18">115</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$18">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$18">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$18">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$18"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row20" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row20');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row20');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row20');">
+<td align="left" class="PSLEVEL2GRIDEVENROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$19">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$19">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$19">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$19">T8</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$19">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$19"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$19">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$19">Wed</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$19">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$19">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$19">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$19">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$19">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$19">Sir Llew Edwards Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divBUILDING_NBR$19">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2419" id="BUILDING_NBR$19" tabindex="163" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2419');" class="PSHYPERLINK">14</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$19">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$19">115</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$19">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$19">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$19">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$19"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row21" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row21');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row21');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row21');">
+<td align="left" class="PSLEVEL2GRIDODDROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$20">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$20">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$20">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$20">T9</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$20">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$20"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$20">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$20">Tue</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$20">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$20">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$20">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$20">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$20">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$20">Forgan Smith Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divBUILDING_NBR$20">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2420" id="BUILDING_NBR$20" tabindex="169" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2420');" class="PSHYPERLINK">01</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$20">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$20">E219</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$20">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$20">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$20">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$20"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row22" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row22');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row22');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row22');">
+<td align="left" class="PSLEVEL2GRIDEVENROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$21">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$21">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$21">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$21">T9</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$21">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$21"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$21">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$21">Wed</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$21">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$21">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$21">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$21">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$21">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$21">Forgan Smith Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divBUILDING_NBR$21">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2421" id="BUILDING_NBR$21" tabindex="175" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2421');" class="PSHYPERLINK">01</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$21">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$21">E219</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$21">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$21">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$21">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$21"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row23" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row23');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row23');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row23');">
+<td align="left" class="PSLEVEL2GRIDODDROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$22">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$22">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$22">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$22">T10</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$22">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$22"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$22">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$22">Tue</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$22">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$22">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$22">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$22">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$22">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$22">Frank White Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divBUILDING_NBR$22">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2422" id="BUILDING_NBR$22" tabindex="181" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2422');" class="PSHYPERLINK">43</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$22">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$22">105</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$22">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$22">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$22">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$22"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row24" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row24');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row24');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row24');">
+<td align="left" class="PSLEVEL2GRIDEVENROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$23">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$23">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$23">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$23">T10</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$23">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$23"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$23">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$23">Wed</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$23">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$23">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$23">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$23">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$23">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$23">Frank White Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divBUILDING_NBR$23">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2423" id="BUILDING_NBR$23" tabindex="187" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2423');" class="PSHYPERLINK">43</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$23">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$23">105</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$23">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$23">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$23">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$23"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row25" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row25');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row25');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row25');">
+<td align="left" class="PSLEVEL2GRIDODDROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$24">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$24">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$24">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$24">T11</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$24">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$24"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$24">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$24">Tue</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$24">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$24">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$24">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$24">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$24">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$24">Frank White Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divBUILDING_NBR$24">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2424" id="BUILDING_NBR$24" tabindex="193" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2424');" class="PSHYPERLINK">43</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$24">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$24">104</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$24">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$24">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$24">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$24"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row26" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row26');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row26');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row26');">
+<td align="left" class="PSLEVEL2GRIDEVENROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$25">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$25">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$25">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$25">T11</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$25">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$25"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$25">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$25">Wed</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$25">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$25">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$25">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$25">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$25">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$25">Frank White Building</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divBUILDING_NBR$25">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2425" id="BUILDING_NBR$25" tabindex="199" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2425');" class="PSHYPERLINK">43</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$25">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$25">104</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$25">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$25">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$25">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$25"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row27" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row27');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row27');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row27');">
+<td align="left" class="PSLEVEL2GRIDODDROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$26">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$26">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$26">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$26">T12</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$26">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$26"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$26">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$26">Tue</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$26">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$26">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$26">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$26">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$26">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$26">General Purpose North 3</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divBUILDING_NBR$26">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2426" id="BUILDING_NBR$26" tabindex="205" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2426');" class="PSHYPERLINK">39A</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$26">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$26">209</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$26">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$26">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDODDROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$26">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$26"> </span>
+</div>
+</td>
+</tr>
+<tr id="trUQ_TTBLE_GUEST$0_row28" valign="center" onclick="HighLightTR('rgb(212,219,217)','','trUQ_TTBLE_GUEST$0_row28');" onmouseover="hoverLightTR('rgb(249,254,203)','',0,'trUQ_TTBLE_GUEST$0_row28');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trUQ_TTBLE_GUEST$0_row28');">
+<td align="left" class="PSLEVEL2GRIDEVENROW" height="17">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCRSHORT3$27">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCRSHORT3$27">St Lucia</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$27">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_CLASS_GROUP$27">T12</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_GROUP_NAME$27">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_GROUP_NAME$27"> </span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$27">
+<span class="PSDROPDOWNLIST_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_DAYOFWEEK$27">Wed</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_START_TM$27">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_START_TM$27">11:00 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_END_TM$27">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_END_TM$27">11:50 AM</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_DESCR$27">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_DESCR$27">General Purpose North 3</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divBUILDING_NBR$27">
+<span class="PSHYPERLINK" title="Opens New Page"><a name="BUILDING_NBR%2427" id="BUILDING_NBR$27" tabindex="211" href="javascript:submitAction_win0(document.win0,'BUILDING_NBR%2427');" class="PSHYPERLINK">39A</a></span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_FCLT_BLDG_VW_ROOM$27">
+<span class="PSEDITBOX_DISPONLY" id="UQ_FCLT_BLDG_VW_ROOM$27">201</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$27">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_TM_TBL_DT$27">29/11/2010 - 29/01/2011</span>
+</div>
+</td>
+<td align="left" class="PSLEVEL2GRIDEVENROW">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$27">
+<span class="PSEDITBOX_DISPONLY" id="UQ_DRV_TTBLE_CR_UQ_EXEMPT_DT$27"> </span>
+</div>
+</td>
+</tr>
+</table></div>
+</td>
+</tr>
+<tr>
+<td height="13" colspan="14"></td>
+</tr>
+</table></div>
+</td>
+</tr>
+<tr>
+<td height="7" colspan="5"></td>
+</tr>
+<tr>
+<td height="5" colspan="2"></td>
+<td rowspan="2" nowrap valign="top" align="left">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_PRINT_PB">
+<a class="PSPUSHBUTTON" style="background-Color: transparent;" id="Left"><span style="background-Color: transparent;"><input type="button" name="UQ_DRV_TTBLE_CR_UQ_PRINT_PB" id="UQ_DRV_TTBLE_CR_UQ_PRINT_PB" tabindex="18" value="Print View (PDF)" class="PSPUSHBUTTON" style="width:116px; " onclick="submitAction_win0(this.form,this.name);"></span></a>
+</div>
+</td>
+</tr>
+<tr>
+<td height="24" colspan="2"></td>
+<td colspan="2" valign="top" align="left">
+<div id="win0divUQ_DRV_TTBLE_CR_UQ_MSG_TXT">
+<span class="PSLONGEDITBOX" id="UQ_DRV_TTBLE_CR_UQ_MSG_TXT">Information correct as at 10:40 PM 02/12/2010 (DD/MM/YYYY). Room allocations may change and it is important to check the timetable prior to start of classes.</span>
+</div>
+</td>
+</tr>
+</table></div>
+</td>
+</tr>
+<tr>
+<td height="48" colspan="8"></td>
+</tr>
+</table></div>
+</td></tr></table>
+<div id="popupModal">
+<div id="popupContainerModal">
+<div id="popupInnerModal">
+<div id="popupTitleBarModal">
+<div id="popupTitleBarLeftImageModal"> </div>
+<div id="popupTitleBarMiddleModal">
+<div id="popupTitleModal"><span id="PTPOPUP_TITLEModal" class="PTPOPUP_TITLE"> </span></div>
+<div id="popupControlsModal">
+<div name="popupMin" id="popupMinModal"><img id="#MODALMIN" alt=""></div>
+<div name="popupMax" id="popupMaxModal"><img id="#MODALMAX" alt=""></div>
+<div name="popupClose" id="popupCloseModal"><img id="#MODALCLOSE" alt=""></div>
+</div>
+</div>
+<div id="popupTitleBarRightImageModal"> </div>
+</div>
+<div id="popupContentContainerModal">
+<div id="popupContentModal"></div>
+<div id="popupOkButtonModal">
+<a class="PSPUSHBUTTON" style="background-Color: transparent;" id="Left"><span style="background-Color: transparent;"><input type="button" id="okbuttonModal" name="okbuttonModal" class="PSPUSHBUTTONRETURN" value="Return" onclick="javascript:submitAction_win0(document.win0, '#ICOKZG')" tabindex="4999" alt="Return" title="Return"></span></a>
+</div>
+</div>
+<div id="popupBottomModal"><img id="popupResizeImgModal" alt=""></div>
+</div>
+<div id="popupShadowModal" class="popupShadow">
+<div id="popupShadowTopRightCornerModal" class="popupShadowTopRightCorner"> </div>
+<div id="popupShadowTopModal" class="popupShadowTop"> </div>
+<div id="popupShadowBottomModal" class="popupShadowBottom">
+<div id="popupShadowBottomLeftCornerModal" class="popupShadowBottomLeftCorner"> </div>
+<div id="popupShadowBottomMiddleModal" class="popupShadowBottomMiddle"> </div>
+<div id="popupShadowBottomRightCornerModal" class="popupShadowBottomRightCorner"> </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="pt_dragtxt" class="PSLEVEL1GRIDCOLUMNHDR"></div>
+<div onmouseup="ptGridResizeObj_win0.TDselUp();" onmousemove="ptGridResizeObj_win0.TDselMove();" id="pt_dragResize" onmouseout="ptGridResizeObj_win0.dragTD=false;" onmbouseover="ptGridResizeObj_win0.dragTD=true;"></div>
+<div id="DetachDiv" height="0" width="0" frameborder="0"></div>
+</form>
+<a name="ICLastAnchor_win0"></a>
+<div id="popupMaskModal"> </div>
+<div id="popup">
+<div id="popupMask"> </div>
+<div id="popupContainer">
+<div id="popupInner" class="PTPOPUP_INNER">
+<div id="popupTitleBar" class="PTPOPUP_HEADER">
+<div id="popupTitleBarLeftImage"> </div>
+<div id="popupTitleBarMiddle">
+<div id="popupTitle" alt="Drag to move" title="Drag to move" style="float:left"><span id="PTPOPUP_TITLE" class="PTPOPUP_TITLE">Look Up</span></div>
+<div id="popupControls" style="float:right">
+<div name="popupMin" id="popupMin" class="titleButton"><img id="#MODALMIN" src="/cs/ps/cache/8.50.03/PT_PORTAL_IC_COLLAPSE_1.gif" onclick="popupObj_win0.minPrompt();" alt="Click to minimize the prompt page" title="Click to minimize the prompt page"></div>
+<div name="popupMax" id="popupMax" class="titleButton"><img id="#MODALMAX" src="/cs/ps/cache/8.50.03/PT_PORTAL_IC_EXPAND_1.gif" onclick="popupObj_win0.minPrompt();" alt="Click to maximize the prompt page" title="Click to maximize the prompt page"></div>
+<div name="popupClose" id="popupClose" class="titleButton"><img id="#MODALCLOSE" src="/cs/ps/cache/8.50.03/PT_PORTAL_IC_CLOSE_1.gif" onclick="popupObj_win0.hidePopup();" alt="Close" title="Close"></div>
+</div>
+</div>
+<div id="popupTitleBarRightImage"> </div>
+</div>
+<div id="popupContent">
+<div id="popupPrompt">
+<div id="popupWidget"><iframe id="popupFrameWidget" name="popupFrameWidget" title="Modal Dialogue" frameborder="0" allowtransparency="true" width="100%" height="100%"></iframe></div>
+<div id="divpopupFrame"></div>
+<div id="popupBottom" style="display:block;"><img id="popupResizeImg" onmousedown="javascript:popupObj_win0.initResizeWindow;" src="/cs/ps/cache/8.50.03/PT_RESIZE_IMG_1.gif" alt="Drag to resize" title="Drag to resize" style="float:right"></div>
+</div>
+<div id="popupMsg"> </div>
+</div>
+</div>
+<div id="popupShadow" class="popupShadow">
+<div id="popupShadowTopRightCorner" class="popupShadowTopRightCorner"> </div>
+<div id="popupShadowTop" class="popupShadowTop"> </div>
+<div id="popupShadowBottom" class="popupShadowBottom">
+<div id="popupShadowBottomLeftCorner" class="popupShadowBottomLeftCorner"> </div>
+<div id="popupShadowBottomMiddle" class="popupShadowBottomMiddle"> </div>
+<div id="popupShadowBottomRightCorner" class="popupShadowBottomRightCorner"> </div>
+</div>
+</div>
+</div>
+</div>
+<div id="pt_console"></div>
+<div id="pt_typeahead0"><span id="pt_typeahead" class="spanTextDropdown"></span></div>
+<!-- Mouse-over popup Begin -->
+<div id="MOpopupDiv" style="visibility:hidden; position:absolute; top:0; left:0">t</div>
+<table id="MOpopupContainer" width="20" border="0" cellpadding="0" cellspacing="0" style="visibility:hidden; position:absolute; top:0; left:0" onmouseover="MOpopupObj_win0.StartPopup('MOpopupContainer', '');" onmouseout="MOpopupObj_win0.StopPopup();">
+<tr>
+<td><img src="/cs/ps/cache/8.50.03/PT_TLEFT_CORNER_ALPHA_1.PNG" width="14" height="15" alt=""></td>
+<td height="11" class="MOBGImageTop"><img src="/cs/ps/cache/8.50.03/PT_TRANS_PIX_1.GIF" width="1" height="1" alt=""></td>
+<td><img src="/cs/ps/cache/8.50.03/PT_TRIGHT_CORNER_ALPHA_1.PNG" width="19" height="15" alt=""></td>
+</tr>
+<tr>
+<td height="25" class="MOBGImageLeft"> </td>
+<td id="MOpopupInner" height="25" width="20" align="left" valign="top" background="/cs/ps/cache/8.50.03/PT_BG_GRADIENT_BINARY_1.PNG" class="MOBGImage">
+<div id="MOdivpopupFrame" tabindex="-1" onclick="MOpopupObj_win0.SetFocusFlag(false);" style="overflow:auto; width:20px; height: 60px;">test</div>
+</td>
+<td height="45" align="left" valign="bottom" class="MOBGImageRightAlpha"><img src="/cs/ps/cache/8.50.03/PT_RIGHT_SHADOW_ALPHA_1.PNG" width="14" height="57" alt=""></td>
+</tr>
+<tr>
+<td valign="top"><img src="/cs/ps/cache/8.50.03/PT_BLEFT_CORNER_ALPHA_1.PNG" width="14" height="17" alt=""></td>
+<td class="MOBGImagebottomAlpha"></td>
+<td><img src="/cs/ps/cache/8.50.03/PT_BRIGHT_CORNER_ALPHA_1.PNG" width="20" height="18" alt=""></td>
+</tr>
+</table>
+<!-- Mouse-over popup End  -->
+</body>
+</html>
