@@ -1,9 +1,10 @@
 #!/usr/bin/ruby
 
-RotaDir = "/srv/rota"
-$LOAD_PATH << RotaDir
-require 'librota/model'
-require 'librota/metamodel'
+require File.expand_path('../lib/config', __FILE__)
+
+require 'rota/model'
+require 'rota/metamodel'
+
 require 'nokogiri'
 require 'bitly'
 require 'cinch'
