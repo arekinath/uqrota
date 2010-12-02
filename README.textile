@@ -1,3 +1,23 @@
 h1. UQRota
 
 Some readme text goes here.
+
+h2. Dependencies
+
+For the fetcher and backend model
+
+pre. gem install json mechanize logger dm-core dm-transactions RedCloth nokogiri
+pre. gem install daemons
+
+For iCal support
+
+pre. gem install ri_cal
+
+For PDF export support
+
+pre. gem install prawn
+
+For the IRC bot
+
+pre. gem install cinch bitly
+
