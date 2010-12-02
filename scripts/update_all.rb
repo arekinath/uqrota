@@ -1,9 +1,10 @@
 #!/usr/bin/ruby
 
-$LOAD_PATH << "/srv/rota"
-require 'librota/model'
-require 'librota/fetcher'
-require 'librota/queues_alerts'
+$LOAD_PATH << File.expand_path("../../lib", __FILE__)
+require 'config'
+require 'rota/model'
+require 'rota/fetcher'
+require 'rota/queues_alerts'
 
 csem = Rota::Model::Semester.current
 while (arg = ARGV.shift)

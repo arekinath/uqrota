@@ -1,0 +1,4 @@
+# Rota config file
+
+database:
+  uri: mysql://uqrota:uqrota@localhost/uqrota

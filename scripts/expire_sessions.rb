@@ -1,7 +1,8 @@
 #!/usr/bin/ruby
 
-$LOAD_PATH << "/srv/rota"
-require 'librota/model'
+$LOAD_PATH << File.expand_path("../../lib", __FILE__)
+require 'config'
+require 'rota/model'
 
 to_expire = Rota::Model::APISession.all.select { |k| k.expired? }
 if to_expire.size > 0

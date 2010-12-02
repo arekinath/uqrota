@@ -2,9 +2,9 @@ require 'rubygems'
 require 'dm-core'
 require 'dm-transactions'
 require 'digest/sha1'
-require 'yaml'
+require 'config'
 
-DataMapper.setup(:default, "mysql://uqrota:uqrota@localhost/uqrota")
+DataMapper.setup(:default, Rota::Config['database']['uri'])
 
 module Rota
   module Model

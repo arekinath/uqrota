@@ -1,5 +1,6 @@
-$LOAD_PATH << "/srv/rota"
-require 'librota/model'
+$LOAD_PATH << File.expand_path("../../lib", __FILE__)
+require 'config'
+require 'rota/model'
 include Rota::Model
 
 puts "#{Time.now} -- starting orphan check"
