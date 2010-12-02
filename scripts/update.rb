@@ -1,7 +1,7 @@
-$LOAD_PATH << "/srv/rota"
-
-require 'librota/model'
-require 'librota/fetcher'
+$LOAD_PATH << File.expand_path("../../lib", __FILE__)
+require 'config'
+require 'rota/model'
+require 'rota/fetcher'
 
 cs = Rota::Model::Course.all(:code => ARGV[0])
 course = cs[-1]
