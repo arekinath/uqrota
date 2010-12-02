@@ -6,8 +6,8 @@ h2. Dependencies
 
 For the fetcher and backend model
 
-pre. gem install json mechanize logger dm-core dm-transactions RedCloth nokogiri
-gem install daemons
+pre. gem install json mechanize logger dm-core dm-transactions dm-migrations RedCloth nokogiri
+gem install daemons dm-sqlite-adapter dm-mysql-adapter
 
 For iCal support
 

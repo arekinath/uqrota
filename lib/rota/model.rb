@@ -56,6 +56,7 @@ module Rota
           s.value = value.to_s
           s.save
         end
+        s
       end
     end
 
@@ -274,33 +275,32 @@ module Rota
       has n, :events
 
       def build_events
-        start_date, end_date = self.dates.split(" - ").collect do |d| 
-          DateTime.strptime(d + ' 00:01 +1000', '%d/%m/%Y %H:%M %Z')
+        begin
+          start_date, end_date = self.dates.split(" - ").collect do |d| 
+            DateTime.strptime(d + ' 00:01 +1000', '%d/%m/%Y %H:%M %Z')
+          end
+        rescue ArgumentError
+          return
         end
 
         start_week = start_date.strftime('%W')
         end_week = end_date.strftime('%W')
-        date = DateTime.strptime("#{start_week} #{self.day} 00:01 +1000", '%W %a %H:%M %Z')
+        start_year = start_date.strftime('%Y')
+        end_year = start_date.strftime('%Y')
+        date = DateTime.strptime("#{start_week} #{start_year} #{self.day} 00:01 +1000", '%W %Y %a %H:%M %Z')
 
         # destroy all current events
         self.events.each do |evt|
           evt.destroy!
         end
 
-        excepts = self.exceptions.split(";").collect do |d|
-          dt = d.strip.chomp
-          dtt = nil
-	  begin
-            dtt = DateTime.strptime(dt, '%d/%m/%Y').strftime('%Y-%m-%d')
-          rescue ArgumentError => ex
-            # blank exception list
-          end
-          dtt
+        ds = self.exceptions.scan(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/)
+        excepts = ds.collect do |d,m,y|
+          "#{y}-#{m}-#{d}"
         end
-        excepts = excepts.compact
 
         # now create the new ones
-        while date.strftime('%W').to_i <= end_week.to_i
+        while date.strftime('%W').to_i <= end_week.to_i or date.year < end_year.to_i
           sdate = date.strftime('%Y-%m-%d')
           evt = Event.new
           evt.date = sdate
@@ -309,12 +309,13 @@ module Rota
           evt.taught = (not excepts.include?(sdate))
           evt.update_times
           evt.save
+          self.events << evt
           date += Rational(7,1)
         end
       end
 
       def Session.mins_from_string(str)
-        m = /([0-9]{2}):([0-9]{2}) ([AP]M)/.match(str)
+        m = /([0-9]{1,2}):([0-9]{1,2}) ([AP]M)/.match(str)
         mins = m[1].to_i * 60 + (m[2].to_i)
         mins += 720 if m[3] == 'PM' and m[1].to_i < 12
         return mins
