@@ -2,6 +2,7 @@ require 'rubygems'
 require 'dm-core'
 require 'dm-transactions'
 require 'digest/sha1'
+require 'yaml'
 
 DataMapper.setup(:default, "mysql://uqrota:uqrota@localhost/uqrota")
 
