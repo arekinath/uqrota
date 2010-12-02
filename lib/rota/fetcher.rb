@@ -1,5 +1,6 @@
-require 'librota/model'
-require 'librota/queues_alerts'
+require 'rota/model'
+require 'rota/queues_alerts'
+
 require 'rubygems'
 require 'logger'
 require 'net/https'

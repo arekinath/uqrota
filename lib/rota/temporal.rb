@@ -1,4 +1,4 @@
-require 'librota/model'
+require 'rota/model'
 
 module Rota
   module Model

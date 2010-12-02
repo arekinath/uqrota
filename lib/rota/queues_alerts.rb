@@ -1,4 +1,4 @@
-require 'librota/model'
+require 'rota/model'
 require 'rubygems'
 require 'dm-core'
 require 'digest/sha1'
