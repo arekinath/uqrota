@@ -1,3 +1,4 @@
+require 'config'
 require 'rota/model'
 require 'rota/queues_alerts'
 
@@ -540,7 +541,8 @@ module Rota
     end
   end
 
-  UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; es-ES; rv:1.9.2.10) Gecko/20100914 Firefox/3.6.10 (.NET CLR 3.5.30729)"
+  UserAgent = Rota::Config['updater']['useragent']
+  Timeout = Rota::Config['updater']['timeout'].to_i
 
   # Fetches pages from mysinet
   class Fetcher
@@ -548,7 +550,7 @@ module Rota
       agent = Mechanize.new
       agent.user_agent = UserAgent
       agent.keep_alive = false
-      agent.read_timeout = 30
+      agent.read_timeout = Timeout
 
       page = agent.get('http://uq.edu.au/study/browse.html?level=ugpg');
       return [agent, page]
@@ -558,7 +560,7 @@ module Rota
       agent = Mechanize.new
       agent.user_agent = UserAgent
       agent.keep_alive = false
-      agent.read_timeout = 30
+      agent.read_timeout = Timeout
 
       page = agent.get("http://uq.edu.au/study/program_list.html?acad_prog=#{program['id']}")
       return [agent, page]
@@ -568,7 +570,7 @@ module Rota
       agent = Mechanize.new
       agent.user_agent = UserAgent
       agent.keep_alive = false
-      agent.read_timeout = 30
+      agent.read_timeout = Timeout
 
       page = agent.get("http://uq.edu.au/study/course.html?course_code=#{course.code}")
       return [agent, page]
@@ -578,7 +580,7 @@ module Rota
       agent = Mechanize.new
       agent.user_agent = UserAgent
       agent.keep_alive = false
-      agent.read_timeout = 30
+      agent.read_timeout = Timeout
       
       page = agent.get("http://uq.edu.au/maps/mapindex.html?menu=1")
       return [agent, page]
@@ -588,7 +590,7 @@ module Rota
       agent = Mechanize.new
       agent.user_agent = UserAgent
       agent.keep_alive = false
-      agent.read_timeout = 30
+      agent.read_timeout = Timeout
       
       page = agent.get("http://www.courses.uq.edu.au/student_section_loader.php?section=print_display&profileId=#{profile.profileId}")
       return [agent, page]
@@ -610,7 +612,7 @@ module Rota
       agent.user_agent = UserAgent
       agent.keep_alive = false
       # agent.log = Logger.new(STDERR)
-      agent.read_timeout = 30
+      agent.read_timeout = Timeout
 
       page = agent.get('https://www.sinet.uq.edu.au/')
       page = agent.get('https://www.sinet.uq.edu.au/psp/ps/?cmd=login')

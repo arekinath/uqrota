@@ -4,6 +4,8 @@ database:
   uri: mysql://uqrota:uqrota@localhost/uqrota
   
 updater:
+  timeout: 30
+  useragent: Mozilla/5.0 (Windows; U; Windows NT 5.1; es-ES; rv:1.9.2.10) Gecko/20100914 Firefox/3.6.10 (.NET CLR 3.5.30729)
   threads:
     default: 4
     profiles: 8
