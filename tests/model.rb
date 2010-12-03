@@ -79,6 +79,7 @@ describe 'A session object' do
   it 'should convert times to mins-from-midnight correctly' do
     TimetableSession.mins_from_string('5:00 AM').should.equal 5*60
     TimetableSession.mins_from_string('05:00 PM').should.equal 17*60
+    TimetableSession.mins_from_string('08:11 AM').should.equal 8*60+11
     TimetableSession.mins_from_string('6:31 AM').should.equal 6*60+31
   end
 end

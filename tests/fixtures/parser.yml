@@ -1,0 +1,15 @@
+user:
+  class: User
+  login: test
+  email: test@test.com
+  
+tt_email:
+  class: Timetable
+  user: @user
+  name: Timetable 1
+  
+tt_sms:
+  class: Timetable
+  user: @user
+  name: Timetable 2
+  alert_sms: =true

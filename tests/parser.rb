@@ -4,6 +4,7 @@ Rota::Config['database']['uri'] = 'sqlite::memory:'
 
 require 'rota/model'
 require 'rota/fetcher'
+require 'rota/queues_alerts'
 require 'rubygems'
 
 require 'dm-migrations'
@@ -11,6 +12,7 @@ DataMapper.auto_migrate!
 require 'nokogiri'
 
 require 'bacon'
+require 'fixtures'
 
 include Rota::Model
 
@@ -29,6 +31,7 @@ describe 'CoursePageParser' do
     f.update_semesters
   
     @page = FakePage.new('fixtures/math2000_sumsem10_tt.html')
+    @page_mod = FakePage.new('fixtures/math2000_sumsem10_tt_modified.html')
     @course = Course.new
     @course.code = "MATH2000"
     @course.save
@@ -40,11 +43,18 @@ describe 'CoursePageParser' do
     
     @parser = Rota::CoursePageParser.new(@offering, @page)
     @parser.parse
+    
+    @parser_mod = Rota::CoursePageParser.new(@offering, @page_mod)
+    @fix = FixtureSet.new("tests/fixtures/parser.yml")
+    @fix.save
   end
   
   after do
     @offering.destroy!
     @course.destroy!
+    @fix.destroy!
+    QueuedEmail.each { |e| e.destroy! }
+    QueuedSMS.each { |s| s.destroy! }
   end
   
   it 'should create series objects' do
@@ -79,5 +89,58 @@ describe 'CoursePageParser' do
     t8wed = t8.sessions(:day => 'Wed').first
     t8wed.should.not.nil?
     t8wed.start.should.equal 11*60
+  end
+  
+  it 'should update information accurately' do
+    @parser_mod.parse
+    
+    lser = @offering.series.first(:name => 'L')
+    lg = lser.groups.first
+    lg.reload
+    lfri = lg.sessions.first(:day => 'Fri')
+    lfri.should.not.nil?
+    lfri.reload
+    lfri.start.should.equal 10*60
+    
+    tser = @offering.series.first(:name => 'T')
+    t1 = tser.groups.first(:name => '1')
+    t1.reload
+    t1wed = t1.sessions.first(:day => 'Wed')
+    t1wed.should.not.nil?
+    t1wed.reload
+    t1wed.start.should.equal 11*60 + 30
+    t1wed.finish.should.equal 12*60 + 20
+  end
+  
+  it 'should provide email alerts when changes occur' do
+    lser = @offering.series.first(:name => 'L')
+    lg = lser.groups.first
+    @fix.tt_email.groups << lg
+    @fix.tt_email.save
+    lg.reload
+    
+    @parser_mod.parse
+    
+    ems = QueuedEmail.all
+    ems.size.should.equal 1
+    ems.first.recipient.should.equal @fix.user.email
+    ems.first.subject.should.include? 'MATH2000 L'
+    
+    QueuedSMS.all.size.should.equal 0
+  end
+  
+  it 'should provide SMS alerts when changes occur' do
+    tser = @offering.series.first(:name => 'T')
+    t1 = tser.groups.first(:name => '1')
+    @fix.tt_sms.groups << t1
+    @fix.tt_sms.save
+    t1.reload
+    
+    @parser_mod.parse
+    
+    sms = QueuedSMS.all
+    sms.size.should.equal 1
+    sms.first.text.should.include? 'MATH2000 T1'
+    QueuedEmail.all.size.should.equal 1
   end
 end
