@@ -28,7 +28,7 @@ describe 'CoursePageParser' do
     f = Rota::Fetcher.new
     f.update_semesters
   
-    @page = FakePage.new('math2000_sumsem10_tt.html')
+    @page = FakePage.new('fixtures/math2000_sumsem10_tt.html')
     @course = Course.new
     @course.code = "MATH2000"
     @course.save

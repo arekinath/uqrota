@@ -17,7 +17,7 @@ include Rota::Model
 
 shared "a fixture test" do
   before do
-    @fix = FixtureSet.new("alerts_fixtures.yml")
+    @fix = FixtureSet.new("fixtures/alerts.yml")
     @fix.tt.groups << @fix.group
     @fix.tt2.groups << @fix.group2
     @fix.save
