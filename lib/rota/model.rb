@@ -9,36 +9,6 @@ DataMapper.setup(:default, Rota::Config['database']['uri'])
 module Rota
   module Model
 
-    class APISession
-      include DataMapper::Resource
-
-      property :id, String, :key => true
-      property :created, DateTime
-      property :remote_addr, String, :length => 100
-      property :expires, Integer
-      belongs_to :user, :required => false
-
-      def expires_dt
-        DateTime.strptime(self.expires.to_s, '%s')
-      end
-
-      def expired?
-        self.expires_dt < DateTime.now
-      end
-
-      def APISession.create
-        s = APISession.new
-        s['id'] = APISession.gen_id
-        s.expires = (DateTime.now + Rational(1,4)).strftime('%s').to_i
-        return s
-      end
-
-      def APISession.gen_id
-        f = File.new('/dev/urandom')
-        Digest::SHA1.hexdigest(f.read(50))
-      end
-    end
-
     class Setting
       include DataMapper::Resource
 

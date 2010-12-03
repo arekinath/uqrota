@@ -13,34 +13,6 @@ require 'bacon'
 
 include Rota::Model
 
-describe 'An API session' do
-  it 'should generate different ids' do
-    id1 = APISession.gen_id
-    id2 = APISession.gen_id
-    
-    id1.should.not.equal id2
-  end
-  
-  it 'should create new sessions' do
-    s = APISession.create
-    s.nil?.should.equal false
-  end
-  
-  it 'should set attributes on new sessions' do
-    s = APISession.create
-    s['id'].size.should.equal APISession.gen_id.size
-    s.expires.is_a?(Integer).should.equal true
-    s.expires.should.be > 0
-  end
-  
-  it 'should support methods for determining expiry' do
-    s = APISession.create
-    s.expires_dt.is_a?(DateTime).should.equal true
-    s.expires_dt.should.be > DateTime.now
-    s.expired?.should.equal false
-  end
-end
-
 describe 'The Setting class' do
   it 'should allow setting' do
     s = Setting.set('test', 'blah')
@@ -71,7 +43,7 @@ end
 
 describe 'A session object' do
   before do
-    @s1 = Session.new
+    @s1 = TimetableSession.new
     @s1.day = 'Mon'
     @s1.start = 8*60
     @s1.finish = 9*60
@@ -79,7 +51,7 @@ describe 'A session object' do
     @s1.exceptions = "08/01/2001; 22/01/2001"
     @s1.save
     
-    @s2 = Session.new
+    @s2 = TimetableSession.new
     @s2.day = 'Tue'
     @s2.start = 9*60
     @s2.finish = 10*60
@@ -87,7 +59,7 @@ describe 'A session object' do
     @s2.exceptions = " "
     @s2.save
     
-    @s3 = Session.new
+    @s3 = TimetableSession.new
     @s3.day = ' '
     @s3.dates = " "
     @s3.exceptions = " "
@@ -119,9 +91,9 @@ describe 'A session object' do
   end
   
   it 'should convert times to mins-from-midnight correctly' do
-    Session.mins_from_string('5:00 AM').should.equal 5*60
-    Session.mins_from_string('05:00 PM').should.equal 17*60
-    Session.mins_from_string('6:31 AM').should.equal 6*60+31
+    TimetableSession.mins_from_string('5:00 AM').should.equal 5*60
+    TimetableSession.mins_from_string('05:00 PM').should.equal 17*60
+    TimetableSession.mins_from_string('6:31 AM').should.equal 6*60+31
   end
 end
 
