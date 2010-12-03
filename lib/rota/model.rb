@@ -102,7 +102,7 @@ module Rota
       property :alert_email, Boolean, :default => true
 
       belongs_to :user
-      has n, :groups, :through => Resource
+      has n, :timetable_groups, :through => Resource
     end
 
     class Semester
@@ -118,35 +118,35 @@ module Rota
       end
     end
 
-    class UqProgram
+    class Program
       include DataMapper::Resource
 
       property :id, Serial
       property :name, String, :length => 200
 
-      has n, :uq_plans
+      has n, :plans
     end
 
-    class UqPlan
+    class Plan
       include DataMapper::Resource
 
       property :id, Serial
       property :name, String, :length => 200
 
-      belongs_to :uq_program
-      has n, :uq_course_groups
+      belongs_to :program
+      has n, :course_groups
     end
 
-    class UqCourseGroup
+    class CourseGroup
       include DataMapper::Resource
 
       property :id, Serial
       property :text, String, :length => 1024
-      belongs_to :uq_plan
-      has n, :uq_courses, :through => Resource
+      belongs_to :plan
+      has n, :courses, :through => Resource
     end
 
-    class UqCourse
+    class Course
       include DataMapper::Resource
 
       property :code, String, :length => 9, :key => true
@@ -158,35 +158,33 @@ module Rota
       property :faculty, String, :length => 512
       property :school, String, :length => 512
 
-      has n, :uq_course_groups, :through => Resource
-      has n, :uq_course_profiles
+      has n, :course_groups, :through => Resource
+      has n, :offerings
       has n, :dependents, :model => 'Prereqship', :child_key => :prereq_code
       has n, :prereqs, :model => 'Prereqship', :child_key => :dependent_code
-
-      #def prereqs
-      #self.prereqships.prereqs(:code.not => self.code)
-      #end
-
-      #def dependents
-      #self.prereqships.dependents(:code.not => self.code)
-      #end
     end
     
-    class UqCourseProfile
+    class Offering
       include DataMapper::Resource
       
       property :id, Serial
-      property :profileId, Integer
+      property :profile_id, Integer
       property :semester, String
       property :location, String
       property :current, Boolean
       property :mode, String
       
-      belongs_to :uq_course
-      has n, :uq_assessment_tasks
+      property :update_thread_id, Integer, :default => 0
+      property :last_update, DateTime
+      
+      belongs_to :semester
+      has n, :series
+      
+      belongs_to :course
+      has n, :assessment_tasks
     end
     
-    class UqAssessmentTask
+    class AssessmentTask
       include DataMapper::Resource
       
       property :id, Serial
@@ -195,10 +193,10 @@ module Rota
       property :due_date, String, :length => 256
       property :weight, String, :length => 128
       
-      belongs_to :uq_course_profile
+      belongs_to :offering
     end
     
-    class UqBuilding
+    class Building
       include DataMapper::Resource
       
       property :map_id, Integer, :key => true
@@ -210,34 +208,21 @@ module Rota
       include DataMapper::Resource
       property :id, Serial
 
-      belongs_to :dependent, :model => UqCourse
-      belongs_to :prereq, :model => UqCourse
+      belongs_to :dependent, :model => Course
+      belongs_to :prereq, :model => Course
     end
 
-    class Course
-      include DataMapper::Resource
-
-      property :id, Serial
-      property :code, String, :length => 9
-      property :description, String, :length => 100
-      property :update_thread_id, Integer, :default => 0
-      property :last_update, DateTime
-
-      belongs_to :semester
-      has n, :series
-    end
-
-    class Series
+    class TimetableSeries
       include DataMapper::Resource
 
       property :id, Serial
       property :name, String
 
-      belongs_to :course
-      has n, :groups
+      belongs_to :offering
+      has n, :timetable_groups
     end
 
-    class Group
+    class TimetableGroup
       include DataMapper::Resource
 
       property :id, Serial
@@ -245,15 +230,15 @@ module Rota
       property :group_name, String
 
       def fancy_name
-        "#{self.series.course.code} #{self.series.name}#{self.name}"
+        "#{self.timetable_series.offering.course.code} #{self.timetable_series.name}#{self.name}"
       end
 
-      belongs_to :series
-      has n, :sessions
+      belongs_to :timetable_series
+      has n, :timetable_sessions
       has n, :timetables, :through => Resource
     end
 
-    class Session
+    class TimetableSession
       include DataMapper::Resource
 
       # what
@@ -271,8 +256,8 @@ module Rota
       property :building, String, :length => 100
       property :room, String
 
-      belongs_to :group
-      has n, :events
+      belongs_to :timetable_group
+      has n, :timetable_events
 
       def build_events
         begin
@@ -302,14 +287,14 @@ module Rota
         # now create the new ones
         while date.strftime('%W').to_i <= end_week.to_i or date.year < end_year.to_i
           sdate = date.strftime('%Y-%m-%d')
-          evt = Event.new
+          evt = TimetableEvent.new
           evt.date = sdate
-          evt.session = self
+          evt.timetable_session = self
           evt.week_number = date.strftime('%W').to_i
           evt.taught = (not excepts.include?(sdate))
           evt.update_times
           evt.save
-          self.events << evt
+          self.timetable_events << evt
           date += Rational(7,1)
         end
       end
@@ -323,7 +308,7 @@ module Rota
     end
 
     # Represents weekly recurrences of a Session
-    class Event
+    class TimetableEvent
       include DataMapper::Resource
 
       property :id, Serial
@@ -334,7 +319,7 @@ module Rota
       property :start, Integer
       property :finish, Integer
 
-      belongs_to :session
+      belongs_to :timetable_session
 
       def update_times
         dt = DateTime.strptime("#{self.date} 00:00:00 +1000", "%Y-%m-%d %H:%M:%S %Z")
