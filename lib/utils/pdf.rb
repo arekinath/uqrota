@@ -238,7 +238,6 @@ module Utils
     
     def render_groups
       cc = ClashCollection.new
-      rs = Array.new
       @groups.each do |group|
         r =  RenderableGroup.new(group)
         r.each do |s|

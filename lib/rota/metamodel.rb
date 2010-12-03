@@ -80,7 +80,7 @@ END
       def data=(newdata)
         self.my_data=(newdata)
         ChangelogEntry.make("wiki", "updated page #{self.name}")
-        last_updated = DateTime.now
+        self.last_updated = DateTime.now
       end
       
       def html
