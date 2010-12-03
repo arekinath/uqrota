@@ -1,0 +1,21 @@
+s1:
+  class: TimetableSession
+  day: Mon
+  start: =8*60
+  finish: =9*60
+  dates: 01/01/2001 - 01/02/2001
+  exceptions: 08/01/2001; 22/01/2001
+  
+s2:
+  class: TimetableSession
+  day: Tue
+  start: =9*60
+  finish: =10*60
+  dates: 04/01/2005 - 04/02/2005
+  exceptions:  
+  
+s3:
+  class: TimetableSession
+  day: &nbsp;
+  dates:   
+  exceptions: .

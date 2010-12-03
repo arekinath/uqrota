@@ -10,6 +10,7 @@ require 'dm-migrations'
 DataMapper.auto_migrate!
 
 require 'bacon'
+require './fixtures'
 
 include Rota::Model
 
@@ -43,50 +44,35 @@ end
 
 describe 'A session object' do
   before do
-    @s1 = TimetableSession.new
-    @s1.day = 'Mon'
-    @s1.start = 8*60
-    @s1.finish = 9*60
-    @s1.dates = "01/01/2001 - 01/02/2001"
-    @s1.exceptions = "08/01/2001; 22/01/2001"
-    @s1.save
+    @fix = FixtureSet.new('fixtures/model.yml')
+    @fix.save
     
-    @s2 = TimetableSession.new
-    @s2.day = 'Tue'
-    @s2.start = 9*60
-    @s2.finish = 10*60
-    @s2.dates = "04/01/2005 - 04/02/2005"
-    @s2.exceptions = " "
-    @s2.save
-    
-    @s3 = TimetableSession.new
-    @s3.day = ' '
-    @s3.dates = " "
-    @s3.exceptions = " "
-    @s3.save
-    
-    @s1.build_events
-    @s2.build_events
-    @s3.build_events
+    @fix.s1.build_events
+    @fix.s2.build_events
+    @fix.s3.build_events
+  end
+  
+  after do
+    @fix.destroy!
   end
 
   it 'should build the correct number of events with everything specified' do
-    @s1.events.size.should.equal 5
+    @fix.s1.events.size.should.equal 5
   end
   
   it 'should build the correct number with whitespace in exceptions' do
-    @s2.events.size.should.equal 5
+    @fix.s2.events.size.should.equal 5
   end
   
   it 'should build the correct number with whitespace in all fields' do
-    @s3.events.size.should.equal 0
+    @fix.s3.events.size.should.equal 0
   end
   
   it 'should exclude exceptions' do
-    @s1.events.select { |ev| ev.taught }.size.should.equal 3
-    @s2.events.select { |ev| ev.taught }.size.should.equal 5
+    @fix.s1.events.select { |ev| ev.taught }.size.should.equal 3
+    @fix.s2.events.select { |ev| ev.taught }.size.should.equal 5
     
-    weeks = @s1.events.select { |ev| not ev.taught }.collect { |ev| ev.week_number }
+    weeks = @fix.s1.events.select { |ev| not ev.taught }.collect { |ev| ev.week_number }
     weeks.should.equal [ 2, 4 ]
   end
   
