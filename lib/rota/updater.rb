@@ -115,7 +115,7 @@ module Rota
           sleep(1)
           retry
         rescue Exception => err
-          puts "> error #{err.class.inspect} on #{@course.code}... retrying..."
+          puts "> error #{err.class.inspect} on #{@profile.course.code}... retrying..."
           sleep(2)
           retry
         end
