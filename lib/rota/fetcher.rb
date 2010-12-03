@@ -13,16 +13,16 @@ module Rota
 
   # Takes a course page from the fetcher and parses it into course/series/group/session objects
   class CoursePageParser
-    def initialize(course, mech_page)
-      @course = course
+    def initialize(offering, mech_page)
+      @offering = offering
       @page = mech_page.parser
     end
 
     def parse
-      @course.last_update = DateTime.now
-      @course.save
-      
-      DataMapper::Transaction.new.commit do
+      DataMapper::Transaction.new.commit do    
+        @offering.last_update = DateTime.now
+        @offering.save
+        
         headings = []
 
         @page.css('table.PSLEVEL2GRIDWBO tr').each do |tr|
@@ -31,7 +31,7 @@ module Rota
           end
         end
 
-        series = @course.series
+        series = @offering.series
         rows_by_class = Hash.new([])
         @page.css('table.PSLEVEL2GRIDWBO tr').each do |tr|
           n = 0
@@ -65,9 +65,9 @@ module Rota
             # now see if the series exists
             s = series.find { |s| s.name == series_name }
             if s.nil?
-              s = Model::Series.new
+              s = Model::TimetableSeries.new
               s.name = series_name
-              s.course = @course
+              s.offering = @offering
               s.save
               series << s
               course_changed = true
@@ -78,7 +78,7 @@ module Rota
             groups = s.groups
             g = groups.find { |g| g.name == group_name }
             if g.nil?
-              g = Model::Group.new
+              g = Model::TimetableGroup.new
               g.name = group_name
               g.series = s
               g.save
@@ -98,10 +98,10 @@ module Rota
               rows.each do |r|
                 sim = 0
                 sim += 1 if sess.day == r['Day']
-                sim += 1 if sess.building == "#{r['Building Name']}"
-                sim += 1 if sess.room == "#{r['Building']}-#{r['Room']}"
-                sim += 1 if sess.start == Model::Session.mins_from_string(r['Start'])
-                sim += 1 if sess.finish == Model::Session.mins_from_string(r['End'])
+                sim += 1 if sess.building.number == r['Building']
+                sim += 1 if sess.room == r['Room']
+                sim += 1 if sess.start == Model::TimetableSession.mins_from_string(r['Start'])
+                sim += 1 if sess.finish == Model::TimetableSession.mins_from_string(r['End'])
                 sim += 1 if sess.dates == r['Start/End Date (DD/MM/YYYY)']
                 sim += 1 if sess.exceptions == r['Not taught on these dates (DD/MM/YYYY)']
                 sim_map[[r,sess]] = sim
@@ -127,10 +127,17 @@ module Rota
                 # we have to make changes
                 # TODO: handle alerts here
                 best_s.day = r['Day']
-                best_s.building = "#{r['Building Name']}"
-                best_s.room = "#{r['Building']}-#{r['Room']}"
-                best_s.start = Model::Session.mins_from_string(r['Start'])
-                best_s.finish = Model::Session.mins_from_string(r['End'])
+                b = Model::Building.first(:number => r['Building'])
+                if b.nil?
+                  b = Model::Building.new
+                  b.number = r['Building']
+                  b.name = r['Building Name']
+                  b.save
+                end
+                best_s.building = b
+                best_s.room = r['Room']
+                best_s.start = Model::TimetableSession.mins_from_string(r['Start'])
+                best_s.finish = Model::TimetableSession.mins_from_string(r['End'])
                 best_s.dates = r['Start/End Date (DD/MM/YYYY)']
                 best_s.exceptions = r['Not taught on these dates (DD/MM/YYYY)']
                 best_s.save
@@ -146,13 +153,20 @@ module Rota
             while rows_of_concern.size > 0
               r = rows_of_concern.pop
 
-              s = Model::Session.new
+              s = Model::TimetableSession.new
               s.group = g
               s.day = r['Day']
-              s.building = "#{r['Building Name']}"
-              s.room = "#{r['Building']}-#{r['Room']}"
-              s.start = Model::Session.mins_from_string(r['Start'])
-              s.finish = Model::Session.mins_from_string(r['End'])
+              b = Model::Building.first(:number => r['Building'])
+              if b.nil?
+                b = Model::Building.new
+                b.number = r['Building']
+                b.name = r['Building Name']
+                b.save
+              end
+              s.building = b
+              s.room = r['Room']
+              s.start = Model::TimetableSession.mins_from_string(r['Start'])
+              s.finish = Model::TimetableSession.mins_from_string(r['End'])
               s.dates = r['Start/End Date (DD/MM/YYYY)']
               s.exceptions = r['Not taught on these dates (DD/MM/YYYY)']
               s.save
@@ -205,9 +219,9 @@ module Rota
           tdt.css("a").each do |link|
             if link['href'] and link['href'].include?("acad_prog")
               link['href'].scan(/acad_prog=([0-9]+)([^0-9]|$)/).each do |prog_id, cl|
-                p = Rota::Model::UqProgram.get(prog_id.to_i)
+                p = Model::Program.get(prog_id.to_i)
                 if p.nil?
-                  p = Rota::Model::UqProgram.new
+                  p = Model::Program.new
                   p['id'] = prog_id.to_i
                   p.name = link.text.chomp.strip
                   p.save
@@ -232,9 +246,11 @@ module Rota
     def parse
       t = DataMapper::Transaction.new
       t.commit do
-        @program.uq_plans.each { |pl| pl.destroy! }
+        @program.plans.course_groups_each { |cg| cg.destroy! }
+        @program.plans.each { |pl| pl.destroy! }
+        
         @page.css("div.planlist").each do |plandiv|
-          plan = Rota::Model::UqPlan.new
+          plan = Model::Plan.new
 
           plan.name = plandiv.css('h1')[0].text.chomp.strip
           firstp = plandiv.css('p')[0]
@@ -248,12 +264,12 @@ module Rota
             plan.name += " (#{txt})" if txt.downcase.include?('major')
           end
 
-          plan.uq_program = @program
+          plan.program = @program
           plan.save
 
           plandiv.css('div.courselist').each do |listdiv|
-            grp = Rota::Model::UqCourseGroup.new
-            grp.uq_plan = plan
+            grp = Model::CourseGroup.new
+            grp.plan = plan
 
             text = ""
             listdiv.css('h1').each do |t|
@@ -274,13 +290,12 @@ module Rota
               unless cells[0].css('a')[0].nil?
                 code = cells[0].css('a')[0].text.chomp.strip
 
-                cse = Rota::Model::UqCourse.get(code)
+                cse = Model::Course.get(code)
                 if cse.nil?
-                  cse = Rota::Model::UqCourse.new
+                  cse = Model::Course.new
                   cse.code = code
                 end
-                cse.uq_course_groups << grp if not cse.uq_course_groups.include?(grp)
-                #cse.uq_plans << plan if not cse.uq_plans.include?(plan)
+                cse.course_groups << grp if not cse.course_groups.include?(grp)
                 cse.name = cells[2].text.chomp.strip
                 cse.units = cells[1].text.chomp.strip.to_i
                 cse.save
@@ -302,15 +317,17 @@ module Rota
       t = DataMapper::Transaction.new
       t.commit do
         @course.prereqs.each { |p| p.destroy! }
-        @course.uq_course_profiles.each { |p| p.destroy! }
 
         sems = []
         t = @page.to_s
+        if t =~ /Semester 1, #{Time.now.year}/ or t =~ /Semester 1, #{Time.now.year-1}/
+          sems << 1
+        end
         if t =~ /Semester 2, #{Time.now.year}/ or t =~ /Semester 2, #{Time.now.year-1}/
           sems << 2
         end
-        if t =~ /Semester 1, #{Time.now.year}/ or t =~ /Semester 1, #{Time.now.year-1}/
-          sems << 1
+        if t =~ /Summer Semester, #{Time.now.year}/ or t =~ /Summer Semester, #{Time.now.year-1}/
+          sems << :summer
         end
         
         t = t.gsub("\n","")
@@ -344,9 +361,9 @@ module Rota
           end
           prereqs = t.scan(/[A-Z]{4}[0-9]{4}/)
           prereqs.each do |code|
-            cse = Rota::Model::UqCourse.get(code)
+            cse = Rota::Model::Course.get(code)
             if cse.nil?
-              cse = Rota::Model::UqCourse.new
+              cse = Rota::Model::Course.new
               cse.code = code
               cse.save
             end
@@ -374,17 +391,23 @@ module Rota
                 pid = link.scan(/profileId=([0-9]+)/).first.first
               end
   
-              p = Rota::Model::UqCourseProfile.first(:profileId => pid)
-              if (not p) or pid == -1
-                p = Rota::Model::UqCourseProfile.new
+              sem = Model::Semester.first(:name => cells[0].text.chomp.strip)
+              if not sem.nil?
+                p = Model::Offering.first(:profile_id => pid)
+                if p.nil? or pid == -1
+                  p = @course.offerings.first(:semester => sem)
+                  if p.nil?
+                    p = Model::Offering.new
+                  end
+                end
+                p.course = @course
+                p.profile_id = pid
+                p.semester = sem
+                p.location = cells[1].text.chomp.strip
+                p.current = true if tr['class'] and tr['class'].include?('current')
+                p.mode = cells[2].text.chomp.strip
+                p.save
               end
-              p.uq_course = @course
-              p.profileId = pid
-              p.semester = cells[0].text.chomp.strip
-              p.location = cells[1].text.chomp.strip
-              p.current = true if tr['class'] and tr['class'].include?('current')
-              p.mode = cells[2].text.chomp.strip
-              p.save
             end
           end
         end
@@ -401,7 +424,7 @@ module Rota
     def parse
       t = DataMapper::Transaction.new
       t.commit do
-        @profile.uq_assessment_tasks.each { |t| t.destroy! }
+        @profile.assessment_tasks.each { |t| t.destroy! }
         
         found = false
         @page.css("table").each do |tbl|
@@ -431,8 +454,8 @@ module Rota
                     name = cells[0].text.chomp.strip
                   end
                 
-                  t = Rota::Model::UqAssessmentTask.new
-                  t.uq_course_profile = @profile
+                  t = Model::AssessmentTask.new
+                  t.course_profile = @profile
                   t.name = name
                   t.description = desc
                   t.due_date = cells[1].text.chomp.strip if cells[1]
@@ -456,7 +479,7 @@ module Rota
     def parse
       t = DataMapper::Transaction.new
       t.commit do
-        Rota::Model::UqBuilding.all.each { |b| b.destroy! }
+        Model::Building.all.each { |b| b.destroy! }
         
         @page.css("br").each do |br|
           br.content = "."
@@ -468,7 +491,7 @@ module Rota
           bnum = t.scan(/#{bname}, ([A-Z0-9]+)/)
           bid = a['href'].scan(/id=([0-9]+)/)
           if bid[0] and bid[0][0] and bnum[0] and bnum[0][0]
-            b = Rota::Model::UqBuilding.new
+            b = Model::Building.new
             b.map_id = bid.first.first
             b.name = bname
             b.number = bnum.first.first
@@ -494,7 +517,7 @@ module Rota
         case state
         when :idle
           tr.css('td span.PABOLDTEXT').each do |s|
-            sem = Rota::Model::Semester.first(:name => s.text.chomp.strip)
+            sem = Model::Semester.first(:name => s.text.chomp.strip)
             if sem
               semesters[sem] = Array.new
               last_semester = sem
@@ -516,22 +539,27 @@ module Rota
 
       if (cs = semesters[Rota::Model::Semester.current])
         cs.each do |code|
-          c = Rota::Model::Course.first(:code => code, :semester => Rota::Model::Semester.current)
-          if c
+          c = Rota::Model::Course.first(:code => code)
+          o = c.offerings(:semester => Model::Semester.current)
+          if o
             # it's already found, add it
-            c.series.each do |s|
+            o.series.each do |s|
               @tt.groups << s.groups[0]
             end
           else
             # fetch it
             course = Rota::Model::Course.new
             course.code = code
-            course.semester = Rota::Model::Semester.current
             course.save
+            
+            offering = Model::Offering.new
+            offering.course = course
+            offering.semester = Rota::Model::Semester.current
+            offering.save
 
             fetcher = Rota::Fetcher.new
             agent,page = fetcher.get_course_page(code)
-            parser = Rota::CoursePageParser.new(course, page)
+            parser = Rota::CoursePageParser.new(offering, page)
             parser.parse
           end
         end

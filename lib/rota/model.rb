@@ -103,6 +103,8 @@ module Rota
 
       belongs_to :user
       has n, :timetable_groups, :through => Resource
+      
+      alias :groups :timetable_groups
     end
 
     class Semester
@@ -111,7 +113,7 @@ module Rota
       property :id, Serial
       property :name, String, :length => 100
 
-      has n, :courses
+      has n, :offerings
 
       def Semester.current
         Semester.get(Setting.get('current_semester').value)
@@ -178,7 +180,8 @@ module Rota
       property :last_update, DateTime
       
       belongs_to :semester
-      has n, :series
+      has n, :timetable_series
+      alias :series :timetable_series
       
       belongs_to :course
       has n, :assessment_tasks
@@ -199,9 +202,12 @@ module Rota
     class Building
       include DataMapper::Resource
       
-      property :map_id, Integer, :key => true
+      property :id, Serial
+      property :map_id, Integer
       property :number, String
       property :name, String, :length => 128
+      
+      has n, :timetable_sessions
     end
 
     class Prereqship
@@ -220,6 +226,7 @@ module Rota
 
       belongs_to :offering
       has n, :timetable_groups
+      alias :groups :timetable_groups
     end
 
     class TimetableGroup
@@ -235,6 +242,8 @@ module Rota
 
       belongs_to :timetable_series
       has n, :timetable_sessions
+      alias :sessions :timetable_sessions
+      alias :series :timetable_series
       has n, :timetables, :through => Resource
     end
 
@@ -253,11 +262,13 @@ module Rota
       property :exceptions, String, :length => 500
 
       # where
-      property :building, String, :length => 100
       property :room, String
-
+      belongs_to :building
+      
       belongs_to :timetable_group
       has n, :timetable_events
+      alias :group :timetable_group
+      alias :events :timetable_events
 
       def build_events
         begin
@@ -320,6 +331,7 @@ module Rota
       property :finish, Integer
 
       belongs_to :timetable_session
+      alias :session :timetable_session
 
       def update_times
         dt = DateTime.strptime("#{self.date} 00:00:00 +1000", "%Y-%m-%d %H:%M:%S %Z")
