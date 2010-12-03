@@ -3,7 +3,7 @@ require 'dm-core'
 
 class FixtureSet
   attr_reader :objects
-
+  
   def initialize(fname)
     @data = YAML.load_file(fname)
     @objects = Hash.new

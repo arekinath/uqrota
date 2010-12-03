@@ -16,7 +16,7 @@ module Rota
       property :source, String, :length => 100
       property :created, DateTime
       property :description, String, :length => 256
-
+      
       def ChangelogEntry.make(source, desc)
         e = ChangelogEntry.new
         e.source = source
@@ -25,29 +25,29 @@ module Rota
         e.save
       end
     end
-
+    
     class QueuedSMS
       include DataMapper::Resource
-
+      
       property :id, Serial
       property :recipient, String
       property :text, String, :length => 320
-
+      
       def send
         sender = Utils::SMSSender.new(Rota::Config['sms']['username'], Rota::Config['sms']['password'])
         sender.send(:recipient => self.recipient, :text => self.text, :sender => Rota::Config['sms']['from'])
         self.destroy!
       end
     end
-
+    
     class QueuedEmail
       include DataMapper::Resource
-
+      
       property :id, Serial
       property :recipient, String, :length => 200
       property :subject, String, :length => 200
       property :body, Text
-
+      
       def send
         origin = Rota::Config['smtp']['from']
         msg = <<ENDMSG
@@ -63,18 +63,18 @@ ENDMSG
         Net::SMTP.start(smtpc['host'], smtpc['port'].to_i, 'mail.uqrota.net', smtpc['user'], smtpc['password'], :plain) do |smtp|
           smtp.send_message msg, origin, self.recipient
         end
-
+        
         self.destroy!
       end
     end
-
+    
     class Offering
       def change_alert
         ChangelogEntry.make("updater", "#{self.course.code} added/removed course series")
         
         tts = Array.new
         self.series.each { |s| s.groups.each { |g| g.timetables.each { |tt| tts << tt if not tts.include?(tt) } } }
-
+        
         tts.each do |t|
           srs = "#{self.course.code}"
           if t.alert_sms
@@ -83,7 +83,7 @@ ENDMSG
             sms.text = "UqRota: #{srs} has added/removed entire course series. Pls check site for details"
             sms.save
           end
-
+          
           if t.alert_email
             em = QueuedEmail.new
             em.recipient = t.user.email
@@ -103,14 +103,14 @@ END
         end
       end
     end
-
+    
     class TimetableSeries
       def change_alert
         ChangelogEntry.make("updater", "#{self.offering.course.code} #{self.name} added/removed groups")
         
         tts = Array.new
         self.groups.each { |g| g.timetables.each { |tt| tts << tt if not tts.include?(tt) } }
-
+        
         tts.each do |t|
           srs = "#{self.offering.course.code} #{self.name}"
           if t.alert_sms
@@ -119,7 +119,7 @@ END
             sms.text = "UqRota: #{srs} has added/removed groups. Pls check site for details"
             sms.save
           end
-
+          
           if t.alert_email
             em = QueuedEmail.new
             em.recipient = t.user.email
@@ -139,7 +139,7 @@ END
         end
       end
     end
-
+    
     class TimetableGroup
       def change_alert
         code = self.series.offering.course.code
@@ -153,7 +153,7 @@ END
             sms.text = "UqRota: #{grp} has changed in sinet. Pls check site for details"
             sms.save
           end
-
+          
           if t.alert_email
             em = QueuedEmail.new
             em.recipient = t.user.email

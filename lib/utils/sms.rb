@@ -34,10 +34,10 @@ END
       
       content = xms_doc.elements['xmsData/xmsBody/content']
       content.text = msg[:text]
-
+      
       sched = xms_doc.elements['xmsData/xmsHead/scheduled']
       sched.text = (Time.now + 10).utc.strftime('%Y-%m-%dT%H:%M:%SZ')
-
+      
       user = xms_doc.elements['xmsData/user']
       userId = REXML::Element.new('userId')
       userId.text = @user
@@ -61,7 +61,7 @@ END
   </soap12:Body>
 </soap12:Envelope>
 END
-
+      
       soap_doc.elements['soap12:Envelope/soap12:Body/DeliverXms/xmsData'].text = xms_doc.to_s
       pdata = soap_doc.to_s
       

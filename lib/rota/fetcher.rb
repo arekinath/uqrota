@@ -10,27 +10,27 @@ require 'json'
 require 'date'
 
 module Rota
-
+  
   # Takes a course page from the fetcher and parses it into course/series/group/session objects
   class CoursePageParser
     def initialize(offering, mech_page)
       @offering = offering
       @page = mech_page.parser
     end
-
+    
     def parse
       DataMapper::Transaction.new.commit do    
         @offering.last_update = DateTime.now
         @offering.save
         
         headings = []
-
+        
         @page.css('table.PSLEVEL2GRIDWBO tr').each do |tr|
           tr.css('th').each do |th|
             headings << th.text
           end
         end
-
+        
         series = @offering.series
         rows_by_class = Hash.new([])
         @page.css('table.PSLEVEL2GRIDWBO tr').each do |tr|
@@ -42,26 +42,26 @@ module Rota
             end
             n += 1
           end
-
+          
           cls = row['Class']
           rows_by_class[cls] = rows_by_class[cls] + [ row ]
         end
         
         #puts rows_by_class.inspect
-
+        
         done_series = []
         done_groups = []
-
+        
         course_changed = false
         changed_series = Array.new
-
+        
         rows_by_class.each do |cls, rows|
           # use the UQ convention for names
           m = /([A-Z]*)([0-9]*)/.match(cls)
           if not m.nil?
             series_name = m[1]
             group_name = m[2]
-
+            
             # now see if the series exists
             s = series.find { |s| s.name == series_name }
             if s.nil?
@@ -73,7 +73,7 @@ module Rota
               course_changed = true
             end
             done_series << s
-
+            
             # and the group
             groups = s.groups
             g = groups.find { |g| g.name == group_name }
@@ -89,13 +89,13 @@ module Rota
               g.reload
             end
             done_groups << g
-
+            
             # now grab the existing sessions (if any)
             sessions = g.sessions
-
+            
             # and build similarity map
             sim_map = Hash.new
-
+            
             # build similarity map
             sessions.each do |sess|
               rows.each do |r|
@@ -110,22 +110,22 @@ module Rota
                 sim_map[[r,sess]] = sim
               end
             end
-
+            
             rows_of_concern = rows.clone
             sess_of_concern = sessions.clone
-
+            
             changed = false
-
+            
             while rows_of_concern.size > 0 and sess_of_concern.size > 0
               r = rows_of_concern.pop
-
+              
               best_s = nil
               sess_of_concern.each do |s|
                 if best_s.nil? or sim_map[[r,s]] > sim_map[[r,best_s]]
                   best_s = s
                 end
               end
-
+              
               if sim_map[[r, best_s]] < 7
                 # we have to make changes
                 # TODO: handle alerts here
@@ -144,18 +144,18 @@ module Rota
                 best_s.dates = r['Start/End Date (DD/MM/YYYY)']
                 best_s.exceptions = r['Not taught on these dates (DD/MM/YYYY)']
                 best_s.save
-
+                
                 best_s.build_events
                 changed = true
               end
-
+              
               sess_of_concern.delete(best_s)
             end
-
+            
             # new sessions to add
             while rows_of_concern.size > 0
               r = rows_of_concern.pop
-
+              
               s = Model::TimetableSession.new
               s.group = g
               s.day = r['Day']
@@ -173,36 +173,36 @@ module Rota
               s.dates = r['Start/End Date (DD/MM/YYYY)']
               s.exceptions = r['Not taught on these dates (DD/MM/YYYY)']
               s.save
-
+              
               s.build_events
               changed = true
             end
-
+            
             # old sessions to destroy
             while sess_of_concern.size > 0
               s = sess_of_concern.pop
               s.destroy!
               changed = true
             end
-
+            
             g.change_alert if changed
-
+            
           end
         end
-
+        
         # fire off series/course alerts
         if course_changed
           @offering.change_alert
         end
-
+        
         changed_series.each do |s|
           s.change_alert
         end
-
+        
         # any groups which haven't been touched have been removed from sinet!
         all_groups = series.collect { |s| s.groups }.flatten
         all_groups -= done_groups
-
+        
         all_groups.each do |g|
           g.change_alert
           g.destroy!
@@ -210,12 +210,12 @@ module Rota
       end
     end
   end
-
+  
   class ProgramListPageParser
     def initialize(mech_page)
       @page = mech_page.parser
     end
-
+    
     def parse
       DataMapper::Transaction.new.commit do
         @page.css("td.title").each do |tdt|
@@ -239,22 +239,21 @@ module Rota
       end
     end
   end
-
+  
   class CourseListPageParser
     def initialize(program, mech_page)
       @program = program
       @page = mech_page.parser
     end
-
+    
     def parse
-      t = DataMapper::Transaction.new
-      t.commit do
+      DataMapper::Transaction.new.commit do
         @program.plans.course_groups_each { |cg| cg.destroy! }
         @program.plans.each { |pl| pl.destroy! }
         
         @page.css("div.planlist").each do |plandiv|
           plan = Model::Plan.new
-
+          
           plan.name = plandiv.css('h1')[0].text.chomp.strip
           firstp = plandiv.css('p')[0]
           if not firstp.nil?
@@ -266,14 +265,14 @@ module Rota
             txt = firsth2.text.chomp.strip.gsub(/\n|\r/,' ').slice(0,50)
             plan.name += " (#{txt})" if txt.downcase.include?('major')
           end
-
+          
           plan.program = @program
           plan.save
-
+          
           plandiv.css('div.courselist').each do |listdiv|
             grp = Model::CourseGroup.new
             grp.plan = plan
-
+            
             text = ""
             listdiv.css('h1').each do |t|
               text << t.text.chomp.strip
@@ -287,12 +286,12 @@ module Rota
             
             grp.text = text
             grp.save
-
+            
             listdiv.css('tr').each do |tr|
               cells = tr.css('td')
               unless cells[0].css('a')[0].nil?
                 code = cells[0].css('a')[0].text.chomp.strip
-
+                
                 cse = Model::Course.get(code)
                 if cse.nil?
                   cse = Model::Course.new
@@ -309,18 +308,18 @@ module Rota
       end
     end
   end
-
+  
   class CourseDetailPageParser
     def initialize(course, mech_page)
       @course = course
       @page = mech_page.parser
     end
-
+    
     def parse
       t = DataMapper::Transaction.new
       t.commit do
         @course.prereqs.each { |p| p.destroy! }
-
+        
         sems = []
         t = @page.to_s
         if t =~ /Semester 1, #{Time.now.year}/ or t =~ /Semester 1, #{Time.now.year-1}/
@@ -338,7 +337,7 @@ module Rota
         @course.description = m[1] if m
         @course.semesters_offered = sems.inspect
         @course.save
-
+        
         @page.css('div#summary').each do |sumdiv|
           headings = Array.new
           sumdiv.css('h2').each do |h2|
@@ -349,14 +348,14 @@ module Rota
               headings << atp.text.chomp.strip
             end
           end
-
+          
           data = Hash.new
           i = 0
           sumdiv.css('p').each do |p|
             data[headings[i]] = p.text.chomp.strip
             i += 1
           end
-
+          
           # now extract the prereq data
           t = ""
           data.each do |k,v|
@@ -370,7 +369,7 @@ module Rota
               cse.code = code
               cse.save
             end
-
+            
             p = Rota::Model::Prereqship.new
             p.dependent = @course
             p.prereq = cse
@@ -393,7 +392,7 @@ module Rota
                 link = cells[3].at_css('a').attribute('href').value
                 pid = link.scan(/profileId=([0-9]+)/).first.first
               end
-  
+              
               sem = Model::Semester.first(:name => cells[0].text.chomp.strip)
               if not sem.nil?
                 p = Model::Offering.first(:profile_id => pid)
@@ -417,16 +416,15 @@ module Rota
       end
     end
   end
-
+  
   class CourseProfileParser
     def initialize(profile, mech_page)
       @profile = profile
       @page = mech_page.parser
     end
-
+    
     def parse
-      t = DataMapper::Transaction.new
-      t.commit do
+      DataMapper::Transaction.new.commit do
         @profile.assessment_tasks.each { |t| t.destroy! }
         
         found = false
@@ -444,7 +442,7 @@ module Rota
                   end
                   
                   cells = tr.css("td")
-                
+                  
                   name = nil; desc = nil
                   if cells[0].at_css('i')
                     desc = cells[0].at_css("i").text.chomp.strip
@@ -456,7 +454,7 @@ module Rota
                   else
                     name = cells[0].text.chomp.strip
                   end
-                
+                  
                   t = Model::AssessmentTask.new
                   t.course_profile = @profile
                   t.name = name
@@ -468,17 +466,17 @@ module Rota
               end
             end
           end
-        
+          
         end
       end
     end
   end
-
+  
   class BuildingIndexParser
     def initialize(page)
       @page = page.parser
     end
-
+    
     def parse
       t = DataMapper::Transaction.new
       t.commit do
@@ -504,21 +502,21 @@ module Rota
       end
     end
   end
-
+  
   class SinetMyPageParser
     def initialize(tt, mech_page)
       @page = mech_page.parser
       @tt = tt
     end
-
+    
     def parse
       state = :idle
       semesters = {}
       last_semester = nil
-
+      
       @page.css('table.PSLEVEL1SCROLLAREABODY tr').each do |tr|
         case state
-        when :idle
+          when :idle
           tr.css('td span.PABOLDTEXT').each do |s|
             sem = Model::Semester.first(:name => s.text.chomp.strip)
             if sem
@@ -528,7 +526,7 @@ module Rota
               state = :got_head
             end
           end
-        when :got_head
+          when :got_head
           tr.css('td table td span.PSEDITBOX_DISPONLY').each do |cell|
             codes = cell.text.chomp.strip.scan(/[A-Z]{4}[0-9]{4}/)
             codes.each do |c|
@@ -539,7 +537,7 @@ module Rota
           state = :idle
         end
       end
-
+      
       if (cs = semesters[Rota::Model::Semester.current])
         cs.each do |code|
           c = Rota::Model::Course.first(:code => code)
@@ -559,7 +557,7 @@ module Rota
             offering.course = course
             offering.semester = Rota::Model::Semester.current
             offering.save
-
+            
             fetcher = Rota::Fetcher.new
             agent,page = fetcher.get_course_page(code)
             parser = Rota::CoursePageParser.new(offering, page)
@@ -567,14 +565,14 @@ module Rota
           end
         end
       end
-
+      
       @tt.save
     end
   end
-
+  
   UserAgent = Rota::Config['updater']['useragent']
   Timeout = Rota::Config['updater']['timeout'].to_i
-
+  
   # Fetches pages from mysinet
   class Fetcher
     def get_pgm_list_page
@@ -582,27 +580,27 @@ module Rota
       agent.user_agent = UserAgent
       agent.keep_alive = false
       agent.read_timeout = Timeout
-
+      
       page = agent.get('http://uq.edu.au/study/browse.html?level=ugpg');
       return [agent, page]
     end
-
+    
     def get_pgm_course_list_page(program)
       agent = Mechanize.new
       agent.user_agent = UserAgent
       agent.keep_alive = false
       agent.read_timeout = Timeout
-
+      
       page = agent.get("http://uq.edu.au/study/program_list.html?acad_prog=#{program['id']}")
       return [agent, page]
     end
-
+    
     def get_course_detail_page(course)
       agent = Mechanize.new
       agent.user_agent = UserAgent
       agent.keep_alive = false
       agent.read_timeout = Timeout
-
+      
       page = agent.get("http://uq.edu.au/study/course.html?course_code=#{course.code}")
       return [agent, page]
     end
@@ -626,35 +624,35 @@ module Rota
       page = agent.get("http://www.courses.uq.edu.au/student_section_loader.php?section=print_display&profileId=#{profile.profileId}")
       return [agent, page]
     end
-
-
+    
+    
     # gets the main timetable search page
     def get_tt_page
       agent,page = get_sinet_login_page
-
+      
       page = agent.click(page.link_with(:text => "Course & Timetable Info"))
       page = agent.click(page.iframe('TargetContent'))
-
+      
       return [agent, page]
     end
-
+    
     def get_sinet_login_page
       agent = Mechanize.new
       agent.user_agent = UserAgent
       agent.keep_alive = false
       # agent.log = Logger.new(STDERR)
       agent.read_timeout = Timeout
-
+      
       page = agent.get('https://www.sinet.uq.edu.au/')
       page = agent.get('https://www.sinet.uq.edu.au/psp/ps/?cmd=login')
       page = agent.get('https://www.sinet.uq.edu.au/psp/ps/EMPLOYEE/HRMS/h/?tab=UQ_GENERAL')
-
+      
       return [agent, page]
     end
-
+    
     def get_sinet_my_page(user, pass)
       agent,page = get_sinet_login_page
-
+      
       form = page.form('login')
       user_field = form.field_with(:name => 'userid')
       user_field.value = user.upcase
@@ -662,40 +660,40 @@ module Rota
       pass_field.value = pass
       tz_field = form.field_with(:name => 'timezoneOffset')
       tz_field.value = '10'
-
+      
       page = agent.submit(form)
       page = agent.get('https://www.sinet.uq.edu.au/psp/ps/EMPLOYEE/HRMS/h/?tab=UQ_MYPAGE&pageletname=MENU&cmd=refreshPglt')
-
+      
       return [agent, page]
     end
-
+    
     # Gets the timetable search page, with a given semester already selected
     def get_sem_page(sem)
       agent, page = get_tt_page
-
+      
       form = page.form('win0')
       pd = form.field_with(:name => 'UQ_DRV_TT_GUEST_STRM')
       pd.value = sem['id'].to_s
-
+      
       return [agent, page]
     end
-
+    
     # Gets the timetable page for a given course object
     def get_course_page(course)
       agent, page = get_sem_page(course.semester)
       form = page.form('win0')
-
+      
       # fill out the course code field
       cc = form.field_with(:name => 'UQ_DRV_CRSE_SRC_UQ_SUBJECT_SRCH')
       cc.value = course.code
-
+      
       # this is what the javascript does to submit
       form.ICAction = 'UQ_DRV_TT_GUEST_UQ_SEARCH_PB'
       form.ICXPos = 100
       form.ICYPos = 100
       form.ICResubmit = 0
       page = agent.submit(form)
-
+      
       # now figure out which row of the table is the one we want (at St Lucia)
       row_n = -1
       row_to_use = 0
@@ -715,27 +713,27 @@ module Rota
         end
         row_n += 1
       end
-
+      
       # and tick the check box on that row
       form = page.form('win0')
       chk = form.field_with(:name => "UQ_DRV_TT_GUEST$selmh$#{row_to_use}$$0")
       chk.value = 'Y'
-
+      
       # now do the submit voodoo again
       form.ICAction = 'UQ_DRV_TT_GUEST_UQ_NEXT_BUTTON$0'
       form.ICXPos = 200
       form.ICYPos = 200
       form.ICResubmit = 0
       page = agent.submit(form)
-
+      
       # and we should have the course page!
       return [agent, page]
     end
-
+    
     # Updates the semesters table in the database
     def update_semesters
       agent, page = get_tt_page
-
+      
       code = page.parser.to_s
       code.gsub!("\n","")
       code.gsub!(/&[a-z]*;/,"&")
@@ -743,13 +741,13 @@ module Rota
       json = m[1].gsub("\t","").gsub("'",'"')
       options = JSON.parse(json)
       sems = options[0]
-
+      
       m = /var selectElemOptions_win0 = ([^;]*);/.match(code)
       json = m[1].gsub("\t","").gsub("'",'"')
       selects = JSON.parse(json)
       idx = selects.find { |d| d[0] == 'UQ_DRV_TT_GUEST_STRM' }[2][0]
       csem = sems[idx.to_i]
-
+      
       Model::Setting.set('current_semester', csem[0])
       sems.each do |opt|
         sem_id, sem_name = opt
@@ -765,5 +763,5 @@ module Rota
       end
     end
   end
-
+  
 end

@@ -23,21 +23,21 @@ p.parse
 
 unless ARGV.include?("--skip_programs")
 puts "\nFetching program lists..."
-pgms = Rota::Model::UqProgram.all
-pgms = pgms.collect { |p| ProgramTask.new(p) }
+pgms = Rota::Model::Program.all
+pgms = pgms.collect { |pg| ProgramTask.new(pg) }
 TaskRunner.new(pgms)
 end
 
 puts "\nFetching course pages..."
-cs = Rota::Model::UqCourse.all.collect { |c| CourseTask.new(c) }
+cs = Rota::Model::Course.all.collect { |c| CourseTask.new(c) }
 TaskRunner.new(cs)
 
 puts "\nFetching course profiles..."
 ps = []
-Rota::Model::UqCourse.all.each do |c|
-  pp = c.uq_course_profiles.select { |p| p.current and p.profileId > 0 }.first
+Rota::Model::Course.all.each do |c|
+  pp = c.course_profiles.select { |pg| pg.current and pg.profileId > 0 }.first
   if pp.nil?
-    pp = c.uq_course_profiles.select { |p| p.profileId > 0 }.first
+    pp = c.course_profiles.select { |pg| pg.profileId > 0 }.first
   end
   ps << ProfileTask.new(pp) unless pp.nil?
 end

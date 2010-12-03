@@ -43,15 +43,15 @@ module Utils
       ashash[names[5]] = "5 * 1 / #{names[0]}"
       ashash[names[6]] = "2 % #{names[5]}"
       
-      js = "document.observe('dom:loaded', function() {\n"
+      src = "document.observe('dom:loaded', function() {\n"
       ashash.keys.sort.each do |name|
         val = ashash[name]
-        js += "var #{name} = #{val};\n"
+        src += "var #{name} = #{val};\n"
       end
-      js += "$('bot_verify').value = eval(#{names[1]}) + eval(#{names[2]});\n"
-      js += "$('bot_seed').value = '#{"%x" % @seed}';\n"
-      js += "});\n"
-      js
+      src += "$('bot_verify').value = eval(#{names[1]}) + eval(#{names[2]});\n"
+      src += "$('bot_seed').value = '#{"%x" % @seed}';\n"
+      src += "});\n"
+      src
     end
     
     def verify(req)
