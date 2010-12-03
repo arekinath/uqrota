@@ -87,6 +87,9 @@ module Rota
             end
             done_groups << g
 
+            # invalidate the group in case we did another update recently
+            g.reload
+
             # now grab the existing sessions (if any)
             sessions = g.sessions
 
