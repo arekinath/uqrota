@@ -189,7 +189,7 @@ module Rota
 
         # fire off series/course alerts
         if course_changed
-          @course.change_alert
+          @offering.change_alert
         end
 
         changed_series.each do |s|

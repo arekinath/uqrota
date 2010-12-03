@@ -30,42 +30,51 @@ describe 'CoursePageParser' do
   
     @page = FakePage.new('math2000_sumsem10_tt.html')
     @course = Course.new
-    @course.semester = Semester.current
     @course.code = "MATH2000"
     @course.save
     
-    @parser = Rota::CoursePageParser.new(@course, @page)
+    @offering = Offering.new
+    @offering.course = @course
+    @offering.semester = Semester.current
+    @offering.save
+    
+    @parser = Rota::CoursePageParser.new(@offering, @page)
     @parser.parse
   end
   
+  after do
+    @offering.destroy!
+    @course.destroy!
+  end
+  
   it 'should create series objects' do
-    ss = @course.series.collect { |s| s.name }
+    ss = @offering.series.collect { |s| s.name }
     ss.size.should.equal 2
     ss.should.include? 'L'
     ss.should.include? 'T'
   end
   
   it 'should create group objects' do
-    lser = @course.series(:name => 'L').first
-    tser = @course.series(:name => 'T').first
+    lser = @offering.series.first(:name => 'L')
+    tser = @offering.series.first(:name => 'T')
     lser.groups.size.should.equal 1
     tser.groups.size.should.equal 12
   end
   
   it 'should create session objects' do
-    lser = @course.series(:name => 'L').first
+    lser = @offering.series.first(:name => 'L')
     
     lg = lser.groups.first
     lg.reload
     lg.should.not.nil?
     lg.sessions.size.should.equal 4
     
-    ltue = lg.sessions(:day => 'Tue').first
+    ltue = lg.sessions.first(:day => 'Tue')
     ltue.should.not.nil?
     ltue.start.should.equal 10*60
     
-    tser = @course.series(:name => 'T')
-    t8 = tser.groups(:name => '8')
+    tser = @offering.series.first(:name => 'T')
+    t8 = tser.groups.first(:name => '8')
     t8.reload
     t8wed = t8.sessions(:day => 'Wed').first
     t8wed.should.not.nil?

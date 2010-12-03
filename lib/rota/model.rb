@@ -40,9 +40,8 @@ module Rota
 
       property :last_login, DateTime
 
-      property :admin, Boolean
+      property :admin, Boolean, :default => false
 
-      has n, :API_sessions
       has n, :timetables
 
       def password=(pw)
@@ -141,7 +140,6 @@ module Rota
       
       property :id, Serial
       property :profile_id, Integer
-      property :semester, String
       property :location, String
       property :current, Boolean
       property :mode, String
@@ -150,7 +148,7 @@ module Rota
       property :last_update, DateTime
       
       belongs_to :semester
-      has n, :timetable_series
+      has n, :timetable_series, :model => 'Rota::Model::TimetableSeries'
       alias :series :timetable_series
       
       belongs_to :course
@@ -214,6 +212,7 @@ module Rota
       has n, :timetable_sessions
       alias :sessions :timetable_sessions
       alias :series :timetable_series
+      alias :series= :timetable_series=
       has n, :timetables, :through => Resource
     end
 
@@ -238,6 +237,7 @@ module Rota
       belongs_to :timetable_group
       has n, :timetable_events
       alias :group :timetable_group
+      alias :group= :timetable_group=
       alias :events :timetable_events
 
       def build_events
@@ -280,7 +280,7 @@ module Rota
         end
       end
 
-      def Session.mins_from_string(str)
+      def TimetableSession.mins_from_string(str)
         m = /([0-9]{1,2}):([0-9]{1,2}) ([AP]M)/.match(str)
         mins = m[1].to_i * 60 + (m[2].to_i)
         mins += 720 if m[3] == 'PM' and m[1].to_i < 12
@@ -302,6 +302,7 @@ module Rota
 
       belongs_to :timetable_session
       alias :session :timetable_session
+      alias :session= :timetable_session=
 
       def update_times
         dt = DateTime.strptime("#{self.date} 00:00:00 +1000", "%Y-%m-%d %H:%M:%S %Z")

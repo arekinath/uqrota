@@ -68,15 +68,15 @@ ENDMSG
       end
     end
 
-    class Course
+    class Offering
       def change_alert
-        ChangelogEntry.make("updater", "#{self.code} added/removed course series")
+        ChangelogEntry.make("updater", "#{self.course.code} added/removed course series")
         
         tts = Array.new
         self.series.each { |s| s.groups.each { |g| g.timetables.each { |tt| tts << tt if not tts.include?(tt) } } }
 
         tts.each do |t|
-          srs = "#{self.code}"
+          srs = "#{self.course.code}"
           if t.alert_sms
             sms = QueuedSMS.new
             sms.recipient = t.user.mobile
@@ -104,15 +104,15 @@ END
       end
     end
 
-    class Series
+    class TimetableSeries
       def change_alert
-        ChangelogEntry.make("updater", "#{self.course.code} #{self.name} added/removed groups")
+        ChangelogEntry.make("updater", "#{self.offering.course.code} #{self.name} added/removed groups")
         
         tts = Array.new
         self.groups.each { |g| g.timetables.each { |tt| tts << tt if not tts.include?(tt) } }
 
         tts.each do |t|
-          srs = "#{self.course.code} #{self.name}"
+          srs = "#{self.offering.course.code} #{self.name}"
           if t.alert_sms
             sms = QueuedSMS.new
             sms.recipient = t.user.mobile
@@ -140,12 +140,13 @@ END
       end
     end
 
-    class Group
+    class TimetableGroup
       def change_alert
-        ChangelogEntry.make("updater", "#{self.series.course.code} #{self.series.name}#{self.name} changed details")
+        code = self.series.offering.course.code
+        ChangelogEntry.make("updater", "#{code} #{self.series.name}#{self.name} changed details")
         
         self.timetables.each do |t|
-          grp = "#{self.series.course.code} #{self.series.name}#{self.name}"
+          grp = "#{code} #{self.series.name}#{self.name}"
           if t.alert_sms
             sms = QueuedSMS.new
             sms.recipient = t.user.mobile
