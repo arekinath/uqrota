@@ -10,7 +10,7 @@ require 'dm-migrations'
 DataMapper.auto_migrate!
 
 require 'bacon'
-require './fixtures'
+require 'fixtures'
 
 include Rota::Model
 
@@ -44,7 +44,7 @@ end
 
 describe 'A session object' do
   before do
-    @fix = FixtureSet.new('fixtures/model.yml')
+    @fix = FixtureSet.new('tests/fixtures/model.yml')
     @fix.save
     
     @fix.s1.build_events
