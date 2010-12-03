@@ -241,6 +241,7 @@ module Rota
       alias :events :timetable_events
 
       def build_events
+        return if self.dates.nil?
         begin
           start_date, end_date = self.dates.split(" - ").collect do |d| 
             DateTime.strptime(d + ' 00:01 +1000', '%d/%m/%Y %H:%M %Z')
@@ -260,6 +261,7 @@ module Rota
           evt.destroy!
         end
 
+        self.exceptions = "" unless self.exceptions
         ds = self.exceptions.scan(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/)
         excepts = ds.collect do |d,m,y|
           "#{y}-#{m}-#{d}"
