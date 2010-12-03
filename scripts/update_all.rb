@@ -5,6 +5,7 @@ require 'config'
 require 'rota/model'
 require 'rota/fetcher'
 require 'rota/queues_alerts'
+require 'rota/updater'
 
 csem = Rota::Model::Semester.current
 while (arg = ARGV.shift)

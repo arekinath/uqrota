@@ -2,3 +2,9 @@
 
 database:
   uri: mysql://uqrota:uqrota@localhost/uqrota
+  
+updater:
+  threads:
+    default: 4
+    profiles: 8
+  
