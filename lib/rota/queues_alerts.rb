@@ -5,6 +5,7 @@ require 'digest/sha1'
 require 'utils/sms'
 require 'net/smtp'
 require 'date'
+require 'config'
 
 module Rota
   module Model
@@ -33,8 +34,8 @@ module Rota
       property :text, String, :length => 320
 
       def send
-        sender = Utils::SMSSender.new(Setting.get('sms_user').value, Setting.get('sms_pass').value)
-        sender.send(:recipient => self.recipient, :text => self.text, :sender => Setting.get('sms_from').value)
+        sender = Utils::SMSSender.new(Rota::Config['sms']['username'], Rota::Config['sms']['password'])
+        sender.send(:recipient => self.recipient, :text => self.text, :sender => Rota::Config['sms']['from'])
         self.destroy!
       end
     end
@@ -48,16 +49,19 @@ module Rota
       property :body, Text
 
       def send
+        origin = Rota::Config['smtp']['from']
         msg = <<ENDMSG
-From: UQRota <noreply@uqrota.net>
+From: UQRota <#{origin}>
 To: #{self.recipient}
 Subject: #{self.subject}
 Date: #{Time.now.to_s}
 
 #{self.body}
 ENDMSG
-        Net::SMTP.start('milky.rijidij.org', 25, 'mail.uqrota.net', 'ycd', 'ycdrox', :plain) do |smtp|
-          smtp.send_message msg, 'noreply@uqrota.net', self.recipient
+        smtpc = Rota::Config['smtp']
+        
+        Net::SMTP.start(smtpc['host'], smtpc['port'].to_i, 'mail.uqrota.net', smtpc['user'], smtpc['password'], :plain) do |smtp|
+          smtp.send_message msg, origin, self.recipient
         end
 
         self.destroy!

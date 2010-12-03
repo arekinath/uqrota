@@ -7,4 +7,15 @@ updater:
   threads:
     default: 4
     profiles: 8
+
+sms:
+  username: smsuserhere
+  password: password
+  from: phonenumber
   
+smtp:
+  host: hostname
+  port: 25
+  user: username
+  password: pass
+  from: noreply@uqrota.net
