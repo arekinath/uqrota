@@ -9,6 +9,7 @@ updater:
   threads:
     default: 4
     profiles: 8
+  reports: admin@uqrota.net
 
 sms:
   username: smsuserhere
