@@ -14,7 +14,7 @@ end
 log "Updating semester list..."
 UpdateTasks::SemesterListTask.new.run
 
-mode = :timetables
+mode = []
 target_semester = Semester.current
 
 while (arg = ARGV.shift)
@@ -29,13 +29,26 @@ while (arg = ARGV.shift)
     semid = semid.to_i
     target_semester = Semester.get(semid)
   elsif arg == 'timetables'
-    mode = :timetables
+    mode << :timetables
   elsif arg == 'profiles'
-    mode = :profiles
+    mode << :profiles
+  elsif arg == 'programs'
+    mode << :programs
+  elsif arg == 'buildings'
+    mode << :buildings
   end
 end
 
-if mode == :timetables
+if mode.size == 0
+  log "Nothing to do..."
+end
+
+if mode.include? :buildings
+  log "Updating building index..."
+  UpdateTasks::BuildingListTask.new.run
+end
+
+if mode.include? :timetables
   offerings = Offering.all(:semester => target_semester)
   tasks = offerings.collect { |o| UpdateTasks::TimetableTask.new(o) }
   
@@ -43,3 +56,30 @@ if mode == :timetables
   t.run("Timetable update for #{target_semester['id']}/#{target_semester.name}")
 end
 
+if mode.include? :programs
+  log "Updating undergraduate program list..."
+  UpdateTasks::ProgramListTask.new.run
+  
+  programs = Program.all
+  tasks = programs.collect { |p| UpdateTasks::ProgramTask.new(p) }
+  t = TaskRunner.new(tasks)
+  t.run("All Programs update")
+end
+
+if mode.include? :profiles
+  courses = Course.all
+  tasks = courses.collect { |c| UpdateTasks::CourseTask.new(c) }
+  t = TaskRunner.new(tasks)
+  t.run("All Course information update")
+  
+  tasks = []
+  Course.all.each do |c|
+    pp = c.offerings.select { |o| o.current and o.profileId > 0 }.first
+    if pp.nil?
+      pp = c.offerings.select { |o| o.profileId > 0 }.first
+    end
+    ps << UpdateTasks::ProfileTask.new(pp) unless pp.nil?
+  end
+  t = TaskRunner.new(tasks, Rota::Config['updater']['threads']['profiles'])
+  t.run("Current course profiles update")
+end
