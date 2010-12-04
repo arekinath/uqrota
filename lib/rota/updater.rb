@@ -51,6 +51,7 @@ module Rota
         print "\n[#{@desc}] done.\n"
       else
         puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] Beginning #{desc}..."
+        count = 1
         while count > 0
           sleep(5)
           @mutex.synchronize { count = @tasks.size }
@@ -112,6 +113,17 @@ module Rota
       
       def to_s
         "SemesterList"
+      end
+    end
+    
+    class BuildingListTask < SafeRunTask
+      def safe_run
+        agent, page = Building.fetch_list
+        Building.parse_list(page)
+      end
+      
+      def to_s
+        "BuildingList"
       end
     end
     

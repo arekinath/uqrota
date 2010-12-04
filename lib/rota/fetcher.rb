@@ -104,9 +104,9 @@ module Rota
           tdt.css("a").each do |link|
             if link['href'] and link['href'].include?("acad_prog")
               link['href'].scan(/acad_prog=([0-9]+)([^0-9]|$)/).each do |prog_id, cl|
-                p = Model::Program.get(prog_id.to_i)
+                p = Program.get(prog_id.to_i)
                 if p.nil?
-                  p = Model::Program.new
+                  p = Program.new
                   p['id'] = prog_id.to_i
                   p.name = link.text.chomp.strip
                   p.save
@@ -597,8 +597,8 @@ module Rota
                 b = Building.find_or_create(r['Building'], r['Building Name'])
                 best_s.building = b
                 best_s.room = r['Room']
-                best_s.start = Model::TimetableSession.mins_from_string(r['Start'])
-                best_s.finish = Model::TimetableSession.mins_from_string(r['End'])
+                best_s.start = TimetableSession.mins_from_string(r['Start'])
+                best_s.finish = TimetableSession.mins_from_string(r['End'])
                 best_s.dates = r['Start/End Date (DD/MM/YYYY)']
                 best_s.exceptions = r['Not taught on these dates (DD/MM/YYYY)']
                 best_s.save
@@ -620,8 +620,8 @@ module Rota
               b = Building.find_or_create(r['Building'], r['Building Name'])
               s.building = b
               s.room = r['Room']
-              s.start = Model::TimetableSession.mins_from_string(r['Start'])
-              s.finish = Model::TimetableSession.mins_from_string(r['End'])
+              s.start = TimetableSession.mins_from_string(r['Start'])
+              s.finish = TimetableSession.mins_from_string(r['End'])
               s.dates = r['Start/End Date (DD/MM/YYYY)']
               s.exceptions = r['Not taught on these dates (DD/MM/YYYY)']
               s.save
