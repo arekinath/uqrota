@@ -53,72 +53,95 @@ module Rota
   
   module UpdateTasks
     
-    class ProgramTask
+    class SafeRunTask
+      def run
+        begin
+          self.safe_run
+        rescue Timeout::Error => err
+          puts "> timeout, retrying..."
+          sleep(1)
+          retry
+        rescue Exception => err
+          puts "> error #{err.class.inspect} on #{self.to_s}... retrying..."
+          sleep(2)
+          retry
+        end
+      end
+    end
+    
+    class ProgramListTask < SafeRunTask
+      def safe_run
+        agent, page = Program.fetch_list
+        Program.parse_list(page)
+      end
+      
+      def to_s
+        "ProgramList"
+      end
+    end
+    
+    class ProgramTask < SafeRunTask
       def initialize(program)
+        super
         @program = program
-        @f = Rota::Fetcher.new
       end
       
-      def run
-        begin
-          agent,page = @f.get_pgm_course_list_page(@program)
-          p = Rota::CourseListPageParser.new(@program, page)
-          p.parse
-        rescue Timeout::Error => err
-          puts "> timeout, retrying..."
-          sleep(1)
-          retry
-        rescue Exception => err
-          puts "> error #{err.class.inspect} on #{@course.code}... retrying..."
-          sleep(2)
-          retry
-        end
+      def safe_run
+          agent, page = @program.fetch_courses
+          @program.parse_courses(page)
+      end
+      
+      def to_s
+        "Program<#{@program.name}>"
       end
     end
     
-    class CourseTask
+    class CourseTask < SafeRunTask
       def initialize(course)
+        super
         @course = course
-        @f = Rota::Fetcher.new
       end
       
-      def run
-        begin
-          agent,page = @f.get_course_detail_page(@course)
-          p = Rota::CourseDetailPageParser.new(@course, page)
-          p.parse
-        rescue Timeout::Error => err
-          puts "> timeout on #{@course.code}, retrying..."
-          sleep(1)
-          retry
-        rescue Exception => err
-          puts "> error #{err.class.inspect} on #{@course.code}... retrying..."
-          sleep(2)
-          retry
-        end
+      def safe_run
+          agent, page = @course.fetch_details
+          @course.parse_details(page)
+          @course.parse_offerings(page)
+      end
+      
+      def to_s
+        "Course<#{@course.code}>"
       end
     end
     
-    class ProfileTask
-      def initialize(profile)
-        @profile = profile
-        @f = Rota::Fetcher.new
+    class ProfileTask < SafeRunTask
+      def initialize(offering)
+        super
+        @offering = offering
       end
       
-      def run
-        begin
-          agent,page = @f.get_course_profile(@profile)
-          p = Rota::CourseProfileParser.new(@profile, page)
-          p.parse
-        rescue Timeout::Error => err
-          puts "> timeout, retrying..."
-          sleep(1)
-          retry
-        rescue Exception => err
-          puts "> error #{err.class.inspect} on #{@profile.course.code}... retrying..."
-          sleep(2)
-          retry
-        end
+      def safe_run
+          agent,page = @offering.fetch_profile
+          @offering.parse_profile(page)
+      end
+      
+      def to_s
+        "Profile<#{@offering.course.code}/#{@offering.semester['id']}>"
+      end
+    end
+    
+    class TimetableTask < SafeRunTask
+      def initialize(offering)
+        super
+        @offering = offering
+      end
+      
+      def safe_run
+        agent, page = @offering.fetch_timetable
+        @offering.parse_timetable(page)
+      end
+      
+      def to_s
+        "Timetable<#{@offering.course.code}/#{@offering.semester['id']}>"
       end
     end
     
