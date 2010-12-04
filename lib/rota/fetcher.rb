@@ -128,8 +128,12 @@ module Rota
     def parse_courses(page)
       page = page.parser
       DataMapper::Transaction.new.commit do
-        self.plans.course_groups_each { |cg| cg.destroy! }
-        self.plans.each { |pl| pl.destroy! }
+        if self.plans.size > 0
+          if self.plans.course_groups.size > 0
+            self.plans.course_groups_each { |cg| cg.destroy! }
+          end
+          self.plans.each { |pl| pl.destroy! }
+        end
         
         page.css("div.planlist").each do |plandiv|
           plan = Plan.new
@@ -146,7 +150,7 @@ module Rota
             plan.name += " (#{txt})" if txt.downcase.include?('major')
           end
           
-          plan.program = @program
+          plan.program = self
           plan.save
           
           plandiv.css('div.courselist').each do |listdiv|
