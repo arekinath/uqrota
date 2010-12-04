@@ -233,7 +233,9 @@ module Rota
     
     def parse_details(page)
       page = page.parser
-      DataMapper::Transaction.new.commit do        
+      DataMapper::Transaction.new.commit do
+        self.prereqs.each { |p| p.destroy! }
+        
         sems = []
         t = page.to_s
         
@@ -304,8 +306,6 @@ module Rota
     def parse_offerings(page)
       page = page.parser
       DataMapper::Transaction.new.commit do
-        self.prereqs.each { |p| p.destroy! }
-        
         page.css('table.offerings').each do |otbl|
           otbl.css('tr').each do |tr|
             cells = tr.css('td')
