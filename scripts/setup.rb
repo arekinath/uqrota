@@ -8,8 +8,19 @@ require 'rota/queues_alerts'
 
 require 'dm-migrations'
 
+mode = :fresh
+while (arg = ARGV.shift)
+  if arg == '--upgrade'
+    mode = :upgrade
+  end
+end
+
 puts "Creating database tables..."
-DataMapper.auto_migrate!
+if mode == :fresh
+  DataMapper.auto_migrate!
+elsif mode == :upgrade
+  DataMapper.auto_upgrade!
+end
 
 puts "Fetching semester list..."
 Rota::UpdateTasks::SemesterListTask.new.run

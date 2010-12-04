@@ -228,7 +228,7 @@ module Rota
   
   class Course
     def fetch_details
-      Fetcher::standard_fetch("http://uq.edu.au/study/course.html?course_code=#{course.code}")
+      Fetcher::standard_fetch("http://uq.edu.au/study/course.html?course_code=#{self.code}")
     end
     
     def parse_details(page)
@@ -237,15 +237,15 @@ module Rota
         sems = []
         t = page.to_s
         
-        def check_sem(semname, sym)
+        check_sem = proc do |semname, sym|
           if t =~ /#{semname}, #{Time.now.year}/ or t =~ /#{semname}, #{Time.now.year-1}/
             sems << sym
           end
         end
         
-        check_sem('Semester 1', 1)
-        check_sem('Semester 2', 2)
-        check_sem('Summer Semester', :summer)
+        check_sem.call('Semester 1', 1)
+        check_sem.call('Semester 2', 2)
+        check_sem.call('Summer Semester', :s)
         
         t = t.gsub("\n","")
         m = /<h1>Course description<\/h1>(.*)<h1>Archived offerings<\/h1>/.match(t)
