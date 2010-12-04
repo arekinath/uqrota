@@ -667,7 +667,7 @@ module Rota
     UserAgent = Rota::Config['updater']['useragent']
     Timeout = Rota::Config['updater']['timeout'].to_i
     
-    def standard_fetch(url)
+    def self.standard_fetch(url)
       agent = Mechanize.new
       agent.user_agent = UserAgent
       agent.keep_alive = false
@@ -678,7 +678,7 @@ module Rota
     end
     
     module SInet
-      def tt_page
+      def self.tt_page
         agent,page = login_page
         
         page = agent.click(page.link_with(:text => "Course & Timetable Info"))
@@ -687,7 +687,7 @@ module Rota
         return [agent, page]
       end
       
-      def login_page
+      def self.login_page
         agent = Mechanize.new
         agent.user_agent = UserAgent
         agent.keep_alive = false
@@ -700,7 +700,7 @@ module Rota
         return [agent, page]
       end
       
-      def sem_page(sem)
+      def self.sem_page(sem)
         agent, page = tt_page
         
         form = page.form('win0')

@@ -32,8 +32,6 @@ while (arg = ARGV.shift)
     mode = :timetables
   elsif arg == 'profiles'
     mode = :profiles
-  elsif arg == 'semesters'
-    mode = :semesters
   end
 end
 
