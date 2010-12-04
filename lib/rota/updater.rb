@@ -70,7 +70,7 @@ module Rota
         begin
           self.safe_run
         rescue Timeout::Error => err
-          puts "> Timeout on #{self.to_s}, retrying..."
+          puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] timeout on #{self.to_s}, retrying..."
           sleep(1)
           retry
         rescue Exception => err
