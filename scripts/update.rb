@@ -1,17 +1,7 @@
-$LOAD_PATH << File.expand_path("../../lib", __FILE__)
-require 'config'
+#!/usr/bin/ruby
+
+require File.expand_path("../../lib/config", __FILE__)
 require 'rota/model'
 require 'rota/fetcher'
+require 'rota/updater'
 
-cs = Rota::Model::Course.all(:code => ARGV[0])
-course = cs[-1]
-puts "selecting from semester: #{course.semester['id']}/#{course.semester.name}"
-
-puts "fetching..."
-fetcher = Rota::Fetcher.new
-agent,page = fetcher.get_course_page(course)
-puts "parsing..."
-parser = Rota::CoursePageParser.new(course, page)
-parser.parse
-
-puts "done."

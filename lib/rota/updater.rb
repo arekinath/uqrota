@@ -1,5 +1,6 @@
 require 'config'
 require 'rota/model'
+require 'rota/queues_alerts'
 require 'rota/fetcher'
 require 'thread'
 
@@ -14,7 +15,7 @@ module Rota
       self.run
     end
     
-    def run
+    def run(desc, terminal=false)
       mutex, tasks = [@mutex, @tasks]
       ths = []
       @nthreads.times do
@@ -38,16 +39,26 @@ module Rota
         end
       end
       
-      print "starting..."
-      count = 1
-      while count > 0
-        sleep(1)
-        @mutex.synchronize { count = @tasks.size }
-        pc = "%.2f" % ((@total-count).to_f / @total.to_f * 100.0)
-        print "\r#{@total-count}/#{@total} tasks taken (#{pc}\%)"
+      if terminal
+        print "[#{desc}] starting..."
+        count = 1
+        while count > 0
+          sleep(1)
+          @mutex.synchronize { count = @tasks.size }
+          pc = "%.2f" % ((@total-count).to_f / @total.to_f * 100.0)
+          print "\r[#{desc}] #{@total-count}/#{@total} tasks taken (#{pc}\%)"
+        end
+        ths.each { |th| th.join }
+        print "\n[#{@desc}] done.\n"
+      else
+        puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] Beginning #{desc}..."
+        while count > 0
+          sleep(5)
+          @mutex.synchronize { count = @tasks.size }
+        end
+        ths.each { |th| th.join }
+        puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] #{desc} completed."
       end
-      
-      ths.each { |th| th.join }
     end
   end
   
@@ -55,16 +66,30 @@ module Rota
     
     class SafeRunTask
       def run
+        errcount = 0
         begin
           self.safe_run
         rescue Timeout::Error => err
-          puts "> timeout, retrying..."
+          puts "> Timeout on #{self.to_s}, retrying..."
           sleep(1)
           retry
         rescue Exception => err
-          puts "> error #{err.class.inspect} on #{self.to_s}... retrying..."
-          sleep(2)
-          retry
+          errcount += 1
+          if errcount < 5
+            puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] error #{err.class.inspect} on #{self.to_s}... retrying..."
+            sleep(2)
+            retry
+          else
+            errstr = "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] 5x repeated error on #{self.to_s}, giving up.\n"
+            errstr += err.inspect + "\n"
+            errstr += err.backtrace.join("\n\t")
+            puts errstr
+            
+            em = Rota::QueuedEmail.new(:recipient => Rota::Config['updater']['reports'])
+            em.subject = "Update task error: #{self.to_s}"
+            em.body = errstr
+            em.save
+          end
         end
       end
     end
@@ -77,6 +102,17 @@ module Rota
       
       def to_s
         "ProgramList"
+      end
+    end
+    
+    class SemesterListTask < SafeRunTask
+      def safe_run
+        agent, page = Semester.fetch_list
+        Semester.parse_list(page)
+      end
+      
+      def to_s
+        "SemesterList"
       end
     end
     
