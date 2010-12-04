@@ -12,7 +12,6 @@ module Rota
       @mutex = Mutex.new
       @nthreads = nth
       @total = tasks.size
-      self.run
     end
     
     def run(desc, terminal=false)
