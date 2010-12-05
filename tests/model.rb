@@ -12,7 +12,7 @@ DataMapper.auto_migrate!
 require 'bacon'
 require 'fixtures'
 
-include Rota::Model
+include Rota
 
 describe 'The Setting class' do
   it 'should allow setting' do

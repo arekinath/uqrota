@@ -11,30 +11,36 @@ DataMapper.auto_migrate!
 
 require 'bacon'
 
-include Rota::Model
+include Rota
 
-describe 'The fetcher' do
-  before do
-    @f = Rota::Fetcher.new
-  end
+describe 'List fetchers' do
 
   it 'should fetch the course & timetable info page' do
-    agent, page = @f.get_tt_page
+    agent, page = Fetcher::SInet::tt_page()
     text = page.parser.text
     text.should.include?('Course & Timetable Info')
     text.should.include?('Search for courses by selecting')
   end
   
   it 'should fetch the undergrad plpp' do
-    agent, page = @f.get_pgm_list_page
+    agent, page = Program.fetch_list
     text = page.parser.text
     text.should.include?('Undergraduate Program')
     text.should.include?('Science')
   end
   
   it 'should fetch the semesters list' do
-    @f.update_semesters
-    Setting.get('current_semester').should.not.nil?
-    Semester.all.size.should.be > 1
+    agent, page = Semester.fetch_list
+    src = page.parser.to_s
+    src.should.include?('Semester 1')
+    src.should.include?('Summer Semester')
   end
+  
+  it 'should fetch the buildings list' do
+    agent, page = Building.fetch_list
+    text = page.parser.text
+    text.should.include?('Forgan Smith')
+    text.should.include?('Duhig')
+  end
+  
 end

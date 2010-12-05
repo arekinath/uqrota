@@ -13,7 +13,7 @@ require 'nokogiri'
 require 'bacon'
 require 'fixtures'
 
-include Rota::Model
+include Rota
 
 shared "a fixture test" do
   before do
