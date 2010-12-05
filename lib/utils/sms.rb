@@ -11,6 +11,7 @@ module Utils
     end
     
     # sends an SMS message. takes a hash, returns true on success
+    # hash should have :recipient, :text, :sender
     def send(msg)
       xms_doc = REXML::Document.new <<END
 <?xml version="1.0" encoding="utf-8"?>
