@@ -18,3 +18,8 @@ sem5:
     class: Semester
     id: 6180
     name: Semester 2, 2011
+    
+set:
+    class: Setting
+    name: current_semester
+    value: 6080

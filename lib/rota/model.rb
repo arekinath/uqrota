@@ -6,6 +6,7 @@ require 'digest/sha1'
 require 'config'
 
 DataMapper.setup(:default, Rota::Config['database']['uri'])
+DataMapper::Model.raise_on_save_failure = true
 
 module Rota
   class Setting
@@ -41,7 +42,11 @@ module Rota
     
     property :admin, Boolean, :default => false
     
-    has n, :timetables, :constraint => :destroy
+    has n, :semester_plans, :constraint => :destroy, :child_key => [:owner_login]
+    has n, :timetables, :through => :semester_plans
+    
+    has n, :readables, 'Timetable', :through => Resource
+    has n, :writeables, 'Timetable', :through => Resource
     
     def password=(pw)
       self.password_sha1 = User.hash_password(pw)
@@ -63,6 +68,7 @@ module Rota
     
     property :id, Serial
     
+    property :name, String, :length => 256
     belongs_to :owner, 'User'
     belongs_to :semester
     has n, :courses, :through => Resource, :constraint => :skip
@@ -74,16 +80,17 @@ module Rota
     include DataMapper::Resource
     
     property :id, Serial
-    property :name, String
+    property :name, String, :length => 256
     
     property :world_readable, Boolean, :default => false
     
     property :alert_sms, Boolean, :default => false
     property :alert_email, Boolean, :default => true
     
-    belongs_to :owner, 'User'
-    has n, :readers, 'User'
-    has n, :writers, 'User'
+    has 1, :owner, 'User', :through => :semester_plan
+    
+    has n, :readers, 'User', :through => Resource
+    has n, :writers, 'User', :through => Resource
     
     has n, :shares, :constraint => :destroy
     
@@ -92,7 +99,7 @@ module Rota
     has n, :timetable_groups, :through => Resource, :constraint => :skip
     alias :groups :timetable_groups
     
-    has n, :hidden_sessions, 'TimetableSession', :constraint => :skip
+    has n, :hidden_sessions, 'TimetableSession', :through => Resource, :constraint => :skip
   end
   
   class Share
@@ -295,7 +302,7 @@ module Rota
     property :group_name, String
     
     def fancy_name
-        "#{self.timetable_series.offering.course.code} #{self.timetable_series.name}#{self.name}"
+        "#{self.series.offering.course.code} #{self.series.name}#{self.name}"
     end
     
     belongs_to :timetable_series
@@ -323,6 +330,8 @@ module Rota
     # where
     property :room, String
     belongs_to :building
+    
+    has n, :timetables_hiding, 'Timetable', :through => Resource, :constraint => :skip
     
     belongs_to :timetable_group
     has n, :timetable_events, :constraint => :destroy

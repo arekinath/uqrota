@@ -34,6 +34,7 @@ describe 'Semester list parser' do
   
   after do
     Semester.all.each { |s| s.destroy! }
+    Setting.each { |s| s.destroy! }
   end
   
   it 'should create semesters with correct IDs' do
@@ -98,6 +99,8 @@ describe 'Course page parser (MATH2000/sumsem10)' do
     
     @offering.parse_timetable(@page)
     
+    @offering.reload
+    
     @fix = FixtureSet.new("tests/fixtures/parser.yml")
     @fix.save
   end
@@ -127,9 +130,8 @@ describe 'Course page parser (MATH2000/sumsem10)' do
   
   it 'should create session objects' do
     lser = @offering.series.first(:name => 'L')
-    
+
     lg = lser.groups.first
-    lg.reload
     lg.should.not.nil?
     lg.sessions.size.should.equal 4
     
@@ -139,7 +141,6 @@ describe 'Course page parser (MATH2000/sumsem10)' do
     
     tser = @offering.series.first(:name => 'T')
     t8 = tser.groups.first(:name => '8')
-    t8.reload
     t8wed = t8.sessions(:day => 'Wed').first
     t8wed.should.not.nil?
     t8wed.start.should.equal 11*60
@@ -147,21 +148,18 @@ describe 'Course page parser (MATH2000/sumsem10)' do
   
   it 'should update information accurately' do
     @offering.parse_timetable(@page_mod)
+    @offering.reload
     
     lser = @offering.series.first(:name => 'L')
     lg = lser.groups.first
-    lg.reload
     lfri = lg.sessions.first(:day => 'Fri')
     lfri.should.not.nil?
-    lfri.reload
     lfri.start.should.equal 10*60
     
     tser = @offering.series.first(:name => 'T')
     t1 = tser.groups.first(:name => '1')
-    t1.reload
     t1wed = t1.sessions.first(:day => 'Wed')
     t1wed.should.not.nil?
-    t1wed.reload
     t1wed.start.should.equal 11*60 + 30
     t1wed.finish.should.equal 12*60 + 20
   end
@@ -171,7 +169,6 @@ describe 'Course page parser (MATH2000/sumsem10)' do
     lg = lser.groups.first
     @fix.tt_email.groups << lg
     @fix.tt_email.save
-    lg.reload
     
     @offering.parse_timetable(@page_mod)
     
@@ -188,7 +185,6 @@ describe 'Course page parser (MATH2000/sumsem10)' do
     t1 = tser.groups.first(:name => '1')
     @fix.tt_sms.groups << t1
     @fix.tt_sms.save
-    t1.reload
     
     @offering.parse_timetable(@page_mod)
     
@@ -224,7 +220,6 @@ describe 'Course page parser (nurs2003/sumsem10) [incomplete]' do
   end
   
   it 'should create series objects' do
-    @offering.reload
     @offering.series.size.should.equal 1
     @offering.series.first.name.should.equal 'W'
   end

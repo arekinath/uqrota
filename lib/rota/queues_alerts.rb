@@ -78,14 +78,14 @@ ENDMSG
         srs = "#{self.course.code}"
         if t.alert_sms
           sms = QueuedSMS.new
-          sms.recipient = t.user.mobile
+          sms.recipient = t.owner.mobile
           sms.text = "UqRota: #{srs} has added/removed entire course series. Pls check site for details"
           sms.save
         end
         
         if t.alert_email
           em = QueuedEmail.new
-          em.recipient = t.user.email
+          em.recipient = t.owner.email
           em.subject = "UqRota alteration alert: #{srs}"
           em.body = <<END
 Hi, this is the UqRota timetable monitor.
@@ -114,14 +114,14 @@ END
         srs = "#{self.offering.course.code} #{self.name}"
         if t.alert_sms
           sms = QueuedSMS.new
-          sms.recipient = t.user.mobile
+          sms.recipient = t.owner.mobile
           sms.text = "UqRota: #{srs} has added/removed groups. Pls check site for details"
           sms.save
         end
         
         if t.alert_email
           em = QueuedEmail.new
-          em.recipient = t.user.email
+          em.recipient = t.owner.email
           em.subject = "UqRota alteration alert: #{srs}"
           em.body = <<END
 Hi, this is the UqRota timetable monitor.
@@ -148,14 +148,14 @@ END
         grp = "#{code} #{self.series.name}#{self.name}"
         if t.alert_sms
           sms = QueuedSMS.new
-          sms.recipient = t.user.mobile
+          sms.recipient = t.owner.mobile
           sms.text = "UqRota: #{grp} has changed in sinet. Pls check site for details"
           sms.save
         end
         
         if t.alert_email
           em = QueuedEmail.new
-          em.recipient = t.user.email
+          em.recipient = t.owner.email
           em.subject = "UqRota alteration alert: #{grp}"
           em.body = <<END
 Hi, this is the UqRota timetable monitor.

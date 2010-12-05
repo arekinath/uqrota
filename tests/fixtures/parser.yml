@@ -3,13 +3,18 @@ user:
   login: test
   email: test@test.com
   
+splan:
+  class: SemesterPlan
+  owner: @user
+  semester: =Semester.current
+  
 tt_email:
   class: Timetable
-  owner: @user
+  semester_plan: @splan
   name: Timetable 1
   
 tt_sms:
   class: Timetable
-  owner: @user
+  semester_plan: @splan
   name: Timetable 2
   alert_sms: =true
