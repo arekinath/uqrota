@@ -381,7 +381,7 @@ module Rota
   
   class Offering
     def fetch_profile
-      Fetcher::standard_fetch("http://www.courses.uq.edu.au/student_section_loader.php?section=print_display&profileId=#{profile.profileId}")
+      Fetcher::standard_fetch("http://www.courses.uq.edu.au/student_section_loader.php?section=print_display&profileId=#{self.profile_id}")
     end
     
     def parse_profile(page)
