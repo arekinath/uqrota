@@ -97,9 +97,9 @@ if mode.include? :profiles
   
   tasks = []
   Course.all.each do |c|
-    pp = c.offerings.select { |o| o.current and o.profileId > 0 }.first
+    pp = c.offerings.select { |o| o.current and o.profile_id > 0 }.first
     if pp.nil?
-      pp = c.offerings.select { |o| o.profileId > 0 }.first
+      pp = c.offerings.select { |o| o.profile_id > 0 }.first
     end
     ps << UpdateTasks::ProfileTask.new(pp) unless pp.nil?
   end
