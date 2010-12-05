@@ -11,11 +11,29 @@ def log(msg)
   puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] #{msg}"
 end
 
+def help_text
+  puts <<END
+Usage: scripts/update [-p|--progress] [[-s|--semester] id] target1 target2
+
+Available targets:
+  * timetables
+  * profiles
+  * programs
+  * buildings
+END
+end
+
+if ARGV.size == 0
+  help_text()
+  Kernel.exit(1)
+end
+
 log "Updating semester list..."
 UpdateTasks::SemesterListTask.new.run
 
 mode = []
 target_semester = Semester.current
+terminal = false
 
 while (arg = ARGV.shift)
   if arg == '--semester' or arg == '-s'
@@ -28,6 +46,8 @@ while (arg = ARGV.shift)
     end
     semid = semid.to_i
     target_semester = Semester.get(semid)
+  elsif arg == '--progress' or arg == '-p'
+    terminal = true
   elsif arg == 'timetables'
     mode << :timetables
   elsif arg == 'profiles'
@@ -36,6 +56,9 @@ while (arg = ARGV.shift)
     mode << :programs
   elsif arg == 'buildings'
     mode << :buildings
+  else
+    help_text()
+    Kernel.exit(1)
   end
 end
 
@@ -53,7 +76,7 @@ if mode.include? :timetables
   tasks = offerings.collect { |o| UpdateTasks::TimetableTask.new(o) }
   
   t = TaskRunner.new(tasks)
-  t.run("Timetable update for #{target_semester['id']}/#{target_semester.name}")
+  t.run("Timetable update for #{target_semester['id']}/#{target_semester.name}", terminal)
 end
 
 if mode.include? :programs
@@ -63,14 +86,14 @@ if mode.include? :programs
   programs = Program.all
   tasks = programs.collect { |p| UpdateTasks::ProgramTask.new(p) }
   t = TaskRunner.new(tasks)
-  t.run("All Programs update")
+  t.run("All Programs update", terminal)
 end
 
 if mode.include? :profiles
   courses = Course.all
   tasks = courses.collect { |c| UpdateTasks::CourseTask.new(c) }
   t = TaskRunner.new(tasks)
-  t.run("All Course information update")
+  t.run("All Course information update", terminal)
   
   tasks = []
   Course.all.each do |c|
@@ -81,5 +104,5 @@ if mode.include? :profiles
     ps << UpdateTasks::ProfileTask.new(pp) unless pp.nil?
   end
   t = TaskRunner.new(tasks, Rota::Config['updater']['threads']['profiles'])
-  t.run("Current course profiles update")
+  t.run("Current course profiles update", terminal)
 end
