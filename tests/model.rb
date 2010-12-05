@@ -82,6 +82,11 @@ describe 'A session object' do
     TimetableSession.mins_from_string('08:11 AM').should.equal 8*60+11
     TimetableSession.mins_from_string('6:31 AM').should.equal 6*60+31
   end
+  
+  it 'should handle invalid times' do
+    TimetableSession.mins_from_string('5:').should.nil?
+    TimetableSession.mins_from_string(' ').should.nil?
+  end
 end
 
 

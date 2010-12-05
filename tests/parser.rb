@@ -14,7 +14,7 @@ require 'nokogiri'
 require 'bacon'
 require 'fixtures'
 
-include Rota::Model
+include Rota
 
 class FakePage
   attr_reader :parser
@@ -25,10 +25,10 @@ class FakePage
   end 
 end
 
-describe 'CoursePageParser' do
+describe 'CoursePageParser (MATH2000/sumsem10)' do
   before do
-    f = Rota::Fetcher.new
-    f.update_semesters
+    agent, page = Semester.fetch_list
+    Semester.parse_list(page)
   
     @page = FakePage.new('fixtures/math2000_sumsem10_tt.html')
     @page_mod = FakePage.new('fixtures/math2000_sumsem10_tt_modified.html')
@@ -41,10 +41,8 @@ describe 'CoursePageParser' do
     @offering.semester = Semester.current
     @offering.save
     
-    @parser = Rota::CoursePageParser.new(@offering, @page)
-    @parser.parse
+    @offering.parse_timetable(@page)
     
-    @parser_mod = Rota::CoursePageParser.new(@offering, @page_mod)
     @fix = FixtureSet.new("tests/fixtures/parser.yml")
     @fix.save
   end
@@ -92,7 +90,7 @@ describe 'CoursePageParser' do
   end
   
   it 'should update information accurately' do
-    @parser_mod.parse
+    @offering.parse_timetable(@page_mod)
     
     lser = @offering.series.first(:name => 'L')
     lg = lser.groups.first
@@ -119,7 +117,7 @@ describe 'CoursePageParser' do
     @fix.tt_email.save
     lg.reload
     
-    @parser_mod.parse
+    @offering.parse_timetable(@page_mod)
     
     ems = QueuedEmail.all
     ems.size.should.equal 1
@@ -136,11 +134,41 @@ describe 'CoursePageParser' do
     @fix.tt_sms.save
     t1.reload
     
-    @parser_mod.parse
+    @offering.parse_timetable(@page_mod)
     
     sms = QueuedSMS.all
     sms.size.should.equal 1
     sms.first.text.should.include? 'MATH2000 T1'
     QueuedEmail.all.size.should.equal 1
+  end
+end
+
+describe 'CoursePageParser (nurs2003/sumsem10) [incomplete]' do
+  before do
+    agent, page = Semester.fetch_list
+    Semester.parse_list(page)
+    
+    @page = FakePage.new('fixtures/nurs3002_sumsem10.html')
+    @course = Course.new
+    @course.code = "NURS3002"
+    @course.save
+    
+    @offering = Offering.new
+    @offering.course = @course
+    @offering.semester = Semester.current
+    @offering.save
+    
+    @offering.parse_timetable(@page)
+  end
+  
+  after do
+    @offering.destroy!
+    @course.destroy!
+  end
+  
+  it 'should create series objects' do
+    @offering.reload
+    @offering.series.size.should.equal 1
+    @offering.series.first.name.should.equal 'W'
   end
 end
