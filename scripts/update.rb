@@ -13,7 +13,7 @@ end
 
 def help_text
   puts <<END
-Usage: scripts/update [-p|--progress] [[-s|--semester] id] target1 target2
+Usage: scripts/update [-p|--progress] [[-s|--semester] id] target1 target2 ...
 
 Available targets:
   * timetables
