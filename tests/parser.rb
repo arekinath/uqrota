@@ -53,6 +53,33 @@ describe 'Semester list parser' do
   end
 end
 
+describe 'Calendar page parser (against 2010)' do
+  before do
+    @page = FakePage.new('fixtures/acad_calendar_2010.html')
+    @sems = FixtureSet.new("tests/fixtures/dummy_semesters.yml")
+    @sems.save
+    
+    @sems.sem1.parse_dates(@page)
+    @sems.sem2.parse_dates(@page)
+  end
+  
+  after do
+    @sems.destroy!
+  end
+  
+  it 'should get the weeks for sem 1 correct' do
+    @sems.sem1.start_week.should.equal 9
+    @sems.sem1.midsem_week.should.equal 14
+    @sems.sem1.finish_week.should.equal 22
+  end
+  
+  it 'should get the weeks for sem 2 correct' do
+    @sems.sem2.start_week.should.equal 30
+    @sems.sem2.midsem_week.should.equal 39
+    @sems.sem2.finish_week.should.equal 43
+  end
+end
+
 describe 'Course page parser (MATH2000/sumsem10)' do
   before do
     @sems = FixtureSet.new("tests/fixtures/dummy_semesters.yml")

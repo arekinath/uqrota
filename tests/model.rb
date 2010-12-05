@@ -65,6 +65,25 @@ describe 'A course object' do
   end
 end
 
+describe 'A semester object' do
+  before do
+    @sem = Semester.new
+    @sem.start_week = 13
+    @sem.finish_week = 21
+    @sem.midsem_week = 17
+  end
+  
+  it 'should calculate week numbers before the midsem break' do
+    @sem.week(2).should.equal 14
+    @sem.week(3).should.equal 15
+  end
+  
+  it 'should calculate week numbers after the midsem break' do
+    @sem.week(5).should.equal 18
+    @sem.week(8).should.equal 21
+  end
+end
+
 describe 'A session object' do
   before do
     @fix = FixtureSet.new('tests/fixtures/sessions.yml')

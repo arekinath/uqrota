@@ -5,11 +5,11 @@ user:
   
 tt_email:
   class: Timetable
-  user: @user
+  owner: @user
   name: Timetable 1
   
 tt_sms:
   class: Timetable
-  user: @user
+  owner: @user
   name: Timetable 2
   alert_sms: =true
