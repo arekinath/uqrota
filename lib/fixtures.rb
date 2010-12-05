@@ -28,9 +28,13 @@ class FixtureSet
           v = eval(v.slice(1,v.size).strip)
         end
         v = v.slice(1,v.size) if v.is_a?(String) and v[0] == v[1] and '=#@'.include?(v[0])
-        obj.send(k + '=', v)
+        if obj.respond_to?(k+'=')
+          obj.send(k + '=', v)
+        else
+          obj.send(k, v)
+        end
       end
-      
+
       code = lambda { @objects[o_name] }
       self.class.send(:define_method, o_name, code)
     end

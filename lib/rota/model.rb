@@ -133,13 +133,22 @@ module Rota
       Semester.get(Setting.get('current_semester').value)
     end
     
+    def year
+      self.name.split(",").last.to_i
+    end
+    
     def week(n)
-      midsem_n = midsem_week - start_week
-      if n < midsem_n
-        return start_week + n - 1
-      else
-        return start_week + n
+      dt = DateTime.strptime("Mon #{self.start_week} #{self.year}", '%A %W %Y')
+      
+      while n > 1
+        n -= 1
+        dt += Rational(7, 1)
+        if dt.strftime('%W').to_i == midsem_week
+          dt += Rational(7, 1)
+        end
       end
+      
+      return [dt.year, dt.strftime('%W').to_i]
     end
   end
   

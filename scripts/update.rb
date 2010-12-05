@@ -31,6 +31,9 @@ end
 log "Updating semester list..."
 UpdateTasks::SemesterListTask.new.run
 
+t = TaskRunner.new(Semester.all.collect { |s| UpdateTasks::SemesterTask.new(s) })
+t.run("Update semester details")
+
 mode = []
 target_semester = Semester.current
 terminal = false

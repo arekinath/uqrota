@@ -116,6 +116,22 @@ module Rota
       end
     end
     
+    class SemesterTask < SafeRunTask
+      def initialize(sem)
+        @semester = sem
+        super
+      end
+      
+      def safe_run
+        agent, page = @semester.fetch_dates
+        @semester.parse_dates(page)
+      end
+      
+      def to_s
+        "SemesterTask<#{@semester['id']}>"
+      end
+    end
+    
     class BuildingListTask < SafeRunTask
       def safe_run
         agent, page = Building.fetch_list

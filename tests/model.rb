@@ -68,19 +68,31 @@ end
 describe 'A semester object' do
   before do
     @sem = Semester.new
+    @sem.name = "Semester 2, 2010"
     @sem.start_week = 13
     @sem.finish_week = 21
     @sem.midsem_week = 17
+    
+    @sem_b = Semester.new
+    @sem_b.name = "Summer Semester, 2012"
+    @sem_b.start_week = 50
+    @sem_b.finish_week = 10
+    @sem_b.midsem_week = 2
   end
   
   it 'should calculate week numbers before the midsem break' do
-    @sem.week(2).should.equal 14
-    @sem.week(3).should.equal 15
+    @sem.week(2).should.equal [2010, 14]
+    @sem.week(3).should.equal [2010, 15]
   end
   
   it 'should calculate week numbers after the midsem break' do
-    @sem.week(5).should.equal 18
-    @sem.week(8).should.equal 21
+    @sem.week(5).should.equal [2010, 18]
+    @sem.week(8).should.equal [2010, 21]
+  end
+  
+  it 'should calculate across a year boundary' do
+    @sem_b.week(5).should.equal [2013, 1]
+    @sem_b.week(7).should.equal [2013, 4]
   end
 end
 

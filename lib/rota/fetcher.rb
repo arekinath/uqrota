@@ -343,8 +343,7 @@ module Rota
   
   class Semester
     def fetch_dates
-      year = self.name.split(",").last.to_i
-      Fetcher::standard_fetch("http://uq.edu.au/events/calendar_view.php?category_id=16&year=#{year}")
+      Fetcher::standard_fetch("http://uq.edu.au/events/calendar_view.php?category_id=16&year=#{self.year}")
     end
     
     def parse_dates(page)
