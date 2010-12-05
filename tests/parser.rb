@@ -25,10 +25,38 @@ class FakePage
   end 
 end
 
-describe 'CoursePageParser (MATH2000/sumsem10)' do
+describe 'Semester list parser' do
   before do
-    agent, page = Semester.fetch_list
-    Semester.parse_list(page)
+    @page = FakePage.new('fixtures/semlist.html')
+    
+    Semester.parse_list(@page)
+  end
+  
+  after do
+    Semester.all.each { |s| s.destroy! }
+  end
+  
+  it 'should create semesters with correct IDs' do
+    ids = Semester.all.collect { |s| s['id'] }.sort
+    ids.should.equal [6020, 6060, 6080, 6120, 6160]
+  end
+  
+  it 'should create semesters with correct names' do
+    names = Semester.all.collect { |s| s.name }.sort
+    names.should.equal ['Semester 1, 2010', 'Semester 1, 2011',
+                        'Semester 2, 2010', 'Semester 2, 2011',
+                        'Summer Semester, 2010']
+  end
+  
+  it 'should set the current semester' do
+    Semester.current['id'].should.equal 6080
+  end
+end
+
+describe 'Course page parser (MATH2000/sumsem10)' do
+  before do
+    @sems = FixtureSet.new("tests/fixtures/dummy_semesters.yml")
+    @sems.save
   
     @page = FakePage.new('fixtures/math2000_sumsem10_tt.html')
     @page_mod = FakePage.new('fixtures/math2000_sumsem10_tt_modified.html')
@@ -51,6 +79,7 @@ describe 'CoursePageParser (MATH2000/sumsem10)' do
     @offering.destroy!
     @course.destroy!
     @fix.destroy!
+    @sems.destroy!
     QueuedEmail.each { |e| e.destroy! }
     QueuedSMS.each { |s| s.destroy! }
   end
@@ -143,10 +172,10 @@ describe 'CoursePageParser (MATH2000/sumsem10)' do
   end
 end
 
-describe 'CoursePageParser (nurs2003/sumsem10) [incomplete]' do
+describe 'Course page parser (nurs2003/sumsem10) [incomplete]' do
   before do
-    agent, page = Semester.fetch_list
-    Semester.parse_list(page)
+    @sems = FixtureSet.new("tests/fixtures/dummy_semesters.yml")
+    @sems.save
     
     @page = FakePage.new('fixtures/nurs3002_sumsem10.html')
     @course = Course.new
@@ -164,6 +193,7 @@ describe 'CoursePageParser (nurs2003/sumsem10) [incomplete]' do
   after do
     @offering.destroy!
     @course.destroy!
+    @sems.destroy!
   end
   
   it 'should create series objects' do

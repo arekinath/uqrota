@@ -1,0 +1,20 @@
+sem1:
+    class: Semester
+    id: 6020
+    name: Semester 1, 2010
+sem2:
+    class: Semester
+    id: 6060
+    name: Semester 2, 2010
+sem3:
+    class: Semester
+    id: 6080
+    name: Summer Semester, 2010
+sem4:
+    class: Semester
+    id: 6120
+    name: Semester 1, 2011
+sem5:
+    class: Semester
+    id: 6180
+    name: Semester 2, 2011
