@@ -232,7 +232,7 @@ module Rota
         return DateTime.parse("#{day} #{month} #{year}")
       end
       
-      tspans = self.due_date.scan(/([0-9]{1,2})\s+([A-Z][a-z]{2})\s+([0-9]{2})\s([0-9]{1,2}):([0-9]{2})+-\s+([0-9]{1,2})\s+([A-Z][a-z]{2})\s+([0-9]{2})\s([0-9]{1,2}):([0-9]{2})/)
+      tspans = self.due_date.scan(/([0-9]{1,2})\s+([A-Z][a-z]{2})\s+([0-9]{2})\s+([0-9]{1,2}):([0-9]{2})\s+-\s+([0-9]{1,2})\s+([A-Z][a-z]{2})\s+([0-9]{2})\s+([0-9]{1,2}):([0-9]{2})/)
       if tspans.size == 1
         _,_,_,_,_, day, month, year, hours, mins = tspans.first
         return DateTime.parse("#{day} #{month} #{year} #{hours}:#{mins}")
@@ -240,12 +240,29 @@ module Rota
       
       dates = self.due_date.scan(/([0-9]{1,2})\s+([A-Z][a-z]{2})\s+([0-9]{2})/)
       if dates.size > 0
-        day, month, year = dates.first
+        day, month, year = dates.last
         return DateTime.parse("#{day} #{month} #{year}")
       end
       
       weeks = self.due_date.scan(/([wW]eek|[Ww]k) ([0-9]{1,2})/)
+      if weeks.size > 0
+        _, week = weeks.last
+        n = self.offering.semester.week(week)
+        return DateTime.strptime("Mon #{n}", '%A %W')
+      end
       
+      if self.due_date.downcase.include?('examination period')
+        n = self.offering.semester.finish_week + 2
+        return DateTime.strptime("Mon #{n}", '%A %W')
+      end
+      
+      begin
+        dt = DateTime.parse(self.due_date)
+        return dt
+      rescue ArgumentError
+      end
+      
+      return nil
     end
   end
   
