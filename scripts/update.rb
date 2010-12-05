@@ -71,14 +71,6 @@ if mode.include? :buildings
   UpdateTasks::BuildingListTask.new.run
 end
 
-if mode.include? :timetables
-  offerings = Offering.all(:semester => target_semester)
-  tasks = offerings.collect { |o| UpdateTasks::TimetableTask.new(o) }
-  
-  t = TaskRunner.new(tasks)
-  t.run("Timetable update for #{target_semester['id']}/#{target_semester.name}", terminal)
-end
-
 if mode.include? :programs
   log "Updating undergraduate program list..."
   UpdateTasks::ProgramListTask.new.run
@@ -94,14 +86,24 @@ if mode.include? :profiles
   tasks = courses.collect { |c| UpdateTasks::CourseTask.new(c) }
   t = TaskRunner.new(tasks)
   t.run("All Course information update", terminal)
+end
+
+if mode.include? :timetables
+  offerings = Offering.all(:semester => target_semester)
+  tasks = offerings.collect { |o| UpdateTasks::TimetableTask.new(o) }
   
+  t = TaskRunner.new(tasks)
+  t.run("Timetable update for #{target_semester['id']}/#{target_semester.name}", terminal)
+end
+
+if mode.include? :profiles
   tasks = []
   Course.all.each do |c|
     pp = c.offerings.select { |o| o.current and o.profile_id > 0 }.first
     if pp.nil?
       pp = c.offerings.select { |o| o.profile_id > 0 }.first
     end
-    ps << UpdateTasks::ProfileTask.new(pp) unless pp.nil?
+    tasks << UpdateTasks::ProfileTask.new(pp) unless pp.nil?
   end
   t = TaskRunner.new(tasks, Rota::Config['updater']['threads']['profiles'])
   t.run("Current course profiles update", terminal)
