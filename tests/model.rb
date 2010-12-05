@@ -42,9 +42,32 @@ describe 'A user object' do
   end
 end
 
+describe 'A course object' do
+  before do
+    @fix = FixtureSet.new('tests/fixtures/prereqs.yml')
+    @fix.save
+  end
+  
+  after do
+    @fix.destroy!
+  end
+  
+  it 'should recognise its prereqs' do
+    @fix.course3.reload
+    @fix.course3.prereqs.should.include? @fix.course1
+    @fix.course3.prereqs.should.include? @fix.course2
+    @fix.course3.prereqs.size.should.equal 2
+  end
+  
+  it 'should recognise its dependents' do
+    @fix.course3.reload
+    @fix.course3.dependents.should.equal [@fix.course4]
+  end
+end
+
 describe 'A session object' do
   before do
-    @fix = FixtureSet.new('tests/fixtures/model.yml')
+    @fix = FixtureSet.new('tests/fixtures/sessions.yml')
     @fix.save
     
     @fix.s1.build_events

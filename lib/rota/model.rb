@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'dm-core'
 require 'dm-transactions'
+require 'dm-constraints'
 require 'digest/sha1'
 require 'config'
 
@@ -129,8 +130,11 @@ module Rota
     
     has n, :course_groups, :through => Resource
     has n, :offerings
-    has n, :dependents, :model => 'Prereqship', :child_key => :prereq_code
-    has n, :prereqs, :model => 'Prereqship', :child_key => :dependent_code
+    
+    has n, :dependentships, 'Prereqship', :child_key => :prereq_code
+    has n, :prereqships, 'Prereqship', :child_key => :dependent_code
+    has n, :dependents, self, :through => :dependentships, :via => :dependent
+    has n, :prereqs, self, :through => :prereqships, :via => :prereq
   end
   
   class Offering
@@ -191,8 +195,8 @@ module Rota
     include DataMapper::Resource
     property :id, Serial
     
-    belongs_to :dependent, :model => Course
-    belongs_to :prereq, :model => Course
+    belongs_to :dependent, 'Course'
+    belongs_to :prereq, 'Course'
   end
   
   class TimetableSeries

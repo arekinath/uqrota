@@ -1,0 +1,30 @@
+course1:
+    class: Course
+    code: TEST1001
+
+course2:
+    class: Course
+    code: TEST1002
+
+course3:
+    class: Course
+    code: TEST2002
+    
+course4:
+    class: Course
+    code: TEST3000
+
+pr1:
+    class: Prereqship
+    prereq: @course1
+    dependent: @course3
+    
+pr2:
+    class: Prereqship
+    prereq: @course2
+    dependent: @course3
+
+pr3:
+    class: Prereqship
+    prereq: @course3
+    dependent: @course4
