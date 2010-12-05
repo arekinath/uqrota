@@ -251,6 +251,8 @@ module Rota
     
     def build_events
       return if self.dates.nil?
+      return if self.day.nil? or self.day.size < 3
+      
       begin
         start_date, end_date = self.dates.split(" - ").collect do |d| 
           DateTime.strptime(d + ' 00:01 +1000', '%d/%m/%Y %H:%M %Z')
@@ -293,6 +295,7 @@ module Rota
     
     def TimetableSession.mins_from_string(str)
       m = /([0-9]{1,2}):([0-9]{1,2}) ([AP]M)/.match(str)
+      return nil if m.nil?
       mins = m[1].to_i * 60 + (m[2].to_i)
       mins += 720 if m[3] == 'PM' and m[1].to_i < 12
       return mins
