@@ -41,7 +41,7 @@ module Rota
     
     property :admin, Boolean, :default => false
     
-    has n, :timetables
+    has n, :timetables, :constraint => :destroy
     
     def password=(pw)
       self.password_sha1 = User.hash_password(pw)
@@ -58,6 +58,18 @@ module Rota
     end
   end
   
+  class SemesterPlan
+    include DataMapper::Resource
+    
+    property :id, Serial
+    
+    belongs_to :owner, 'User'
+    belongs_to :semester
+    has n, :courses, :through => Resource, :constraint => :skip
+    
+    has n, :timetables, :constraint => :destroy
+  end
+  
   class Timetable
     include DataMapper::Resource
     
@@ -69,10 +81,34 @@ module Rota
     property :alert_sms, Boolean, :default => false
     property :alert_email, Boolean, :default => true
     
-    belongs_to :user
-    has n, :timetable_groups, :through => Resource
+    belongs_to :owner, 'User'
+    has n, :readers, 'User'
+    has n, :writers, 'User'
     
+    has n, :shares, :constraint => :destroy
+    
+    belongs_to :semester_plan
+    
+    has n, :timetable_groups, :through => Resource, :constraint => :skip
     alias :groups :timetable_groups
+    
+    has n, :hidden_sessions, 'TimetableSession', :constraint => :skip
+  end
+  
+  class Share
+    include DataMapper::Resource
+    
+    property :id, String, :key => true
+    
+    belongs_to :timetable
+    property :rights, String
+    property :expires, DateTime
+    property :counter, Integer
+    
+    def Share.gen_id
+      f = File.new('/dev/urandom')  
+      Digest::SHA1.hexdigest(f.read(100))
+    end
   end
   
   class Semester
@@ -80,11 +116,23 @@ module Rota
     
     property :id, Serial
     property :name, String, :length => 100
+    property :start_week, Integer
+    property :finish_week, Integer
+    property :midsem_week, Integer
     
-    has n, :offerings
+    has n, :offerings, :constraint => :destroy
     
     def Semester.current
       Semester.get(Setting.get('current_semester').value)
+    end
+    
+    def week(n)
+      midsem_n = midsem_week - start_week
+      if n < midsem_n
+        return start_week + n - 1
+      else
+        return start_week + n
+      end
     end
   end
   
@@ -94,7 +142,7 @@ module Rota
     property :id, Serial
     property :name, String, :length => 200
     
-    has n, :plans
+    has n, :plans, :constraint => :destroy
   end
   
   class Plan
@@ -104,7 +152,7 @@ module Rota
     property :name, String, :length => 200
     
     belongs_to :program
-    has n, :course_groups
+    has n, :course_groups, :constraint => :destroy
   end
   
   class CourseGroup
@@ -113,7 +161,7 @@ module Rota
     property :id, Serial
     property :text, String, :length => 1024
     belongs_to :plan
-    has n, :courses, :through => Resource
+    has n, :courses, :through => Resource, :constraint => :skip
   end
   
   class Course
@@ -128,13 +176,15 @@ module Rota
     property :faculty, String, :length => 512
     property :school, String, :length => 512
     
-    has n, :course_groups, :through => Resource
-    has n, :offerings
+    has n, :course_groups, :through => Resource, :constraint => :skip
+    has n, :offerings, :constraint => :destroy
     
-    has n, :dependentships, 'Prereqship', :child_key => :prereq_code
-    has n, :prereqships, 'Prereqship', :child_key => :dependent_code
+    has n, :dependentships, 'Prereqship', :child_key => :prereq_code, :constraint => :destroy
+    has n, :prereqships, 'Prereqship', :child_key => :dependent_code, :constraint => :destroy
     has n, :dependents, self, :through => :dependentships, :via => :dependent
     has n, :prereqs, self, :through => :prereqships, :via => :prereq
+    
+    has n, :semester_plans, :through => Resource, :constraint => :skip
   end
   
   class Offering
@@ -150,11 +200,11 @@ module Rota
     property :last_update, DateTime
     
     belongs_to :semester
-    has n, :timetable_series, :model => 'Rota::TimetableSeries'
+    has n, :timetable_series, :model => 'Rota::TimetableSeries', :constraint => :destroy
     alias :series :timetable_series
     
     belongs_to :course
-    has n, :assessment_tasks
+    has n, :assessment_tasks, :constraint => :destroy
   end
   
   class AssessmentTask
@@ -167,6 +217,29 @@ module Rota
     property :weight, String, :length => 128
     
     belongs_to :offering
+    
+    def due_date_dt
+      tspans = self.due_date.scan(/([0-9]{1,2})\s+([A-Z][a-z]{2})\s+([0-9]{2})\s+-\s+([0-9]{1,2})\s+([A-Z][a-z]{2})\s+([0-9]{2})/)
+      if tspans.size == 1
+        _,_,_, day, month, year = tspans.first
+        return DateTime.parse("#{day} #{month} #{year}")
+      end
+      
+      tspans = self.due_date.scan(/([0-9]{1,2})\s+([A-Z][a-z]{2})\s+([0-9]{2})\s([0-9]{1,2}):([0-9]{2})+-\s+([0-9]{1,2})\s+([A-Z][a-z]{2})\s+([0-9]{2})\s([0-9]{1,2}):([0-9]{2})/)
+      if tspans.size == 1
+        _,_,_,_,_, day, month, year, hours, mins = tspans.first
+        return DateTime.parse("#{day} #{month} #{year} #{hours}:#{mins}")
+      end
+      
+      dates = self.due_date.scan(/([0-9]{1,2})\s+([A-Z][a-z]{2})\s+([0-9]{2})/)
+      if dates.size > 0
+        day, month, year = dates.first
+        return DateTime.parse("#{day} #{month} #{year}")
+      end
+      
+      weeks = self.due_date.scan(/([wW]eek|[Ww]k) ([0-9]{1,2})/)
+      
+    end
   end
   
   class Building
@@ -177,7 +250,11 @@ module Rota
     property :number, String
     property :name, String, :length => 128
     
-    has n, :timetable_sessions
+    has n, :timetable_sessions, :constraint => :skip
+    
+    def room(r)
+      "#{self.name} #{self.number}-#{r}"
+    end
     
     def Building.find_or_create(num, name)
       b = Building.first(:number => num)
@@ -206,7 +283,7 @@ module Rota
     property :name, String
     
     belongs_to :offering
-    has n, :timetable_groups
+    has n, :timetable_groups, :constraint => :destroy
     alias :groups :timetable_groups
   end
   
@@ -222,11 +299,11 @@ module Rota
     end
     
     belongs_to :timetable_series
-    has n, :timetable_sessions
+    has n, :timetable_sessions, :constraint => :destroy
     alias :sessions :timetable_sessions
     alias :series :timetable_series
     alias :series= :timetable_series=
-    has n, :timetables, :through => Resource
+    has n, :timetables, :through => Resource, :constraint => :skip
   end
   
   class TimetableSession
@@ -248,7 +325,7 @@ module Rota
     belongs_to :building
     
     belongs_to :timetable_group
-    has n, :timetable_events
+    has n, :timetable_events, :constraint => :destroy
     alias :group :timetable_group
     alias :group= :timetable_group=
     alias :events :timetable_events

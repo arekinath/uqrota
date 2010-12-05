@@ -342,6 +342,37 @@ module Rota
   end
   
   class Semester
+    def fetch_dates
+      year = self.name.split(",").last.to_i
+      Fetcher::standard_fetch("http://uq.edu.au/events/calendar_view.php?category_id=16&year=#{year}")
+    end
+    
+    def parse_dates(page)
+      ordinal = case
+        when self.name.include?('Semester 1'); 'first'
+        when self.name.include?('Semester 2'); 'second'
+        when self.name.include?('Summer'); 'summer'
+      end
+      
+      state = :idle
+      page.parser.css("li.event_row").each do |rli|
+        date = rli.css('li.first').first.text.downcase
+        desc = rli.css('li.description-calendar-view').first.text.downcase
+        if desc.include?(ordinal) and desc.include?('semester') and (desc.include?('commence') or desc.include?('start') or desc.include?('begin'))
+          self.start_week = DateTime.parse(date).strftime('%W').to_i
+          state = :start
+        end
+        if state == :start and desc.include?(ordinal) and desc.include?('semester') and (desc.include?('end') or desc.include?('finish'))
+          self.finish_week = DateTime.parse(date).strftime('%W').to_i
+          state = :idle
+        end
+        if state == :start and desc.include?('mid') and desc.include?('semester') and desc.include?('break') and not desc.include?('after') and not desc.include?('classes')
+          self.midsem_week = DateTime.parse(date).strftime('%W').to_i
+        end
+      end
+      self.save
+    end
+    
     def Semester.fetch_list
       Fetcher::SInet::tt_page
     end
