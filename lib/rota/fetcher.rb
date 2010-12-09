@@ -130,7 +130,7 @@ module Rota
       DataMapper::Transaction.new.commit do
         if self.plans.size > 0
           if self.plans.course_groups.size > 0
-            self.plans.course_groups_each { |cg| cg.destroy! }
+            self.plans.course_groups.each { |cg| cg.destroy! }
           end
           self.plans.each { |pl| pl.destroy! }
         end
