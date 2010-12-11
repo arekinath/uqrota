@@ -26,9 +26,15 @@ group2:
   series: @series
   name: 2
   
+tbuild:
+  class: Building
+  number: 12
+  name: Test Building
+  
 sess:
   class: TimetableSession
   group: @group
+  building: @tbuild
   day: Tue
   start: =TimetableSession.mins_from_string('8:00 AM')
   finish: =TimetableSession.mins_from_string('8:50 AM')
@@ -38,13 +44,18 @@ user:
   login: user
   email: user@user.com
   
+semplan:
+  class: SemesterPlan
+  owner: @user
+  semester: @sem
+  
 tt:
   class: Timetable
   name: Test timetable
-  user: @user
+  semester_plan: @semplan
   
 tt2:
   class: Timetable
   name: Test timetable 2
-  user: @user
+  semester_plan: @semplan
   alert_sms: =true

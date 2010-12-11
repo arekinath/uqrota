@@ -10,7 +10,13 @@ class FixtureSet
     
     # first pass, define the objects
     @data.each do |o_name, o_entry|
+      if o_entry['class'].nil?
+        raise "No class specified for yaml:#{o_name}"
+      end
       klass = eval(o_entry['class'])
+      if not klass.respond_to?(:new)
+        raise "#{o_entry['class'].inspect} is not a class object in yaml:#{o_name}"
+      end
       obj = klass.new
       @objects[o_name] = obj
     end
@@ -30,8 +36,10 @@ class FixtureSet
         v = v.slice(1,v.size) if v.is_a?(String) and v[0] == v[1] and '=#@'.include?(v[0])
         if obj.respond_to?(k+'=')
           obj.send(k + '=', v)
-        else
+        elsif obj.respond_to?(k)
           obj.send(k, v)
+        else
+          raise "Object of class #{obj.class.inspect} does not respond to #{k.inspect} in yaml:#{o_name}"
         end
       end
 
