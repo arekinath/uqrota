@@ -1,13 +1,8 @@
 h1. UQRota
 
-UQRota is really two projects -- the first is to develop a system that crawls 
-and indexes lots of information about courses and timetables at UQ and presents
-it in a machine-readable and convenient form. This part is the Rota API. The
-second aspect of the project is developing and maintaining a frontend for
-the Rota API written in Javascript and running on most modern web browsers.
+UQRota is really two projects -- the first is to develop a system that crawls and indexes lots of information about courses and timetables at UQ and presents it in a machine-readable and convenient form. This part is the Rota API. The second aspect of the project is developing and maintaining a frontend for the Rota API written in Javascript and running on most modern web browsers.
 
-This repository holds the working code for the next version of UQRota, not yet
-deployed to the live server.
+This repository holds the working code for the next version of UQRota, not yet deployed to the live server.
 
 h2. Information that Rota tracks
 
