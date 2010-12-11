@@ -67,11 +67,22 @@ module Rota
             s.to_ical(cal, excepts)
           end
         end
-      elsif type == :assessment or type == :all
+      end
+      if type == :assessment or type == :all
         self.assessment_tasks.each do |t|
           unless excepts.include?(t)
             t.to_ical(cal)
           end
+        end
+      end
+    end
+  end
+  
+  class Course
+    def to_ical(cal, excepts=[])
+      self.offerings.each do |o|
+        unless excepts.include?(o)
+          o.to_ical(cal, :all, excepts)
         end
       end
     end

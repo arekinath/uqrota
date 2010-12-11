@@ -18,6 +18,8 @@ module Rota
         s.day(self.day)
         s.start(self.start_time)
         s.finish(self.finish_time)
+        s.startmins(self.start)
+        s.finishmins(self.finish)
         s.room(self.room)
         s.building do |b|
           b.number(self.building.number)
@@ -85,11 +87,11 @@ module Rota
     def to_xml(b, *opts)
       b.offering do |off|
         off.id(self['id'])
-        off.course(self.course.code) if opts.include?(:with_course)
+        off.course(self.course.code) unless opts.include?(:no_course)
+        off.semester(self.semester['id']) unless opts.include?(:no_semester)
         off.location(self.location)
         off.mode(self.mode)
         off.lastupdated(self.last_update.strftime("%Y-%m-%d")) if self.last_update
-        off.semester(self.semester['id']) if opts.include?(:with_semester)
         unless opts.include?(:no_children) or opts.include?(:no_series)
           off.series do |ss|
             self.series.each do |ser|
