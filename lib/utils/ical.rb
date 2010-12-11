@@ -89,7 +89,7 @@ module Utils
   
   def self.ical(&block)
     ical = RiCal.Calendar do |cal|
-      block(cal)
+      block.call(cal)
     end
     ical.to_s
   end
