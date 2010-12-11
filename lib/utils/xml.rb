@@ -162,6 +162,6 @@ module Utils
       p.to_xml(builder)
     end
     block.call(builder) if block
-    return builder
+    return builder.target!
   end
 end

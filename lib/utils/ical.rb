@@ -60,7 +60,7 @@ module Rota
   end
   
   class Offering
-    def to_ical(cal, type=:timetable, excepts=[])
+    def to_ical(cal, type=:all, excepts=[])
       if type == :timetable or type == :all
         self.series.each do |s|
           unless excepts.include?(s)
