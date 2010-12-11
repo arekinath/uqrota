@@ -7,11 +7,11 @@ h2. Dependencies
 For the fetcher and backend model
 
 pre. gem install json mechanize logger dm-core dm-transactions dm-migrations RedCloth nokogiri
-gem install daemons dm-sqlite-adapter dm-mysql-adapter
+gem install daemons dm-sqlite-adapter dm-mysql-adapter sinatra bacon
 
-For iCal support
+For export support and APIs
 
-pre. gem install ri_cal
+pre. gem install ri_cal builder
 
 For PDF export support
 
