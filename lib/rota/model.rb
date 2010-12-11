@@ -234,6 +234,10 @@ module Rota
     
     belongs_to :offering
     
+    def to_s
+      "#{self.offering.course.code} #{self.name} (#{self.weight})"
+    end
+    
     def due_date_dt
       tspans = self.due_date.scan(/([0-9]{1,2})\s+([A-Z][a-z]{2})\s+([0-9]{2})\s+-\s+([0-9]{1,2})\s+([A-Z][a-z]{2})\s+([0-9]{2})/)
       if tspans.size == 1

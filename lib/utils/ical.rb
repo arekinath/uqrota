@@ -16,6 +16,19 @@ module Rota
     end
   end
   
+  class AssessmentTask
+    def to_ical(cal)
+      due = self.due_date_dt
+      unless due.nil?
+        cal.event do |event|
+          event.dtstart = due.to_time.utc
+          event.dtend = (due + Rational(1,24)).to_time.utc
+          event.summary = self.to_s
+        end
+      end
+    end
+  end
+  
   class TimetableSession
     def to_ical(cal)
       self.events.each do |ev|
@@ -46,14 +59,18 @@ module Rota
   
   class Offering
     def to_ical(cal, type=:timetable, excepts=[])
-      if type == :timetable
+      if type == :timetable or type == :all
         self.series.each do |s|
           unless excepts.include?(s)
             s.to_ical(cal, excepts)
           end
         end
-      elsif type == :assessment
-        
+      elsif type == :assessment or type == :all
+        self.assessment_tasks.each do |t|
+          unless excepts.include?(t)
+            t.to_ical(cal)
+          end
+        end
       end
     end
   end
