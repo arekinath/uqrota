@@ -413,12 +413,39 @@ module Rota
       end
     end
     
+    def start_time
+      TimetableSession.mins_to_string(self.start)
+    end
+    
+    def finish_time
+      TimetableSession.mins_to_string(self.finish)
+    end
+    
+    def start_time=(v)
+      self.start = TimetableSession.mins_from_string(v)
+    end
+    
+    def finish_time=(v)
+      self.finish = TimetableSession.mins_from_string(v)
+    end
+    
     def TimetableSession.mins_from_string(str)
       m = /([0-9]{1,2}):([0-9]{1,2}) ([AP]M)/.match(str)
       return nil if m.nil?
       mins = m[1].to_i * 60 + (m[2].to_i)
       mins += 720 if m[3] == 'PM' and m[1].to_i < 12
       return mins
+    end
+    
+    def TimetableSession.mins_to_string(mins)
+      hrs = mins / 60
+      mins = mins % 60
+      tp = "AM"
+      if hrs >= 12
+        hrs -= 12 if hrs > 12
+        tp = "PM"
+      end
+      "#{hrs}:%02d #{tp}" % mins
     end
   end
   

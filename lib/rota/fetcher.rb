@@ -631,8 +631,8 @@ module Rota
                 b = Building.find_or_create(r['Building'], r['Building Name'])
                 best_s.building = b
                 best_s.room = r['Room']
-                best_s.start = TimetableSession.mins_from_string(r['Start'])
-                best_s.finish = TimetableSession.mins_from_string(r['End'])
+                best_s.start_time = r['Start']
+                best_s.finish_time = r['End']
                 best_s.dates = r['Start/End Date (DD/MM/YYYY)']
                 best_s.exceptions = r['Not taught on these dates (DD/MM/YYYY)']
                 best_s.save
