@@ -3,6 +3,7 @@ require 'config'
 require 'rota/model'
 require 'utils/ical'
 require 'utils/xml'
+require 'rota/temporal'
 require 'sinatra/base'
 
 class DataService < Sinatra::Base
@@ -115,6 +116,15 @@ class DataService < Sinatra::Base
     course = Rota::Course.get(code.upcase)
     return 404 if course.nil?
     Utils.ical(course)
+  end
+  
+  get '/clashes/:id1/:id2.xml' do |id1, id2|
+    content_type :xml
+    o1 = Rota::Offering.get(id1.to_i)
+    o2 = Rota::Offering.get(id2.to_i)
+    return 404 if o1.nil? or o2.nil?
+    cs = Rota::ClashSummary.new(o1, o2)
+    Utils.xml(cs)
   end
   
   get '/offering/:id.xml' do |id|

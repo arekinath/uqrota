@@ -11,6 +11,29 @@ module Rota
     end
   end
   
+  class Clash
+    def to_xml(b)
+      b.clash do |c|
+        c.send(@type, @objects[0]['id'])
+        c.send(@type, @objects[1]['id'])
+        c.description(@desc)
+      end
+    end
+  end
+  
+  class ClashSummary
+    def to_xml(b)
+      b.summary do |s|
+        s.offering(@o1['id'])
+        s.offering(@o2['id'])
+        s.status(self.clashes? ? 'clash' : 'clear')
+        @clashes.each do |clash|
+          clash.to_xml(s)
+        end
+      end
+    end
+  end
+  
   class Program
     def to_xml(b, *opts)
       b.program do |p|
