@@ -11,6 +11,54 @@ module Rota
     end
   end
   
+  class Program
+    def to_xml(b, *opts)
+      b.program do |p|
+        p.id(self['id'])
+        p.name(self.name)
+        unless opts.include?(:no_children)
+          p.plans do |pls|
+            self.plans.each do |pl|
+              pl.to_xml(pls, :no_children, :no_program)
+            end
+          end
+        end
+      end
+    end
+  end
+  
+  class Plan
+    def to_xml(bu, *opts)
+      bu.plan do |b|
+        b.id(self['id'])
+        b.program(self.program['id']) unless opts.include?(:no_program)
+        b.name(self.name)
+        unless opts.include?(:no_children)
+          b.groups do |gps|
+            self.course_groups.each do |cg|
+              cg.to_xml(gps, :no_plan)
+            end
+          end
+        end
+      end
+    end
+  end
+  
+  class CourseGroup
+    def to_xml(bu, *opts)
+      bu.group do |b|
+        b.id(self['id'])
+        b.text(self.text)
+        b.plan(self.plan['id']) unless opts.include?(:no_plan)
+        b.courses do |cs|
+          self.courses.each do |c|
+            cs.course(c.code)
+          end
+        end
+      end
+    end
+  end
+  
   class TimetableSession
     def to_xml(b, *opts)
       b.session do |s|
@@ -133,7 +181,7 @@ module Rota
         unless opts.include?(:no_children)
           cs.offerings do |ox|
             self.offerings.each do |o|
-              o.to_xml(ox, :no_children, :with_semester)
+              o.to_xml(ox, :no_children, :no_course)
             end
           end
         end
