@@ -2,6 +2,8 @@ require 'rubygems'
 require 'ri_cal'
 require 'date'
 require 'time'
+require 'config'
+require 'rota/model'
 
 module Rota
   
@@ -87,9 +89,14 @@ end
 
 module Utils
   
-  def self.ical(&block)
+  def self.ical(*ps, &block)
     ical = RiCal.Calendar do |cal|
-      block.call(cal)
+      ps.each do |p|
+        p.to_ical(cal)
+      end
+      if block_given?
+        block.call(cal)
+      end
     end
     ical.to_s
   end
