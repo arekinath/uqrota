@@ -119,7 +119,6 @@ module Rota
     class SemesterTask < SafeRunTask
       def initialize(sem)
         @semester = sem
-        super
       end
       
       def safe_run
@@ -145,13 +144,12 @@ module Rota
     
     class ProgramTask < SafeRunTask
       def initialize(program)
-        super
         @program = program
       end
       
       def safe_run
-          agent, page = @program.fetch_courses
-          @program.parse_courses(page)
+        agent, page = @program.fetch_courses
+        @program.parse_courses(page)
       end
       
       def to_s
@@ -161,14 +159,13 @@ module Rota
     
     class CourseTask < SafeRunTask
       def initialize(course)
-        super
         @course = course
       end
       
       def safe_run
-          agent, page = @course.fetch_details
-          @course.parse_details(page)
-          @course.parse_offerings(page)
+        agent, page = @course.fetch_details
+        @course.parse_details(page)
+        @course.parse_offerings(page)
       end
       
       def to_s
@@ -178,13 +175,12 @@ module Rota
     
     class ProfileTask < SafeRunTask
       def initialize(offering)
-        super
         @offering = offering
       end
       
       def safe_run
-          agent,page = @offering.fetch_profile
-          @offering.parse_profile(page)
+        agent,page = @offering.fetch_profile
+        @offering.parse_profile(page)
       end
       
       def to_s
@@ -194,7 +190,6 @@ module Rota
     
     class TimetableTask < SafeRunTask
       def initialize(offering)
-        super
         @offering = offering
       end
       
