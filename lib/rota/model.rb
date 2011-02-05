@@ -153,10 +153,15 @@ module Rota
     
     def each_week(&block)
       dt = DateTime.strptime("Mon #{self.start_week} #{self.year}", '%A %W %Y')
-      
+      n = 0
       while (wkno = dt.strftime('%W').to_i) != finish_week
-        endwk = dt + Rational(4,1)
-        block.call(wkno, dt, endwk)
+        endwk = dt + Rational(5,1)
+        if wkno == midsem_week
+          block.call(:midsem, wkno, dt, endwk)
+        else
+          n += 1
+          block.call(n, wkno, dt, endwk)
+        end
         dt += Rational(7,1)
       end
     end

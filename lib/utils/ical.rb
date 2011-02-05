@@ -9,14 +9,14 @@ module Rota
   
   class Semester
     def to_ical(cal)
-      self.each_week do |week, mon, fri|
+      self.each_week do |n, yweek, mon, fri|
         cal.event do |event|
-          event.dtstart = mon
-          event.dtend = fri
-          if week == midsem_week
+          event.dtstart = mon.to_date
+          event.dtend = fri.to_date
+          if n == :midsem
             event.summary = "Mid-semester break"
           else
-            event.summary = "Week #{week}"
+            event.summary = "Week #{n}"
           end
         end
       end
