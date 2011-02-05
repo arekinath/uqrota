@@ -94,6 +94,26 @@ describe 'A semester object' do
     @sem_b.week(5).should.equal [2013, 1]
     @sem_b.week(7).should.equal [2013, 4]
   end
+  
+  it 'should iterate over weeks during one year' do
+    weeks = [13,14,15,16,17,18,19,20,21]
+    @sem.each_week do |week, mon, fri|
+      weeks.first.should.equal week
+      mon.strftime('%W').to_i.should.equal week
+      fri.strftime('%W').to_i.should.equal week
+      mon.wday.should.equal 1
+      fri.wday.should.equal 5
+      weeks.delete_at(0)
+    end
+  end
+  
+  it 'should iterate over weeks across a year boundary' do
+    weeks = [50,51,52,53,1,2,3,4,5,6,7,8,9,10]
+    @sem_b.each_week do |week, mon, fri|
+      weeks.first.should.equal week
+      weeks.delete_at(0)
+    end
+  end
 end
 
 describe 'A session object' do

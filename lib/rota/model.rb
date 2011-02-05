@@ -150,6 +150,16 @@ module Rota
       
       return [dt.year, dt.strftime('%W').to_i]
     end
+    
+    def each_week(&block)
+      dt = DateTime.strptime("Mon #{self.start_week} #{self.year}", '%A %W %Y')
+      
+      while (wkno = dt.strftime('%W').to_i) != finish_week
+        endwk = dt + Rational(4,1)
+        block.call(wkno, dt, endwk)
+        dt += Rational(7,1)
+      end
+    end
   end
   
   class Program
