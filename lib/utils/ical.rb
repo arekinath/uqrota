@@ -7,6 +7,22 @@ require 'rota/model'
 
 module Rota
   
+  class Semester
+    def to_ical(cal)
+      self.each_week do |week, mon, fri|
+        cal.event do |event|
+          event.dtstart = mon
+          event.dtend = fri
+          if week == midsem_week
+            event.summary = "Mid-semester break"
+          else
+            event.summary = "Week #{week}"
+          end
+        end
+      end
+    end
+  end
+  
   class TimetableEvent
     def to_ical(cal)
       cal.event do |event|
