@@ -2,12 +2,14 @@ require 'rubygems'
 require 'config'
 require 'rota/model'
 require 'utils/ical'
+require 'utils/json'
 require 'utils/xml'
 require 'rota/temporal'
 require 'sinatra/base'
 
 class DataService < Sinatra::Base
   mime_type :xml, 'text/xml'
+  mime_type :json, 'text/javascript'
   mime_type :ical, 'text/calendar'
   
   get '/programs/undergrad.xml' do
@@ -21,6 +23,19 @@ class DataService < Sinatra::Base
     end
   end
   
+  get '/programs/undergrad.json' do
+    content_type :json
+    Utils.json do |x|
+      x.programs(:array) do |a|
+        Rota::Program.all.each do |prog|
+          a.object do |o|
+            prog.to_json(o, :no_children)
+          end
+        end
+      end
+    end
+  end
+  
   get '/program/:id.xml' do |id|
     content_type :xml
     prog = Rota::Program.get(id.to_i)
@@ -28,11 +43,25 @@ class DataService < Sinatra::Base
     Utils.xml(prog)
   end
   
+  get '/program/:id.json' do |id|
+    content_type :json
+    prog = Rota::Program.get(id.to_i)
+    return 404 if prog.nil?
+    Utils.json(prog)
+  end
+  
   get '/plan/:id.xml' do |id|
     content_type :xml
     plan = Rota::Plan.get(id.to_i)
     return 404 if plan.nil?
     Utils.xml(plan)
+  end
+  
+  get '/plan/:id.json' do |id|
+    content_type :json
+    plan = Rota::Plan.get(id.to_i)
+    return 404 if plan.nil?
+    Utils.json(plan)
   end
   
   get '/semesters.xml' do
@@ -43,6 +72,20 @@ class DataService < Sinatra::Base
           hash = {}
           hash[:current] = 'true' if sem == Rota::Semester.current
           b.semester(sem['id'], hash)
+        end
+      end
+    end
+  end
+  
+  get '/semesters.json' do
+    content_type :json
+    Utils.json do |x|
+      x.semesters(:array) do |b|
+        Rota::Semester.all.each do |sem|
+          b.object do |o|
+            o.id(sem['id'])
+            o.current('true') if sem == Rota::Semester.current
+          end
         end
       end
     end
@@ -59,6 +102,19 @@ class DataService < Sinatra::Base
       end
     end
     Utils.xml(sem)
+  end
+  
+  get '/semester/:id.json' do |id|
+    content_type :json
+    sem = Rota::Semester.get(id.to_i)
+    if sem.nil?
+      if id == 'current'
+        sem = Rota::Semester.current
+      else
+        return 404
+      end
+    end
+    Utils.json(sem)
   end
   
   get '/semester/:id.ics' do |id|
@@ -84,11 +140,31 @@ class DataService < Sinatra::Base
     end
   end
   
+  get '/semester/:id/courses.json' do |id|
+    content_type :json
+    sem = Rota::Semester.get(id.to_i)
+    return 404 if sem.nil?
+    Utils.json do |x|
+      x.courses(:array) do |a|
+        sem.offerings.each do |off|
+          a << off.course.code
+        end
+      end
+    end
+  end
+  
   get '/course/:code.xml' do |code|
     content_type :xml
     course = Rota::Course.get(code.upcase)
     return 404 if course.nil?
     Utils.xml(course)
+  end
+  
+  get '/course/:code.json' do |code|
+    content_type :json
+    course = Rota::Course.get(code.upcase)
+    return 404 if course.nil?
+    Utils.json(course)
   end
   
   get '/course/:code/plans.xml' do |code|
@@ -102,6 +178,26 @@ class DataService < Sinatra::Base
             p.id(pl['id'])
             b.name(pl.name)
             b.program do |pg|
+              pg.id(pl.program['id'])
+              pg.name(pl.program.name)
+            end
+          end
+        end
+      end
+    end
+  end
+  
+  get '/course/:code/plans.json' do |code|
+    content_type :json
+    course = Rota::Course.get(code.upcase)
+    return 404 if course.nil?
+    Utils.json do |j|
+      j.plans(:array) do |a|
+        course.course_groups.plans.uniq.each do |pl|
+          a.object do |obj|
+            obj.id(pl['id'])
+            obj.name(pl.name)
+            obj.program do |pg|
               pg.id(pl.program['id'])
               pg.name(pl.program.name)
             end
@@ -132,6 +228,13 @@ class DataService < Sinatra::Base
     offering = Rota::Offering.get(id.to_i)
     return 404 if offering.nil?
     Utils.xml(offering)
+  end
+  
+  get '/offering/:id.json' do |id|
+    content_type :json
+    offering = Rota::Offering.get(id.to_i)
+    return 404 if offering.nil?
+    Utils.json(offering)
   end
   
   get '/offering/:id.ics' do |id|
