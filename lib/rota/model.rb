@@ -33,7 +33,7 @@ module Rota
   class User
     include DataMapper::Resource
     
-    property :login, String, :key => true
+    property :login, String, :key => true, :length => 128
     property :password_sha1, String
     property :email, String
     property :mobile, String

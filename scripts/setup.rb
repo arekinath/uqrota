@@ -5,6 +5,7 @@ require 'rota/model'
 require 'rota/fetcher'
 require 'rota/updater'
 require 'rota/queues_alerts'
+require 'rota/facebook'
 
 require 'dm-migrations'
 
