@@ -2,26 +2,49 @@
 @import <Foundation/CPArray.j>
 @import <AppKit/CPView.j>
 @import <AppKit/CPTextField.j>
-
-TimetableDays = [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ];
+@import "EventModel.j"
+@import "Utils.j"
 
 @implementation TimetableView : CPView
 {
 	int _minHour, _maxHour;
 	int _minDay, _maxDay;
 	CPArray _labels;
+	EventModel _model;
 }
 
 - (id)initWithFrame: (CGRect)aFrame
 {
 	self = [super initWithFrame: aFrame];
-	_minHour = 8;
-	_maxHour = 18;
-	_minDay = 0;
-	_maxDay = 7;
-	_labels = [[CPArray alloc] init];
-	[self regenLabels];
+	if (self) {
+		_minHour = 8;
+		_maxHour = 18;
+		_minDay = 0;
+		_maxDay = 7;
+		_labels = [[CPArray alloc] init];
+		_model = [[EventModel alloc] initWithView: self];
+		[self regenLabels];
+	}
 	return self
+}
+
+- (EventModel)model
+{
+	return _model;
+}
+
+- (CPRect)timeRectFrom: (float)startHour to: (float)endHour onDay: (int)day
+{
+	var gBounds = [self gridBounds];
+	var gHeight = CPRectGetHeight(gBounds);
+	var gWidth = CPRectGetWidth(gBounds);
+	
+	var yPerHour = Math.floor(gHeight / (_maxHour - _minHour));
+	var xPerDay  = Math.floor(gWidth / (_maxDay - _minDay));
+	
+	return CPMakeRect(CPRectGetMinX(gBounds) + xPerDay * (day - _minDay),
+					  CPRectGetMinY(gBounds) + yPerHour * (startHour - _minHour),
+					  xPerDay, yPerHour * (endHour - startHour));
 }
 
 - (void)resizeSubviewsWithOldSize: (CGSize)aSize

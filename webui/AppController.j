@@ -8,6 +8,7 @@
 
 @import <Foundation/CPObject.j>
 @import "TimetableView.j"
+@import "EventModel.j"
 
 
 @implementation AppController : CPObject
@@ -29,6 +30,11 @@
     [contentView addSubview: ttv];
 
     [theWindow orderFront: self];
+
+	var m = [ttv model];
+	var o = { "startmins": 9*60, "finishmins": 10.5*60, "day": "Mon" };
+	var s = [[Session alloc] initWithXml:o];
+	[m addSession: s];
 
     // Uncomment the following line to turn on the standard menu bar.
     //CPMenu setMenuBarVisible:YES];
