@@ -117,7 +117,7 @@ module Rota
         b.name(self.building.name)
       end
       unless opts.include?(:no_children)
-        s.events(:array) do |a|
+        o.events(:array) do |a|
           self.events.each do |ev|
             a.object do |obj|
               ev.to_json(obj)
