@@ -12,6 +12,14 @@ class DataService < Sinatra::Base
   mime_type :json, 'text/javascript'
   mime_type :ical, 'text/calendar'
   
+  before do
+    if request.request_method == 'OPTIONS'
+      response.headers['Access-Control-Allow-Origin'] = '*'
+      response.headers['Access-Control-Allow-Methods'] = 'HEAD, POST, GET, PUT, DELETE'
+      response.status = 200
+    end
+  end
+  
   get '/programs/undergrad.xml' do
     content_type :xml
     Utils.xml do |x|
