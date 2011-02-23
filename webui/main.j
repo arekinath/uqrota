@@ -14,5 +14,6 @@
 
 function main(args, namedArgs)
 {
-    CPApplicationMain(args, namedArgs);
+  //netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+  CPApplicationMain(args, namedArgs);
 }

@@ -8,7 +8,8 @@
 @implementation Session : CPView
 {
 	int _id;
-	float _start, _end;
+	float _start;
+	float _end;
 	int _day;
 	
 	int _tidx;
@@ -20,16 +21,20 @@
 	CPTextField _label;
 }
 
-- (id)initWithXml: (id)object
+- (id)initWithObject: (id)object
 {
 	self = [super init];
 	if (self) {
 		_xml = object;
-		_start = object.startmins / 60.0;
-		_end = object.finishmins / 60.0;
-		_day = DayNumberOf(object.day);
+		_start = _xml.startmins / 60.0;
+		_end = _xml.finishmins / 60.0;
+		_day = DayNumberOf(_xml.day);
 		_label = [[CPTextField alloc] init];
-		[_label setStringValue: "Session"];
+		
+		var str = object.group.series.offering.course + " " + object.group.series.name + object.group.name;
+		str = str + "\n" + object.building.number + "-" + object.room;
+		
+		[_label setStringValue: str];
 		[self addSubview: _label];
 	}
 	return self;
@@ -48,6 +53,7 @@
 - (void)updateUsage
 {
 	_tidx = [_model incrementUsageFrom: _start to: _end onDay: _day];
+	console.log("updating usage from "+_start+" to "+_end+", got idx " + _tidx);
 }
 
 - (void)updateFrame
