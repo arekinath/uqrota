@@ -18,9 +18,10 @@ class DataService < Sinatra::Base
   mime_type :xml, 'text/xml'
   mime_type :json, 'text/javascript'
   mime_type :ical, 'text/calendar'
+  mime_type :plain, 'text/plain'
   
   http_options /.+/ do
-    content_type = 'text/plain'
+    content_type :plain
     response.headers['Access-Control-Allow-Origin'] = env['Origin'] || '*'
     response.headers['Access-Control-Allow-Methods'] = 'HEAD, POST, GET, PUT, DELETE, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = env['Access-Control-Request-Headers'] || '*'
