@@ -21,9 +21,9 @@ class DataService < Sinatra::Base
   
   http_options /.+/ do
     content_type = 'text/plain'
-    response.headers['Access-Control-Allow-Origin'] = request.env['Origin']
+    response.headers['Access-Control-Allow-Origin'] = ENV['Origin'] || '*'
     response.headers['Access-Control-Allow-Methods'] = 'HEAD, POST, GET, PUT, DELETE, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = request.env['Access-Control-Request-Headers']
+    response.headers['Access-Control-Allow-Headers'] = ENV['Access-Control-Request-Headers'] || '*'
     response.headers['Access-Control-Max-Age'] = '1200'
     ''
   end
