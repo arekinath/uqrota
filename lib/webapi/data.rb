@@ -22,7 +22,9 @@ class DataService < Sinatra::Base
   http_options /.+/ do
     content_type = 'text/plain'
     response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'HEAD, POST, GET, PUT, DELETE'
+    response.headers['Access-Control-Allow-Methods'] = 'HEAD, POST, GET, PUT, DELETE, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = '*'
+    response.headers['Access-Control-Max-Age'] = '1200'
     ''
   end
   
