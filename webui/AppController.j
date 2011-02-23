@@ -7,6 +7,8 @@
  */
 
 @import <Foundation/CPObject.j>
+@import <AppKit/CPWindow.j>
+@import <AppKit/CPPanel.j>
 @import "TimetableView.j"
 @import "EventModel.j"
 @import "CourseModel.j"
@@ -18,6 +20,8 @@
   id contentView;
   
   id timetableView;
+  
+  CPWindow progressPanel;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -37,7 +41,7 @@
 
   [window orderFront: self];
 
-  [self fetchCourseWithCode: "CSSE1001"];
+  [self fetchCourseWithCode: "COMP2303"];
 
   // Uncomment the following line to turn on the standard menu bar.
   //CPMenu setMenuBarVisible:YES];
@@ -50,6 +54,24 @@
   } else {
     var course = [[Course alloc] initWithCode: code andDelegate: self];
   }
+  
+  progressPanel = [[CPWindow alloc] initWithContentRect:CGRectMake(0,0,200,50)
+                                    styleMask: CPTitledWindowMask];
+  [progressPanel setTitle: "Please wait..."];
+  [progressPanel center];
+  [progressPanel orderFront: self];
+  
+  var cv = [progressPanel contentView];
+  
+  var spinGif = [[CPImage alloc] initWithContentsOfFile: "Resources/spinner.gif"];
+  var spinView = [[CPImageView alloc] initWithFrame: CGRectMake(10,10,20,20)];
+  [spinView setImage: spinGif];
+  
+  var textView = [[CPTextField alloc] initWithFrame: CGRectMake(40,15,150,30)];
+  [textView setStringValue: "Loading "+code+"..."];
+  
+  [cv addSubview: spinView];
+  [cv addSubview: textView];
 }
 
 - (void)courseDidLoad: (id)aCourse
@@ -75,7 +97,7 @@
       [m addSession: s];
     }
   }
-  
+  [progressPanel close];
 }
 
 @end

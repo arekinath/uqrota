@@ -19,6 +19,8 @@
 	id _model;
 	
 	CPTextField _label;
+	
+	CPString _color;
 }
 
 - (id)initWithObject: (id)object
@@ -33,6 +35,8 @@
 		
 		var str = object.group.series.offering.course + " " + object.group.series.name + object.group.name;
 		str = str + "\n" + object.building.number + "-" + object.room;
+		
+		_color = "f0e0ff";
 		
 		[_label setStringValue: str];
 		[self addSubview: _label];
@@ -53,7 +57,6 @@
 - (void)updateUsage
 {
 	_tidx = [_model incrementUsageFrom: _start to: _end onDay: _day];
-	console.log("updating usage from "+_start+" to "+_end+", got idx " + _tidx);
 }
 
 - (void)updateFrame
@@ -77,7 +80,7 @@
 	var context = [[CPGraphicsContext currentContext] graphicsPort];
 	var bounds = [self bounds];
 	
-	CGContextSetFillColor(context, [CPColor colorWithHexString: "f0e0ff"]);
+	CGContextSetFillColor(context, [CPColor colorWithHexString: _color]);
 	CGContextSetStrokeColor(context, [CPColor colorWithHexString: "303030"]);
 	CGContextSetLineWidth(context, 2.0);
 	CGContextSetAlpha(context, 0.8);
