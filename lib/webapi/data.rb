@@ -20,6 +20,10 @@ class DataService < Sinatra::Base
   mime_type :ical, 'text/calendar'
   mime_type :plain, 'text/plain'
   
+  before do
+    response.headers['Access-Control-Allow-Origin'] = '*'
+  end
+  
   http_options /.+/ do
     content_type :plain
     response.headers['Access-Control-Allow-Origin'] = '*'
