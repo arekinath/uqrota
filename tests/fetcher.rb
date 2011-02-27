@@ -1,4 +1,7 @@
-require File.expand_path("../../lib/config", __FILE__)
+# Require config, but in way that it won't ever be included twice
+$:<< File.expand_path("../../lib/", __FILE__)
+require 'config'
+$:.pop
 
 Rota::Config['database']['uri'] = 'sqlite::memory:'
 

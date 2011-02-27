@@ -19,20 +19,16 @@ More information in the "wiki":/arekinath/uqrota/wiki/
 
 h2. Dependencies
 
-For the fetcher and backend model
+Dependencies are managed by bundler. To install it:
 
-pre. gem install json mechanize logger dm-core dm-transactions dm-migrations RedCloth nokogiri
-gem install daemons dm-sqlite-adapter dm-mysql-adapter sinatra bacon
+pre. gem install bundler
 
-For export support and APIs
+The IRC bot requires Cinch, which in turn supports only Ruby >= 1.9.1.
+If you are running Ruby 1.8.x, run the following to install any required gems:
 
-pre. gem install ri_cal builder
+pre. bundle install --without irc
 
-For PDF export support
+If you're running Ruby 1.9.x, you get IRC:
 
-pre. gem install prawn
-
-For the IRC bot
-
-pre. gem install cinch bitly
+pre. bundle install
 
