@@ -29,14 +29,14 @@ end
 describe 'A user object' do
   it 'should encrypt the stored password' do
     u = User.new
-    u.login = 'test'
+    u.email = 'test@test.com'
     u.password = 'blah'
     u.password_sha1.should.not.equal 'blah'
   end
   
   it 'should check the encrypted password correctly' do
     u = User.new
-    u.login = 'test'
+    u.email = 'test@test.com'
     u.password = 'blah'
     u.is_password?('blah').should.equal true
   end

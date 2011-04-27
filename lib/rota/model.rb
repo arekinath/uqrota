@@ -33,16 +33,15 @@ module Rota
   class User
     include DataMapper::Resource
     
-    property :login, String, :key => true, :length => 128
+    property :email, String, :key => true, :length => 128
     property :password_sha1, String
-    property :email, String
     property :mobile, String
     
     property :last_login, DateTime
     
     property :admin, Boolean, :default => false
     
-    has n, :semester_plans, :constraint => :destroy, :child_key => [:owner_login]
+    has n, :semester_plans, :constraint => :destroy, :child_key => [:owner_email]
     has n, :timetables, :through => :semester_plans
     
     has n, :readables, 'Timetable', :through => Resource
@@ -81,8 +80,6 @@ module Rota
     
     property :id, Serial
     property :name, String, :length => 256
-    
-    property :world_readable, Boolean, :default => false
     
     property :alert_sms, Boolean, :default => false
     property :alert_email, Boolean, :default => true

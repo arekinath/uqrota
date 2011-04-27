@@ -41,7 +41,6 @@ sess:
   
 user:
   class: User
-  login: user
   email: user@user.com
   
 semplan:

@@ -1,6 +1,5 @@
 user:
   class: User
-  login: test
   email: test@test.com
   
 splan:
