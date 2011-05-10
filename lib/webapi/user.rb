@@ -4,7 +4,7 @@ require 'rota/model'
 require 'rota/temporal'
 require 'sinatra/base'
 
-class UserService < Sinatra::Base
+class LoginService < Sinatra::Base
   enable :sessions
   
   mime_type :xml, 'text/xml'
@@ -39,5 +39,25 @@ class UserService < Sinatra::Base
     content_type :json
     session[:user] = nil
     Utils.json { |j| j.success true }
+  end
+end
+
+class UserService < Sinatra::Base
+  enable :sessions
+  
+  mime_type :xml, 'text/xml'
+  mime_type :json, 'text/javascript'
+  mime_type :ical, 'text/calendar'
+  mime_type :plain, 'text/plain'
+  
+  before do
+    unless session[:user]
+      return 403
+    end
+  end
+  
+  get '/timetables.json' do
+    content_type :json
+    Utils.json { |j| j.test true }
   end
 end

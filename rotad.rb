@@ -13,6 +13,7 @@ class RotaApp < Sinatra::Base
   set :sessions, true
   
   use DataService
+  use LoginService
   use UserService
 end
 
