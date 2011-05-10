@@ -48,11 +48,11 @@ module Rota
     has n, :writeables, 'Timetable', :through => Resource
     
     def password=(pw)
-      self.password_sha1 = User.hash_password(pw)
+      self.password_sha1 = User.hash_password(self.email + pw)
     end
     
     def is_password?(pw)
-      self.password_sha1 == User.hash_password(pw)
+      self.password_sha1 == User.hash_password(self.email + pw)
     end
     
     # Hash a password for storage and comparison
