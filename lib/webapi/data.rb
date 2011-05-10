@@ -24,7 +24,7 @@ class DataService < Sinatra::Base
     response.headers['Access-Control-Allow-Origin'] = '*'
   end
   
-  http_options /.+/ do
+  http_options /(programs|semester|plan|course|group|session|offering).+/ do
     content_type :plain
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'HEAD, POST, GET, PUT, DELETE, OPTIONS'

@@ -4,6 +4,13 @@ require 'rota/model'
 require 'rota/temporal'
 require 'sinatra/base'
 
+class << Sinatra::Base
+  def http_options path,opts={}, &blk
+    route 'OPTIONS', path, opts, &blk
+  end
+end
+Sinatra::Delegator.delegate :http_options 
+
 class LoginService < Sinatra::Base
   enable :sessions
   
@@ -11,6 +18,14 @@ class LoginService < Sinatra::Base
   mime_type :json, 'text/javascript'
   mime_type :ical, 'text/calendar'
   mime_type :plain, 'text/plain'
+  
+  before do
+    if request.env['ORIGIN'] =~ /^https:\/\/uqrota\.net\/(.+)$/
+      response.headers['Access-Control-Allow-Origin'] = request.env['ORIGIN']
+    elsif request.env['HTTP_ORIGIN'] =~ /^https:\/\/www\.uqrota\.net\/(.+)$/
+      response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN']
+    end
+  end
   
   post '/login.json' do
     content_type :json
@@ -45,6 +60,14 @@ end
 class UserService < Sinatra::Base
   enable :sessions
   
+  before do
+    if request.env['ORIGIN'] =~ /^https:\/\/uqrota\.net\/(.+)$/
+      response.headers['Access-Control-Allow-Origin'] = request.env['ORIGIN']
+    elsif request.env['HTTP_ORIGIN'] =~ /^https:\/\/www\.uqrota\.net\/(.+)$/
+      response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN']
+    end
+  end
+  
   mime_type :xml, 'text/xml'
   mime_type :json, 'text/javascript'
   mime_type :ical, 'text/calendar'
@@ -52,7 +75,7 @@ class UserService < Sinatra::Base
   
   before do
     unless session[:user]
-      return 403
+      halt(403)
     end
   end
   
