@@ -13,6 +13,7 @@ class UserService < Sinatra::Base
   mime_type :plain, 'text/plain'
   
   post '/login.json' do
+    content_type :json
     user = Rota::User.get(params[:email])
     if not user.nil? and user.is_password?(params[:password])
       session[:user] = user
@@ -23,6 +24,7 @@ class UserService < Sinatra::Base
   end
   
   get '/login.json' do
+    content_type :json
     if session[:user]
       Utils.json do |j|
         j.logged_in true
@@ -34,6 +36,7 @@ class UserService < Sinatra::Base
   end
   
   post '/logout.json' do
+    content_type :json
     session[:user] = nil
     Utils.json { |j| j.success true }
   end
