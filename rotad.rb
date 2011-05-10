@@ -17,4 +17,6 @@ class RotaApp < Sinatra::Base
   use UserService
 end
 
-RotaApp.run!
+if __FILE__ == $0
+  RotaApp.run!
+end
