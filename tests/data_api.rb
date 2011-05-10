@@ -42,7 +42,8 @@ describe 'Data API' do
     body = JSON.parse(last_response.body)
     body.is_a?(Hash).should.be.true
     body["semesters"].is_a?(Array).should.be.true
-    body["semesters"].include?({"id" => 6020}).should.be.true
-    body["semesters"].include?({"id" => 6080, "current" => true}).should.be.true
+    ids = body["semesters"].collect { |h| h["id"] }
+    ids.should.include?(6020)
+    ids.should.include?(6080)
   end
 end
