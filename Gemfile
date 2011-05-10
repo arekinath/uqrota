@@ -1,6 +1,7 @@
 source "http://rubygems.org"
 gem "RedCloth"
 gem "bacon"
+gem "rack-test"
 gem "daemons"
 gem "dm-constraints"
 gem "dm-core"
