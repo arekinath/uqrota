@@ -351,6 +351,9 @@ module Rota
         when self.name.include?('Semester 1'); 'first'
         when self.name.include?('Semester 2'); 'second'
         when self.name.include?('Summer'); 'summer'
+        when self.name.include?('Trimester 1'); ''
+        when self.name.include?('Trimester 2'); ''
+        when self.name.include?('Trimester 3'); ''
       end
       
       state = :idle
