@@ -79,8 +79,16 @@ class UserService < Sinatra::Base
     end
   end
   
-  get '/timetables.json' do
+  get '/me/semester_plans.json' do
     content_type :json
-    Utils.json { |j| j.test true }
+    Utils.json do |j|
+      j.plans(:array) do |ar|
+        session[:user].semester_plans.each do |sp|
+          ar.object do |obj|
+            sp.to_json(obj, :no_children)
+          end
+        end        
+      end
+    end
   end
 end

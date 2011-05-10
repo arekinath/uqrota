@@ -98,3 +98,45 @@ describe 'The Login API' do
     body["email"].should.be.nil?
   end
 end
+
+describe 'The User data API' do  
+  def app
+    RotaApp
+  end
+  
+  before do
+    @fix = FixtureSet.new('tests/fixtures/user_api_test_data.yml')
+    @fix.save
+  end
+  
+  after do
+    @fix.destroy!
+  end
+  
+  def user1_login
+    post '/login.json', {:email => 'user@user.com', :password => 'user1'}
+    last_response
+  end
+  
+  it 'should give a list of semester plans' do
+    user1_login.should.be.ok
+    
+    get '/me/semester_plans.json'
+    last_response.should.be.ok
+    last_response.headers['Content-Type'].should.match /^text\/javascript/
+    
+    body = JSON.parse(last_response.body)
+    body.is_a?(Hash).should.be.true
+    body['plans'].is_a?(Array).should.be.true
+    body['plans'].size.should.equal 1
+    
+    plan = body['plans'][0]
+    plan['id'].should.equal @fix.semplan['id']
+    plan['name'].should.equal @fix.semplan.name
+    plan['semester']['id'].should.equal @fix.sem['id']
+    
+    tts = plan['timetables']
+    tts.is_a?(Array).should.be.true
+    tts.size.should.equal 2
+  end
+end

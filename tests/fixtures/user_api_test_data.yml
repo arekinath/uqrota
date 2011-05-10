@@ -53,6 +53,7 @@ semplan:
   class: SemesterPlan
   owner: @user
   semester: @sem
+  name: Testing Plan
   
 tt:
   class: Timetable
