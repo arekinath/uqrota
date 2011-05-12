@@ -3,6 +3,7 @@ require 'dm-core'
 require 'dm-transactions'
 require 'dm-constraints'
 require 'digest/sha1'
+require 'rota/datamodel'
 require 'config'
 
 DataMapper.setup(:default, Rota::Config['database']['uri'])
