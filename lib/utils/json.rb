@@ -201,37 +201,6 @@ module Rota
     end
   end
   
-  class SemesterPlan
-    def to_json(o, *opts)
-      o.id(self['id'])
-      o.name(self.name)
-      o.semester do |s|
-        s.id(self.semester['id'])
-      end
-      o.owner do |u|
-        u.email(self.owner.email)
-      end
-      o.courses(:array) do |a|
-        self.courses.each do |c|
-          a.object do |ob|
-            ob.code(c.code)
-          end
-        end
-      end
-      o.timetables(:array) do |a|
-        self.timetables.each do |t|
-          a.object do |ob|
-            if opts.include?(:no_children)
-              ob.id(t['id'])
-            else
-              t.to_json(ob)
-            end
-          end
-        end
-      end
-    end
-  end
-  
 end
 
 class JSONObjectContext
