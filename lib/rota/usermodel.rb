@@ -120,7 +120,7 @@ module Rota
   class SharingLink
     include DataMapper::Resource
     
-    property :hashcode, String, :length => 80, :key => true
+    property :hashcode, String, :length => 40, :key => true
     
     property :uses_total, Integer
     property :uses_left, Integer
@@ -141,6 +141,43 @@ module Rota
         bytes = File.new("/dev/urandom").read(500)
         self.hashcode = Digest::SHA1.hexdigest(bytes)
       end
+    end
+  end
+  
+  class APISession
+    include DataMapper::Resource
+    
+    property :hashcode, String, :length => 40, :key => true
+    
+    property :created, DateTime
+    property :last_used, DateTime
+    
+    property :logged_in, Boolean, :default => false
+    belongs_to :user, :required => false
+    
+    property :secret, String, :length => 40
+    
+    def initialize(*k)
+      super(*k)
+      while self.hashcode and APISession.all(:hashcode => self.hashcode).size > 0
+        bytes_hc = File.new("/dev/urandom").read(500)
+        bytes_sec = File.new("/dev/urandom").read(500)
+        self.hashcode = Digest::SHA1.hexdigest(bytes_hc)
+        self.secret = Digest::SHA1.hexdigest(bytes_sec)
+      end
+    end
+    
+    def self.from_session(sess)
+      s = nil
+      if sess['apisession']
+        s = self.first(:hashcode => sess['apisession'])
+      end
+      if s.nil?
+        s = self.new
+        s.save
+        sess['apisession'] = s.hashcode
+      end
+      return s
     end
   end
   

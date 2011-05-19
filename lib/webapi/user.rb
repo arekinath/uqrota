@@ -20,6 +20,7 @@ class LoginService < Sinatra::Base
   mime_type :plain, 'text/plain'
   
   before do
+    @s = Rota::APISession.from_session(session)
     if request.env['ORIGIN'] =~ /^https:\/\/uqrota\.net\/(.+)$/
       response.headers['Access-Control-Allow-Origin'] = request.env['ORIGIN']
     elsif request.env['HTTP_ORIGIN'] =~ /^https:\/\/www\.uqrota\.net\/(.+)$/
@@ -27,23 +28,30 @@ class LoginService < Sinatra::Base
     end
   end
   
+  after do
+    @s.save
+  end
+  
   post '/login.json' do
     content_type :json
     user = Rota::User.get(params[:email])
     if not user.nil? and user.is_password?(params[:password])
-      session[:user] = user
-      Utils.json { |j| j.success true }
+      @s.logged_in = true
+      @s.user = user
+      Utils.json { |j| j.success true; j.secret @s.secret }
     else
+      @s.logged_in = false
       Utils.json { |j| j.success false }
     end
   end
   
   get '/login.json' do
     content_type :json
-    if session[:user]
+    if @s.logged_in
       Utils.json do |j|
         j.logged_in true
-        j.email session[:user].email
+        j.email @s.user.email
+        j.secret @s.secret
       end
     else
       Utils.json { |j| j.logged_in false }
@@ -52,7 +60,8 @@ class LoginService < Sinatra::Base
   
   post '/logout.json' do
     content_type :json
-    session[:user] = nil
+    @s.logged_in = false
+    @s.user = nil
     Utils.json { |j| j.success true }
   end
 end
@@ -74,9 +83,11 @@ class UserService < Sinatra::Base
   mime_type :plain, 'text/plain'
   
   before do
-    unless session[:user]
-      halt(403)
-    end
+    @s = Rota::APISession.from_session(session)
+  end
+  
+  after do
+    @s.save
   end
   
   get '/me/semester_plans.json' do
