@@ -137,7 +137,7 @@ module Rota
     
     def initialize(*k)
       super(*k)
-      while self.hashcode and SharingLink.all(:hashcode => self.hashcode).size > 0
+      while self.hashcode.nil? or SharingLink.all(:hashcode => self.hashcode).size > 0
         bytes = File.new("/dev/urandom").read(500)
         self.hashcode = Digest::SHA1.hexdigest(bytes)
       end
@@ -147,7 +147,7 @@ module Rota
   class APISession
     include DataMapper::Resource
     
-    property :hashcode, String, :length => 40, :key => true
+    property :hashcode, String, :length => 45, :key => true
     
     property :created, DateTime
     property :last_used, DateTime
@@ -155,16 +155,18 @@ module Rota
     property :logged_in, Boolean, :default => false
     belongs_to :user, :required => false
     
-    property :secret, String, :length => 40
+    property :secret, String, :length => 45
     
     def initialize(*k)
       super(*k)
-      while self.hashcode and APISession.all(:hashcode => self.hashcode).size > 0
+      while self.hashcode.nil? or APISession.all(:hashcode => self.hashcode).size > 0
         bytes_hc = File.new("/dev/urandom").read(500)
         bytes_sec = File.new("/dev/urandom").read(500)
         self.hashcode = Digest::SHA1.hexdigest(bytes_hc)
         self.secret = Digest::SHA1.hexdigest(bytes_sec)
       end
+      self.created = Time.now
+      self.last_used = Time.now
     end
     
     def self.from_session(sess)

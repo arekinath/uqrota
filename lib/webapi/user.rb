@@ -84,7 +84,7 @@ class UserService < Sinatra::Base
   
   before do
     @s = Rota::APISession.from_session(session)
-    unless @s.logged_in and request.env['X_API_SECRET'] == @s.secret
+    unless @s.logged_in and request.env['HTTP_X_API_SECRET'] == @s.secret
       halt(403)
     end
   end
