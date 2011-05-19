@@ -93,15 +93,15 @@ class UserService < Sinatra::Base
     @s.save
   end
   
-  get '/me/semester_plans.json' do
+  get '/planbox/mine.json' do
     content_type :json
     Utils.json do |j|
-      j.plans(:array) do |ar|
-        session[:user].semester_plans.each do |sp|
-          ar.object do |obj|
-            sp.to_json(obj, :no_children)
+      j.planboxes(:array) do |a|
+        @s.user.plan_boxes.each do |pb|
+          a.object do |obj|
+            pb.to_json(obj)
           end
-        end        
+        end
       end
     end
   end

@@ -2,10 +2,11 @@ require 'rubygems'
 require 'config'
 require 'rota/model'
 require 'utils/ical'
-require 'utils/json'
 require 'utils/xml'
 require 'rota/temporal'
 require 'sinatra/base'
+
+require 'dm-serializer/to_json'
 
 class << Sinatra::Base
   def http_options path,opts={}, &blk
@@ -100,16 +101,7 @@ class DataService < Sinatra::Base
   
   get '/semesters.json' do
     content_type :json
-    Utils.json do |x|
-      x.semesters(:array) do |b|
-        Rota::Semester.all.each do |sem|
-          b.object do |o|
-            o.id(sem['id'])
-            o.current('true') if sem == Rota::Semester.current
-          end
-        end
-      end
-    end
+    Rota::Semester.all.to_json(:methods => [:is_current?])
   end
   
   get '/semester/:id.xml' do |id|
@@ -135,7 +127,7 @@ class DataService < Sinatra::Base
         return 404
       end
     end
-    Utils.json(sem)
+    sem.to_json(:methods => [:is_current?])
   end
   
   get '/semester/:id.ics' do |id|
@@ -161,17 +153,11 @@ class DataService < Sinatra::Base
     end
   end
   
-  get '/semester/:id/courses.json' do |id|
+  get '/semester/:id/offerings.json' do |id|
     content_type :json
     sem = Rota::Semester.get(id.to_i)
     return 404 if sem.nil?
-    Utils.json do |x|
-      x.courses(:array) do |a|
-        sem.offerings.each do |off|
-          a << off.course.code
-        end
-      end
-    end
+    sem.to_json(:only => [:id], :methods => [:offerings])
   end
   
   get '/course/:code.xml' do |code|

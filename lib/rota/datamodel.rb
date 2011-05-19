@@ -45,6 +45,10 @@ module Rota
       Semester.get(Setting.get('current_semester').value)
     end
     
+    def is_current?
+      return self['id'].to_s == Setting.get('current_semester').value
+    end
+    
     def year
       self.name.split(",").last.to_i
     end
@@ -110,11 +114,11 @@ module Rota
   class Course
     include DataMapper::Resource
     
-    property :code, String, :length => 9, :key => true
+    property :code, String, :length => 10, :key => true
     property :units, Integer
     property :name, String, :length => 200
     property :semesters_offered, String, :length => 20
-    property :description, String, :length => 4096
+    property :description, Text
     property :coordinator, String, :length => 512
     property :faculty, String, :length => 512
     property :school, String, :length => 512
