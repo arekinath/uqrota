@@ -135,7 +135,12 @@ module Rota
           self.plans.each { |pl| pl.destroy! }
         end
         
-        page.css("div.planlist").each do |plandiv|
+        plandivs = page.css("div.planlist")
+        if plandivs.size < 1
+          plandivs = page.css("div#program-course-list")
+        end
+        
+        plandivs.each do |plandiv|
           plan = Plan.new
           
           plan.name = plandiv.css('h1')[0].text.chomp.strip
