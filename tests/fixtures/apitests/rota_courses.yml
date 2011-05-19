@@ -1,0 +1,30 @@
+--- 
+- code: AGRC1906C
+  units: 2
+  name: Applied Workplace Health & Safety
+  description: "\t<p>Introduction to workplace health &amp; safety legislation, risk assessment, hazard management, quality assurance, safe use of hand-tools &amp; chemicals applications. Graded competencies associated with workplace health &amp; safety, chainsaws, welding, machinery repair and maintenance, chemical transport, application &amp; storage.</p>\t\t"
+  semesters_offered: "[1, 2]"
+  coordinator: Mr M. Pace
+  faculty: Science
+  school: Science Faculty
+- code: AGRC1907C
+  units: 2
+  name: Farm Infrastructure & Equipment
+- code: AGRC1908C
+  units: 2
+  name: Applied Plant Production
+- code: AGRC1909C
+  units: 2
+  name: Plant Studies
+- code: ANIM1909C
+  units: 2
+  name: Animal Studies
+- code: ANIM1910C
+  units: 2
+  name: Applied Animal Production
+- code: COMU1903C
+  units: 2
+  name: Rural Communication
+- code: MGTS1962C
+  units: 2
+  name: Rural Business Management

@@ -1,0 +1,7 @@
+--- 
+- id: 1
+  text: Semester 1
+  plan_id: 1
+- id: 2
+  text: Semester 2
+  plan_id: 1
