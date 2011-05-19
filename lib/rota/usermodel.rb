@@ -21,11 +21,8 @@ module Rota
     
     property :admin, Boolean, :default => false
     
-    has n, :semester_plans, :constraint => :destroy, :child_key => [:owner_email]
-    has n, :timetables, :through => :semester_plans
-    
-    has n, :readables, 'Timetable', :through => Resource
-    has n, :writeables, 'Timetable', :through => Resource
+    has n, :plan_boxes
+    has n, :notifications
     
     def password=(pw)
       self.password_sha1 = User.hash_password(self.email + pw)
@@ -35,6 +32,10 @@ module Rota
       self.password_sha1 == User.hash_password(self.email + pw)
     end
     
+    def sharing_links
+      self.plan_boxes.timetables.sharing_links
+    end
+    
     # Hash a password for storage and comparison
     # Currently just uses sha-1
     def User.hash_password(pw)
@@ -42,56 +43,129 @@ module Rota
     end
   end
   
-  class SemesterPlan
+  class PlanBox
     include DataMapper::Resource
     
     property :id, Serial
+    property :title, String, :length => 128
     
-    property :name, String, :length => 256
-    belongs_to :owner, 'User'
+    belongs_to :user
     belongs_to :semester
-    has n, :courses, :through => Resource, :constraint => :skip
+    has n, :courses
+    has n, :timetables
     
-    has n, :timetables, :constraint => :destroy
+    has n, :plan_boxes
   end
   
   class Timetable
     include DataMapper::Resource
     
     property :id, Serial
-    property :name, String, :length => 256
     
-    property :alert_sms, Boolean, :default => false
-    property :alert_email, Boolean, :default => true
-    
-    has 1, :owner, 'User', :through => :semester_plan
-    
-    has n, :readers, 'User', :through => Resource
-    has n, :writers, 'User', :through => Resource
-    
-    has n, :shares, :constraint => :destroy
-    
-    belongs_to :semester_plan
-    
-    has n, :timetable_groups, :through => Resource, :constraint => :skip
-    alias :groups :timetable_groups
-    
-    has n, :hidden_sessions, 'TimetableSession', :through => Resource, :constraint => :skip
+    belongs_to :plan_box
+    has n, :course_selections
+    has n, :sharing_links
   end
   
-  class Share
+  class CourseSelection
     include DataMapper::Resource
     
-    property :id, String, :key => true
+    property :id, Serial
+    property :visible, Boolean, :default => true
     
+    belongs_to :course
     belongs_to :timetable
-    property :rights, String
-    property :expires, DateTime
-    property :counter, Integer
     
-    def Share.gen_id
-      f = File.new('/dev/urandom')  
-      Digest::SHA1.hexdigest(f.read(100))
+    has n, :group_selections
+    has n, :series_selections
+  end
+  
+  class SeriesSelection
+    include DataMapper::Resource
+    
+    property :id, Serial
+    property :visible, Boolean, :default => true
+    
+    belongs_to :course_selection
+    belongs_to :timetable_series
+    alias :series :timetable_series
+    belongs_to :selected_group, 'TimetableGroup'
+  end
+  
+  class GroupSelection
+    include DataMapper::Resource
+    
+    property :id, Serial
+    property :visible, Boolean, :default => true
+    
+    belongs_to :course_selection
+    belongs_to :timetable_group
+    alias :group :timetable_group
+    alias :group= :timetable_group=
+  end
+  
+  class TimetableSeries
+    has n, :series_selections
+  end
+  
+  class TimetableGroup
+    has n, :series_selections
+    has n, :group_selections
+  end
+  
+  class Course
+    has n, :plan_boxes
+  end
+  
+  class SharingLink
+    include DataMapper::Resource
+    
+    property :hashcode, String, :length => 80, :key => true
+    
+    property :uses_total, Integer
+    property :uses_left, Integer
+    
+    property :allows_feed, Boolean
+    property :allows_copy, Boolean
+    
+    property :expiry, DateTime
+    
+    property :active, Boolean
+    
+    has n, :logs, 'SharingLog'
+    belongs_to :timetable
+    
+    def initialize(*k)
+      super(*k)
+      while self.hashcode and SharingLink.all(:hashcode => self.hashcode).size > 0
+        bytes = File.new("/dev/urandom").read(500)
+        self.hashcode = Digest::SHA1.hexdigest(bytes)
+      end
     end
   end
+  
+  class SharingLog
+    include DataMapper::Resource
+    
+    property :id, Serial
+    property :ip, String, :length => 128
+    property :when, DateTime
+    property :email, String, :length => 128
+    
+    belongs_to :sharing_link
+  end
+  
+  class Notification
+    include DataMapper::Resource
+    
+    property :id, Serial
+    property :when, DateTime
+    property :target, String, :length => 128
+    property :description, Text
+    
+    property :login_count, Integer
+    
+    belongs_to :user
+  end
+  
 end

@@ -126,8 +126,6 @@ module Rota
     has n, :prereqships, 'Prereqship', :child_key => :dependent_code, :constraint => :destroy
     has n, :dependents, self, :through => :dependentships, :via => :dependent
     has n, :prereqs, self, :through => :prereqships, :via => :prereq
-    
-    has n, :semester_plans, :through => Resource, :constraint => :skip
   end
   
   class Offering
@@ -139,7 +137,6 @@ module Rota
     property :current, Boolean
     property :mode, String
     
-    property :update_thread_id, Integer, :default => 0
     property :last_update, DateTime
     
     belongs_to :semester
@@ -267,7 +264,6 @@ module Rota
     alias :sessions :timetable_sessions
     alias :series :timetable_series
     alias :series= :timetable_series=
-    has n, :timetables, :through => Resource, :constraint => :skip
   end
   
   class TimetableSession
@@ -287,8 +283,6 @@ module Rota
     # where
     property :room, String
     belongs_to :building
-    
-    has n, :timetables_hiding, 'Timetable', :through => Resource, :constraint => :skip
     
     belongs_to :timetable_group
     has n, :timetable_events, :constraint => :destroy
