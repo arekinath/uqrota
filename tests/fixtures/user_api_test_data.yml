@@ -48,20 +48,3 @@ sess:
   day: Tue
   start: =TimetableSession.mins_from_string('8:00 AM')
   finish: =TimetableSession.mins_from_string('8:50 AM')
-  
-semplan:
-  class: SemesterPlan
-  owner: @user
-  semester: @sem
-  name: Testing Plan
-  
-tt:
-  class: Timetable
-  name: Test timetable
-  semester_plan: @semplan
-  
-tt2:
-  class: Timetable
-  name: Test timetable 2
-  semester_plan: @semplan
-  alert_sms: =true
