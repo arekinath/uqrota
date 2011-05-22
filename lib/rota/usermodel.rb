@@ -5,6 +5,7 @@ require 'dm-constraints'
 require 'digest/sha1'
 require 'rota/datamodel'
 require 'config'
+require 'utils/json'
 
 DataMapper.setup(:default, Rota::Config['database']['uri'])
 DataMapper::Model.raise_on_save_failure = true
@@ -23,6 +24,11 @@ module Rota
     
     has n, :plan_boxes
     has n, :notifications
+    
+    include JSON::Serializable
+    json_key :email
+    json_attrs :mobile, :last_login, :admin
+    json_children :plan_boxes, :notifications
     
     def password=(pw)
       self.password_sha1 = User.hash_password(self.email + pw)
@@ -54,7 +60,10 @@ module Rota
     has n, :courses
     has n, :timetables
     
-    has n, :plan_boxes
+    include JSON::Serializable
+    json_attrs :title
+    json_children :courses, :timetables
+    json_parents :user, :semester
   end
   
   class Timetable
@@ -65,6 +74,10 @@ module Rota
     belongs_to :plan_box
     has n, :course_selections
     has n, :sharing_links
+    
+    include JSON::Serializable
+    json_children :course_selections
+    json_parents :plan_box
   end
   
   class CourseSelection
@@ -78,6 +91,11 @@ module Rota
     
     has n, :group_selections
     has n, :series_selections
+    
+    include JSON::Serializable
+    json_attrs :visible, :course
+    json_children :group_selections, :series_selections
+    json_parents :timetable
   end
   
   class SeriesSelection
@@ -90,6 +108,10 @@ module Rota
     belongs_to :timetable_series
     alias :series :timetable_series
     belongs_to :selected_group, 'TimetableGroup'
+    
+    include JSON::Serializable
+    json_attrs :visible, :series, :selected_group
+    json_parents :course_selection
   end
   
   class GroupSelection
@@ -102,6 +124,10 @@ module Rota
     belongs_to :timetable_group
     alias :group :timetable_group
     alias :group= :timetable_group=
+    
+    include JSON::Serializable
+    json_attrs :visible, :group
+    json_parents :course_selection
   end
   
   class TimetableSeries
@@ -135,6 +161,12 @@ module Rota
     has n, :logs, 'SharingLog'
     belongs_to :timetable
     
+    include JSON::Serializable
+    json_key :hashcode
+    json_attrs :uses_total, :uses_left, :allows_feed, :allows_copy, :expiry, :active
+    json_children :logs
+    json_parents :timetable
+    
     def initialize(*k)
       super(*k)
       while self.hashcode.nil? or SharingLink.all(:hashcode => self.hashcode).size > 0
@@ -156,6 +188,10 @@ module Rota
     belongs_to :user, :required => false
     
     property :secret, String, :length => 45
+    
+    include JSON::Serializable
+    json_key :hashcode
+    json_attrs :created, :last_used, :logged_in, :user, :secret
     
     def initialize(*k)
       super(*k)
@@ -192,6 +228,10 @@ module Rota
     property :email, String, :length => 128
     
     belongs_to :sharing_link
+    
+    include JSON::Serializable
+    json_attrs :ip, :when, :email
+    json_parent :sharing_link
   end
   
   class Notification
@@ -205,6 +245,10 @@ module Rota
     property :login_count, Integer
     
     belongs_to :user
+    
+    include JSON::Serializable
+    json_attrs :when, :target, :description, :login_count
+    json_parent :user
   end
   
 end
