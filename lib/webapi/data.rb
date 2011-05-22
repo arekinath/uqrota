@@ -6,8 +6,6 @@ require 'utils/xml'
 require 'rota/temporal'
 require 'sinatra/base'
 
-require 'dm-serializer/to_json'
-
 class << Sinatra::Base
   def http_options path,opts={}, &blk
     route 'OPTIONS', path, opts, &blk
@@ -93,7 +91,7 @@ class DataService < Sinatra::Base
   
   get '/semesters.json' do
     content_type :json
-    Rota::Semester.all.to_a.to_json
+    Rota::Semester.all.to_a.to_rota_json
   end
   
   get '/semester/:id.xml' do |id|

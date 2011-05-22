@@ -43,7 +43,7 @@ module Rota
     has n, :offerings, :constraint => :destroy
     
     include JSON::Serializable
-    json :attrs => [:name, :start_week, :finish_week, :midsem_week]
+    json :attrs => [:name, :start_week, :finish_week, :midsem_week, {:current => :is_current?}]
     
     def Semester.current
       Semester.get(Setting.get('current_semester').value)
@@ -169,8 +169,8 @@ module Rota
     has n, :assessment_tasks, :constraint => :destroy
     
     include JSON::Serializable
-    json_attrs :location, :mode, :lastupdated
-    json_children :series, :assessment
+    json_attrs :location, :mode, :last_update
+    json_children :series, :assessment_tasks
     json_parents :course, :semester
   end
   

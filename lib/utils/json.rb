@@ -10,6 +10,12 @@ class Array
   end
 end
 
+class DateTime
+  def to_json(*k)
+    return self.iso8601.to_json(*k)
+  end
+end
+
 module JSON
   module Serializable
     class ToJsonProxy
@@ -62,6 +68,13 @@ module JSON
         chl = self.class.instance_variable_get(:@json_children).flatten
         chl.each do |m|
           hash[m] = self.send(m).collect { |c| ToJsonProxy.new(c, level-1) }
+        end
+      end
+      
+      if parent
+        pnts = self.class.instance_variable_get(:@json_parents).flatten
+        pnts.each do |m|
+          hash[m] = ToJsonProxy.new(self.send(m), 0)
         end
       end
       
