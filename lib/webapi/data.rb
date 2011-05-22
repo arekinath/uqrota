@@ -47,15 +47,7 @@ class DataService < Sinatra::Base
   
   get '/programs/undergrad.json' do
     content_type :json
-    Utils.json do |x|
-      x.programs(:array) do |a|
-        Rota::Program.all.each do |prog|
-          a.object do |o|
-            prog.to_json(o, :no_children)
-          end
-        end
-      end
-    end
+    Rota::Programs.all.to_a.to_rota_json
   end
   
   get '/program/:id.xml' do |id|
@@ -69,7 +61,7 @@ class DataService < Sinatra::Base
     content_type :json
     prog = Rota::Program.get(id.to_i)
     return 404 if prog.nil?
-    Utils.json(prog)
+    proj.to_json
   end
   
   get '/plan/:id.xml' do |id|
@@ -83,7 +75,7 @@ class DataService < Sinatra::Base
     content_type :json
     plan = Rota::Plan.get(id.to_i)
     return 404 if plan.nil?
-    Utils.json(plan)
+    plan.to_json
   end
   
   get '/semesters.xml' do
@@ -101,7 +93,7 @@ class DataService < Sinatra::Base
   
   get '/semesters.json' do
     content_type :json
-    Rota::Semester.all.to_json(:methods => [:is_current?])
+    Rota::Semester.all.to_a.to_json
   end
   
   get '/semester/:id.xml' do |id|
@@ -127,7 +119,7 @@ class DataService < Sinatra::Base
         return 404
       end
     end
-    sem.to_json(:methods => [:is_current?])
+    sem.to_json
   end
   
   get '/semester/:id.ics' do |id|
@@ -157,7 +149,7 @@ class DataService < Sinatra::Base
     content_type :json
     sem = Rota::Semester.get(id.to_i)
     return 404 if sem.nil?
-    sem.to_json(:only => [:id], :methods => [:offerings])
+    sem.offerings.to_a.to_rota_json
   end
   
   get '/course/:code.xml' do |code|
@@ -171,7 +163,7 @@ class DataService < Sinatra::Base
     content_type :json
     course = Rota::Course.get(code.upcase)
     return 404 if course.nil?
-    Utils.json(course)
+    course.to_json
   end
   
   get '/course/:code/plans.xml' do |code|
@@ -198,20 +190,7 @@ class DataService < Sinatra::Base
     content_type :json
     course = Rota::Course.get(code.upcase)
     return 404 if course.nil?
-    Utils.json do |j|
-      j.plans(:array) do |a|
-        course.course_groups.plans.uniq.each do |pl|
-          a.object do |obj|
-            obj.id(pl['id'])
-            obj.name(pl.name)
-            obj.program do |pg|
-              pg.id(pl.program['id'])
-              pg.name(pl.program.name)
-            end
-          end
-        end
-      end
-    end
+    course.plans.to_a.to_rota_json
   end
   
   get '/course/:code.ics' do |code|
@@ -241,7 +220,7 @@ class DataService < Sinatra::Base
     content_type :json
     offering = Rota::Offering.get(id.to_i)
     return 404 if offering.nil?
-    Utils.json(offering)
+    offering.to_json
   end
   
   get '/offering/:id.ics' do |id|
