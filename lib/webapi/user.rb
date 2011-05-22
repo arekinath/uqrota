@@ -38,23 +38,19 @@ class LoginService < Sinatra::Base
     if not user.nil? and user.is_password?(params[:password])
       @s.logged_in = true
       @s.user = user
-      Utils.json { |j| j.success true; j.secret @s.secret }
+      { :success => true, :secret => @s.secret }.to_json
     else
       @s.logged_in = false
-      Utils.json { |j| j.success false }
+      { :success => false }.to_json
     end
   end
   
   get '/login.json' do
     content_type :json
     if @s.logged_in
-      Utils.json do |j|
-        j.logged_in true
-        j.email @s.user.email
-        j.secret @s.secret
-      end
+      { :logged_in => true, :email => @s.user.email, :secret => @s.secret }.to_json
     else
-      Utils.json { |j| j.logged_in false }
+      { :logged_in => false }.to_json
     end
   end
   
@@ -62,7 +58,7 @@ class LoginService < Sinatra::Base
     content_type :json
     @s.logged_in = false
     @s.user = nil
-    Utils.json { |j| j.success true }
+    { :success => true }.to_json
   end
 end
 
