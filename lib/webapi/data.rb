@@ -218,7 +218,7 @@ class DataService < Sinatra::Base
     content_type :json
     offering = Rota::Offering.get(id.to_i)
     return 404 if offering.nil?
-    offering.to_json
+    offering.to_json(5)
   end
   
   get '/offering/:id.ics' do |id|

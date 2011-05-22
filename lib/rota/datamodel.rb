@@ -186,7 +186,7 @@ module Rota
     belongs_to :offering
     
     include JSON::Serializable
-    json_attrs :name, :description, :due, :weight, {:due_date => :due_date_dt}
+    json_attrs :name, :description, :due_date, :weight, :due_date_dt
     json_parent :offering
     
     def to_s
@@ -303,7 +303,7 @@ module Rota
     alias :series= :timetable_series=
     
     include JSON::Serializable
-    json :attrs => [:name, :groupname], :children => [:sessions], :parent => :series
+    json :attrs => [:name, :group_name], :children => [:sessions], :parent => :series
   end
   
   class TimetableSession
@@ -331,8 +331,8 @@ module Rota
     alias :events :timetable_events
     
     include JSON::Serializable
-    json_attrs :day, :start, :finish, :startmins, :finishmins, :room
-    json_children :building, :events
+    json_attrs :day, :room, :start, :finish, :start_time, :finish_time, :building
+    json_children :events
     json_parent :group
     
     def build_events

@@ -58,9 +58,15 @@ module JSON
         if m.is_a?(Hash)
           m.each do |k,v|
             hash[k] = self.send(v)
+            if hash[k].kind_of?(Serializable)
+              hash[k] = ToJsonProxy.new(hash[k], 0)
+            end
           end
         else
           hash[m] = self.send(m)
+          if hash[m].kind_of?(Serializable)
+            hash[m] = ToJsonProxy.new(hash[m], 0)
+          end
         end
       end
       
