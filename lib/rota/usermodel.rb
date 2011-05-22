@@ -105,16 +105,16 @@ module Rota
   end
   
   class TimetableSeries
-    has n, :series_selections
+    has n, :series_selections, :required => false
   end
   
   class TimetableGroup
-    has n, :series_selections
-    has n, :group_selections
+    has n, :series_selections, :required => false
+    has n, :group_selections, :required => false
   end
   
   class Course
-    has n, :plan_boxes
+    has n, :plan_boxes, :required => false
   end
   
   class SharingLink

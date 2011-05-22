@@ -130,11 +130,11 @@ module Rota
     property :code, String, :length => 10, :key => true
     property :units, Integer
     property :name, String, :length => 200
-    property :semesters_offered, String, :length => 20
-    property :description, Text
-    property :coordinator, String, :length => 512
-    property :faculty, String, :length => 512
-    property :school, String, :length => 512
+    property :semesters_offered, String, :length => 20, :required => false
+    property :description, Text, :required => false
+    property :coordinator, String, :length => 512, :required => false
+    property :faculty, String, :length => 512, :required => false
+    property :school, String, :length => 512, :required => false
     
     has n, :course_groups, :through => Resource, :constraint => :skip
     has n, :offerings, :constraint => :destroy
