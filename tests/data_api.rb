@@ -79,4 +79,39 @@ describe 'Data API' do
     lst.size.should.equal 1
     lst[0]['course']['code'].should.equal "AGRC1906C"
   end
+  
+  it 'should return a course as JSON' do
+    get '/course/AGRC1906C.json'
+    last_response.should.be.ok
+    last_response.headers['Content-Type'].should.match /^text\/javascript/
+    course = JSON.parse(last_response.body)
+    course.is_a?(Hash).should.be.true
+    course['units'].should.equal 2
+    course['coordinator'].should.equal "Mr M. Pace"
+    course['offerings'].size.should.equal 1
+    course['offerings'][0]['id'].should.equal 1
+  end
+  
+  it 'should return an offering as JSON' do
+    get '/offering/1.json'
+    last_response.should.be.ok
+    last_response.headers['Content-Type'].should.match /^text\/javascript/
+    o = JSON.parse(last_response.body)
+    o.is_a?(Hash).should.be.true
+    
+    o['series'].size.should.equal 1
+    s = o['series'][0]
+    s['name'].should.equal 'C'
+    s['groups'].size.should.equal 1
+    g = s['groups'][0]
+    g['sessions'].size.should.equal 1
+    ss = g['sessions'][0]
+    ss['events'].size.should.equal 14
+    ss['events'][0]['id'].should.equal 1
+    
+    o['assessment_tasks'].size.should.equal 6
+    o['assessment_tasks'][0]['name'].should.equal " Risk Assessment,Hazard ID, Legislation and the ACT"
+  end
+  
+  
 end
