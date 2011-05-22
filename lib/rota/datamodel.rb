@@ -4,6 +4,7 @@ require 'dm-transactions'
 require 'dm-constraints'
 require 'digest/sha1'
 require 'config'
+require 'utils/json'
 
 DataMapper.setup(:default, Rota::Config['database']['uri'])
 DataMapper::Model.raise_on_save_failure = true
@@ -40,6 +41,9 @@ module Rota
     property :midsem_week, Integer
     
     has n, :offerings, :constraint => :destroy
+    
+    include JSON::Serializable
+    json :attrs => [:name, :start_week, :finish_week, :midsem_week]
     
     def Semester.current
       Semester.get(Setting.get('current_semester').value)
@@ -90,6 +94,9 @@ module Rota
     property :name, String, :length => 200
     
     has n, :plans, :constraint => :destroy
+    
+    include JSON::Serializable
+    json :attrs => [:name], :children => [:plans]
   end
   
   class Plan
@@ -100,6 +107,9 @@ module Rota
     
     belongs_to :program
     has n, :course_groups, :constraint => :destroy
+    
+    include JSON::Serializable
+    json :attrs => [:name], :children => [:course_groups], :parent => :program
   end
   
   class CourseGroup
@@ -109,6 +119,9 @@ module Rota
     property :text, String, :length => 1024
     belongs_to :plan
     has n, :courses, :through => Resource, :constraint => :skip
+    
+    include JSON::Serializable
+    json :attrs => [:text], :children => [:courses], :parent => :plan
   end
   
   class Course
@@ -130,6 +143,11 @@ module Rota
     has n, :prereqships, 'Prereqship', :child_key => :dependent_code, :constraint => :destroy
     has n, :dependents, self, :through => :dependentships, :via => :dependent
     has n, :prereqs, self, :through => :prereqships, :via => :prereq
+    
+    include JSON::Serializable
+    json_key :code
+    json_attrs :units, :name, :description, :coordinator, :faculty, :school
+    json_children :prereqs, :dependents, :offerings
   end
   
   class Offering
@@ -149,6 +167,11 @@ module Rota
     
     belongs_to :course
     has n, :assessment_tasks, :constraint => :destroy
+    
+    include JSON::Serializable
+    json_attrs :location, :mode, :lastupdated
+    json_children :series, :assessment
+    json_parents :course, :semester
   end
   
   class AssessmentTask
@@ -161,6 +184,10 @@ module Rota
     property :weight, String, :length => 128
     
     belongs_to :offering
+    
+    include JSON::Serializable
+    json_attrs :name, :description, :due, :weight, {:due_date => :due_date_dt}
+    json_parent :offering
     
     def to_s
       "#{self.offering.course.code} #{self.name} (#{self.weight})"
@@ -217,6 +244,9 @@ module Rota
     
     has n, :timetable_sessions, :constraint => :skip
     
+    include JSON::Serializable
+    json_attrs :map_id, :number, :name
+    
     def room(r)
       "#{self.name} #{self.number}-#{r}"
     end
@@ -250,6 +280,9 @@ module Rota
     belongs_to :offering
     has n, :timetable_groups, :constraint => :destroy
     alias :groups :timetable_groups
+    
+    include JSON::Serializable
+    json :attrs => [:name], :children => [:groups], :parent => :offering
   end
   
   class TimetableGroup
@@ -268,6 +301,9 @@ module Rota
     alias :sessions :timetable_sessions
     alias :series :timetable_series
     alias :series= :timetable_series=
+    
+    include JSON::Serializable
+    json :attrs => [:name, :groupname], :children => [:sessions], :parent => :series
   end
   
   class TimetableSession
@@ -293,6 +329,11 @@ module Rota
     alias :group :timetable_group
     alias :group= :timetable_group=
     alias :events :timetable_events
+    
+    include JSON::Serializable
+    json_attrs :day, :start, :finish, :startmins, :finishmins, :room
+    json_children :building, :events
+    json_parent :group
     
     def build_events
       return if self.dates.nil?
@@ -389,6 +430,10 @@ module Rota
     belongs_to :timetable_session
     alias :session :timetable_session
     alias :session= :timetable_session=
+    
+    include JSON::Serializable
+    json_attrs :date, :taught
+    json_parent :session
     
     def update_times
       dt = DateTime.strptime("#{self.date} 00:00:00 +1000", "%Y-%m-%d %H:%M:%S %Z")

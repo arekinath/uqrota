@@ -2,278 +2,100 @@ require 'rubygems'
 require 'json'
 require 'json/add/core'
 require 'config'
-require 'rota/model'
 require 'utils/xml'
 
-module Rota
-  
-  class Program
-    def to_json(o, *opts)
-      o.id(self['id'])
-      o.name(self.name)
-      unless opts.include?(:no_children)
-        o.plans(:array) do |pls|
-          self.plans.each do |pl|
-            pls.object do |ob|
-              pl.to_json(ob, :no_children, :no_program)
-            end
-          end
-        end
+module JSON
+  module Serializable
+    class ToJsonProxy
+      def initialize(target, level)
+        @target = target
+        @level = level
+      end
+      
+      def to_json(*k)
+        @target.to_json(@level, false, *k)
       end
     end
-  end
-  
-  class Plan
-    def to_json(o, *opts)
-      o.id(self['id'])
-      o.program(self.program['id']) unless opts.include?(:no_program)
-      o.name(self.name)
-      unless opts.include?(:no_children)
-        o.groups(:array) do |gps|
-          self.course_groups.each do |cg|
-            gps.object do |ob|
-              cg.to_json(ob, :no_plan)
-            end
-          end
-        end
-      end
+    
+    def self.included(klass)
+      klass.extend(ClassMethods)
+      klass.instance_variable_set(:@json_keys, Array.new)
+      klass.instance_variable_set(:@json_attrs, Array.new)
+      klass.instance_variable_set(:@json_parents, Array.new)
+      klass.instance_variable_set(:@json_children, Array.new)
     end
-  end
-  
-  class CourseGroup
-    def to_json(o, *opts)
-      o.id(self['id'])
-      o.text(self.text)
-      o.plan(self.plan['id']) unless opts.include?(:no_plan)
-      o.courses(:array) do |a|
-        self.courses.each do |c|
-          a << c.code
-        end
-      end
-    end
-  end
-  
-  class Semester
-    def to_json(o, *opts)
-      o.id(self['id'])
-      o.name(self.name)
-      o.weeks do |w|
-        w.start(self.start_week)
-        w.finish(self.finish_week)
-        w.midsem(self.midsem_week)
-      end
-    end
-  end
-  
-  class Course
-    def to_json(o, *opts)
-      o.code(self.code)
-      o.units(self.units)
-      o.name(self.name)
-      o.description(self.description)
-      o.coordinator(self.coordinator)
-      o.faculty(self.faculty)
-      o.school(self.school)
-      o.prereqs(:array) do |a|
-        self.prereqs.each do |c|
-          a << c.code
-        end
-      end
-      o.dependents(:array) do |a|
-        self.dependents.each do |c|
-          a << c.code
-        end
-      end
-      unless opts.include?(:no_children)
-        o.offerings(:array) do |a|
-          self.offerings.each do |off|
-            a.object do |ob|
-              off.to_json(ob, :no_children, :no_course)
-            end
-          end
-        end
-      end
-    end
-  end
-  
-  class TimetableEvent
-    def to_json(o, *opts)
-      o.date self.date
-      o.taught self.taught
-    end
-  end
-  
-  class TimetableSession
-    def to_json(o, *opts)
-      o.id(self['id'])
-      o.day(self.day)
-      o.start(self.start_time)
-      o.finish(self.finish_time)
-      o.startmins(self.start)
-      o.finishmins(self.finish)
-      o.room(self.room)
-      o.building do |b|
-        b.number(self.building.number)
-        b.name(self.building.name)
-      end
-      unless opts.include?(:no_children)
-        o.events(:array) do |a|
-          self.events.each do |ev|
-            a.object do |obj|
-              ev.to_json(obj)
-            end
-          end
-        end
-      end
-    end
-  end
-  
-  class TimetableGroup
-    def to_json(o, *opts)
-      o.id(self['id'])
-      o.name(self.name)
-      o.groupname(self.group_name)
-      unless opts.include?(:no_children)
-        o.sessions(:array) do |a|
-          self.sessions.each do |se|
-            a.object do |obj|
-              se.to_json(obj)
-            end
-          end
-        end
-      end
-    end
-  end
-  
-  class TimetableSeries
-    def to_json(o, *opts)
-      o.id(self['id'])
-      o.name(self.name)
-      unless opts.include?(:no_children)
-        o.groups(:array) do |g|
-          self.groups.each do |gg|
-            g.object do |obj|
-              gg.to_json(obj)
-            end
-          end
-        end
-      end
-    end
-  end
-  
-  class Offering
-    def to_json(o, *opts)
-      o.id(self['id'])
-      o.course(self.course.code) unless opts.include?(:no_course)
-      o.semester(self.semester['id']) unless opts.include?(:no_semester)
-      o.location(self.location)
-      o.mode(self.mode)
-      o.lastupdated(self.last_update.strftime("%Y-%m-%d")) if self.last_update
-      unless opts.include?(:no_children) or opts.include?(:no_series)
-        o.series(:array) do |a|
-          self.series.each do |ser|
-            a.object do |obj|
-              ser.to_json(obj)
-            end
-          end
-        end
-      end
-      unless opts.include?(:no_children) or opts.include?(:no_assessment)
-        o.assessment(:array) do |a|
-          self.assessment_tasks.each do |t|
-            a.object do |obj|
-              t.to_json(obj)
-            end
-          end
-        end
-      end
-    end
-  end
-  
-  class AssessmentTask
-    def to_json(o, *opts)
-      o.id(self['id'])
-      o.name(self.name)
-      o.description(self.description)
-      o.due(self.due_date)
-      o.weight(self.weight)
-      o.duedate(self.due_date_dt.strftime("%Y-%m-%d %H:%M")) if self.due_date_dt
-    end
-  end
-  
-end
-
-class JSONObjectContext
-  def initialize(hash=nil)
-    @hash = hash || Hash.new
-  end
-  
-  def to_s
-    @hash.to_json
-  end
-  
-  def method_missing(sym, *args, &block)
-    if args.size == 1
-      if args[0] == :array
-        arr = Array.new
-        block.call(JSONArrayContext.new(arr))
-        @hash[sym.to_s] = arr
-      elsif args[0] == :object
-        hash = Hash.new
-        @hash[sym.to_s] = hash
-        block.call(JSONObjectContext.new(hash))
-      else
-        @hash[sym.to_s] = args[0]
-      end
-    else
+    
+    # JSON levels:  0 - just the object's key attribute
+    #               1 - all of object's attributes and children
+    #               2 - all of object + 2 levels of children etc
+    
+    def to_json(level=1, parent=true, *k)
+      return nil if level < 0
+      
       hash = Hash.new
-      @hash[sym.to_s] = hash
-      block.call(JSONObjectContext.new(hash))
+      hash[:class] = self.class.name.split("::").last
+      
+      msgs = self.class.instance_variable_get(:@json_keys).flatten
+      msgs << :id if msgs.size == 0
+      if level >= 1
+        msgs += self.class.instance_variable_get(:@json_attrs).flatten
+      end
+      
+      msgs = msgs.collect do |m|
+        if m.is_a?(Hash)
+          m.each do |k,v|
+            hash[k] = self.send(v)
+          end
+        else
+          hash[m] = self.send(m)
+        end
+      end
+      
+      if level >= 1
+        chl = self.class.instance_variable_get(:@json_children).flatten
+        chl.each do |m|
+          hash[m] = self.send(m).collect { |c| ToJsonProxy.new(c, level-1) }
+        end
+      end
+      
+      return hash.to_json(*k)
     end
-  end
-  
-  def respond_to?(sym)
-    true
+    
+    module ClassMethods
+      def json(hash)
+        hash.each do |k,v|
+          if [:key, :keys].include?(k)
+            @json_keys << v
+          elsif [:attrs].include?(k)
+            @json_attrs << v
+          elsif [:children].include?(k)
+            @json_children << v
+          elsif [:parent, :parents].include?(k)
+            @json_parents << v
+          end
+        end
+      end
+      
+      def json_keys(*k)
+        @json_keys << k
+      end
+      
+      alias :json_key :json_keys
+      
+      def json_attrs(*k)
+        @json_attrs << k
+      end
+      
+      def json_children(*k)
+        @json_children << k
+      end
+      
+      def json_parents(*k)
+        @json_parents << k
+      end
+      
+      alias :json_parent :json_parents
+    end
   end
 end
 
-class JSONArrayContext
-  def initialize(array=nil)
-    @array = array || Array.new
-  end
-  
-  def to_s
-    @array.to_json
-  end
-  
-  def <<(val)
-    @array << val
-  end
-  
-  def value(val)
-    @array << val
-  end
-  
-  def object(&block)
-    hash = Hash.new
-    block.call(JSONObjectContext.new(hash))
-    @array << hash
-  end
-  
-  def array(&block)
-    arr = Array.new
-    block.call(JSONArrayContext.new(arr))
-    @array << arr
-  end
-end
-
-module Utils
-  def self.json(*ps, &block)
-    c = JSONObjectContext.new
-    ps.each do |p|
-      p.to_json(c)
-    end
-    block.call(c) if block
-    return c.to_s
-  end
-end
