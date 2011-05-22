@@ -4,16 +4,23 @@ require 'json/add/core'
 require 'config'
 require 'utils/xml'
 
+class Array
+  def to_rota_json(level=1, parent=true, *k)
+    self.collect { |k| JSON::Serializable::ToJsonProxy.new(k, level, parent) }.to_json(*k)
+  end
+end
+
 module JSON
   module Serializable
     class ToJsonProxy
-      def initialize(target, level)
+      def initialize(target, level, parent=false)
         @target = target
         @level = level
+        @parent = parent
       end
       
       def to_json(*k)
-        @target.to_json(@level, false, *k)
+        @target.to_json(@level, @parent, *k)
       end
     end
     
