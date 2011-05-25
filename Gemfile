@@ -13,6 +13,7 @@ gem "json"
 gem "mechanize"
 gem "nokogiri"
 gem "sinatra"
+gem "sinatra-namespace"
 # Optional dependencies
 gem "ri_cal", :group => :api
 gem "builder", :group => :api
