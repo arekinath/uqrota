@@ -36,7 +36,7 @@ class LoginService < Sinatra::Base
   
   post '/login.json' do
     content_type :json
-    user = Rota::User.get(params[:email])
+    user = Rota::User.first(:email => params[:email])
     if not user.nil? and user.is_password?(params[:password])
       @s.logged_in = true
       @s.user = user
@@ -54,6 +54,13 @@ class LoginService < Sinatra::Base
     else
       { :logged_in => false }.to_json
     end
+  end
+  
+  put '/user/me.json' do
+    content_type :json
+    user = Rota::User.create(params[:user])
+    user.save
+    return user.to_json
   end
   
   post '/logout.json' do
@@ -91,16 +98,172 @@ class UserService < Sinatra::Base
     @s.save
   end
   
-  get '/planbox/mine.json' do
+  get '/user/me.json' do
     content_type :json
-    Utils.json do |j|
-      j.planboxes(:array) do |a|
-        @s.user.plan_boxes.each do |pb|
-          a.object do |obj|
-            pb.to_json(obj)
-          end
-        end
-      end
+    @s.user.to_json
+  end
+  
+  post '/user/me.json' do
+    content_type :json
+    @s.user.update(params[:user])
+    @s.user.to_json
+  end
+  
+  get '/planbox/:id.json' do
+    content_type :json
+    planbox = Rota::PlanBox.get(params[:id])
+    if planbox.nil?
+      404
+    elsif @s.user != planbox.user
+      403
+    else
+      planbox.to_json
     end
+  end
+  
+  post '/planbox/:id.json' do
+    content_type :json
+    planbox = Rota::PlanBox.get(params[:id])
+    if planbox.nil?
+      404
+    elsif @s.user != planbox.user
+      403
+    else
+      planbox.update(params[:planbox])
+      planbox.to_json
+    end
+  end
+  
+  put '/user/me/planboxes/new.json' do
+    content_type :json
+    planbox = Rota::PlanBox.create(params[:planbox])
+    planbox.user = @s.user
+    planbox.save
+    planbox.to_json
+  end
+  
+  get '/timetable/:id.json' do
+    content_type :json
+    tt = Rota::Timetable.get(params[:id])
+    if tt.nil?
+      404
+    elsif tt.plan_box.user != @s.user
+      403
+    else
+      tt.to_json
+    end
+  end
+  
+  post '/timetable/:id.json' do
+    content_type :json
+    tt = Rota::Timetable.get(params[:id])
+    if tt.nil?
+      404
+    elsif tt.plan_box.user != @s.user
+      403
+    else
+      tt.update(params[:timetable])
+      tt.to_json
+    end
+  end
+  
+  put '/planbox/:pbid/timetables/new.json' do
+    content_type :json
+    pb = Rota::PlanBox.get(params[:pbid])
+    if pb.nil?
+      404
+    elsif pb.user != @s.user
+      403
+    else
+      tt = Rota::Timetable.create(params[:timetable])
+      tt.plan_box = pb
+      tt.save
+      tt.to_json
+    end
+  end
+  
+  get '/course_selection/:id.json' do
+    content_type :json
+    cs = Rota::CourseSelection.get(params[:id])
+    if cs.nil?
+      404
+    elsif cs.timetable.plan_box.user != @s.user
+      403
+    else
+      cs.to_json
+    end
+  end
+  
+  post '/course_selection/:id.json' do
+    content_type :json
+    x = Rota::CourseSelection.get(params[:id])
+    if x.nil?
+      404
+    elsif x.timetable.plan_box.user != @s.user
+      403
+    else
+      x.update(params[:course_selection])
+      x.to_json
+    end
+  end
+  
+  put '/timetable/:ttid/course_selections/new.json' do
+    content_type :json
+  end
+  
+  get '/series_selection/:id.json' do
+    content_type :json
+    ss = Rota::SeriesSelection.get(params[:id])
+    if ss.nil?
+      404
+    elsif ss.course_selection.timetable.plan_box.user != @s.user
+      403
+    else
+      ss.to_json
+    end
+  end
+  
+  post '/series_selection/:id.json' do
+    content_type :json
+    x = Rota::SeriesSelection.get(params[:id])
+    if x.nil?
+      404
+    elsif x.timetable.plan_box.user != @s.user
+      403
+    else
+      x.update(params[:course_selection])
+      x.to_json
+    end
+  end
+  
+  put '/course_selection/:csid/series_selections/new.json' do
+    content_type :json
+  end
+  
+  get '/group_selection/:id.json' do
+    content_type :json
+    gs = Rota::GroupSelection.get(params[:id])
+    if gs.nil?
+      404
+    elsif gs.course_selection.timetable.plan_box.user != @s.user
+      403
+    else
+      gs.to_json
+    end
+  end
+  
+  post '/group_selection/:id.json' do
+    content_type :json
+  end
+  
+  put '/course_selection/:csid/group_selections/new.json' do
+    content_type :json
+    
+  end
+  
+  get '/share/:hashcode.json' do
+    content_type :json
+    sh = Rota::SharingLink.get(params[:hashcode])
+    sh.to_json
   end
 end
