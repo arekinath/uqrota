@@ -25,6 +25,8 @@ class LoginService < Sinatra::Base
       response.headers['Access-Control-Allow-Origin'] = request.env['ORIGIN']
     elsif request.env['HTTP_ORIGIN'] =~ /^https:\/\/www\.uqrota\.net\/(.+)$/
       response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN']
+    else
+      response.headers['Access-Control-Allow-Origin'] = "https://www.uqrota.net"
     end
   end
   
