@@ -14,7 +14,8 @@ module Rota
   class User
     include DataMapper::Resource
     
-    property :email, String, :key => true, :length => 128
+    property :id, Serial
+    property :email, String, :length => 128, :unique => true, :index => true
     property :password_sha1, String
     property :mobile, String
     
@@ -26,8 +27,7 @@ module Rota
     has n, :notifications
     
     include JSON::Serializable
-    json_key :email
-    json_attrs :mobile, :last_login, :admin
+    json_attrs :email, :mobile, :last_login, :admin
     json_children :plan_boxes, :notifications
     
     def password=(pw)
