@@ -209,6 +209,17 @@ class UserService < Sinatra::Base
   
   put '/timetable/:ttid/course_selections/new.json' do
     content_type :json
+    tt = Rota::Timetable.get(params[:ttid])
+    if tt.nil?
+      404
+    elsif tt.plan_box.user != @s.user
+      403
+    else
+      x = Rota::CourseSelection.create(params[:course_selection])
+      x.timetable = tt
+      x.save
+      x.to_json
+    end
   end
   
   get '/series_selection/:id.json' do
