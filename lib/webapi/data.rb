@@ -14,10 +14,6 @@ end
 Sinatra::Delegator.delegate :http_options 
 
 class DataService < Sinatra::Base
-  mime_type :xml, 'text/xml'
-  mime_type :json, 'text/javascript'
-  mime_type :ical, 'text/calendar'
-  mime_type :plain, 'text/plain'
   
   before do
     response.headers['Access-Control-Allow-Origin'] = '*'
@@ -74,6 +70,13 @@ class DataService < Sinatra::Base
     plan = Rota::Plan.get(id.to_i)
     return 404 if plan.nil?
     plan.to_json
+  end
+  
+  get '/coursegroup/:id.json' do |id|
+    content_type :json
+    cg = Rota::CourseGroup.get(id.to_i)
+    return 404 if cg.nil?
+    cg.to_json
   end
   
   get '/semesters.xml' do

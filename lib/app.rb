@@ -10,6 +10,11 @@ class RotaApp < Sinatra::Base
   
   set :sessions, true
   
+  mime_type :xml, 'text/xml'
+  mime_type :json, 'application/json'
+  mime_type :ical, 'text/calendar'
+  mime_type :plain, 'text/plain'
+  
   use DataService
   use LoginService
   use UserService
