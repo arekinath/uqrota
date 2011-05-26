@@ -4,6 +4,7 @@ require 'rota/model'
 require 'utils/ical'
 require 'utils/xml'
 require 'rota/temporal'
+require 'webapi/common'
 require 'sinatra/base'
 
 class << Sinatra::Base

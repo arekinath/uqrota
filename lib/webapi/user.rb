@@ -2,6 +2,7 @@ require 'rubygems'
 require 'config'
 require 'rota/model'
 require 'rota/temporal'
+require 'webapi/common'
 require 'sinatra/base'
 require 'sinatra/namespace'
 
@@ -56,9 +57,21 @@ class LoginService < Sinatra::Base
     
     put '/me.json' do
       content_type :json
-      user = Rota::User.create(params[:user])
-      user.save
-      return user.to_json
+      begin
+        user = Rota::User.create(params[:user])
+        user.save
+        @s.user = user
+        return { :success => true, :user => user, :secret => @s.secret }.to_json
+      rescue DataMapper::SaveFailureError => boom
+        return { :success => false }
+      end
+    end
+    
+    get '/count.json' do
+      content_type :json
+      fc = FindConditions.new(params[:with])
+      cnt = User.all(fc).size
+      return { :count => cnt }.to_json
     end
     
     get '/me.json' do
