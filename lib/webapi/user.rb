@@ -98,6 +98,25 @@ class LoginService < Sinatra::Base
       @s.user = nil
       { :success => true }.to_json
     end
+    
+    get '/:id.json' do |id|
+      content_type :json
+      if @s.logged_in and @s.user.id == id.to_i
+        @s.user.to_json
+      else
+        404
+      end
+    end
+    
+    post '/:id.json' do |id|
+      content_type :json
+      if @s.logged_in and @s.user.id == id.to_i
+        @s.user.update(params[:user])
+        @s.user.to_json
+      else
+        404
+      end
+    end
   end
 end
 
@@ -139,9 +158,9 @@ class UserService < Sinatra::Base
       end
     end
     
-    post '/planbox/:id.json' do
+    post '/planbox/:id.json' do |id|
       content_type :json
-      planbox = Rota::PlanBox.get(params[:id])
+      planbox = Rota::PlanBox.get(id)
       if planbox.nil?
         404
       elsif @s.user != planbox.user
@@ -152,11 +171,27 @@ class UserService < Sinatra::Base
       end
     end
     
-    put '/user/me/planboxes/new.json' do
+    delete '/planbox/:id.json' do |id|
       content_type :json
-      planbox = Rota::PlanBox.create(params[:planbox])
-      planbox.user = @s.user
-      planbox.save
+      planbox = Rota::PlanBox.get(id)
+      if planbox.nil?
+        404
+      elsif @s.user != planbox.user
+        403
+      else
+        planbox.destroy!
+        { :success => true }.to_json
+      end
+    end
+    
+    put '/planboxes/new.json' do
+      content_type :json
+      
+      hash = params[:planbox]
+      hash['semester'] = Rota::Semester.get(hash[:semester][:id])
+      hash['user'] = @s.user
+      
+      planbox = Rota::PlanBox.create(hash)
       planbox.to_json
     end
     
@@ -182,6 +217,19 @@ class UserService < Sinatra::Base
       else
         tt.update(params[:timetable])
         tt.to_json
+      end
+    end
+    
+    delete '/timetable/:id.json' do |id|
+      content_type :json
+      tt = Rota::Timetable.get(id)
+      if tt.nil?
+        404
+      elsif @s.user != tt.plan_box.user
+        403
+      else
+        tt.destroy!
+        { :success => true }.to_json
       end
     end
     

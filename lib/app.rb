@@ -9,6 +9,7 @@ class RotaApp < Sinatra::Base
   set :root, Rota::RootDir
   
   set :sessions, true
+  set :method_override, true
   
   mime_type :xml, 'text/xml'
   mime_type :json, 'application/json'
