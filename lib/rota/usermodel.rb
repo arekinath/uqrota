@@ -57,7 +57,7 @@ module Rota
     
     belongs_to :user
     belongs_to :semester
-    has n, :courses
+    has n, :courses, :through => Resource
     has n, :timetables
     
     include JSON::Serializable
@@ -72,8 +72,8 @@ module Rota
     property :id, Serial
     
     belongs_to :plan_box
-    has n, :course_selections
-    has n, :sharing_links
+    has n, :course_selections, :required => false
+    has n, :sharing_links, :required => false
     
     include JSON::Serializable
     json_children :course_selections
@@ -140,7 +140,7 @@ module Rota
   end
   
   class Course
-    has n, :plan_boxes, :required => false
+    has n, :plan_boxes, :through => Resource
   end
   
   class SharingLink
