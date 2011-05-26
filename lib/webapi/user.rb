@@ -69,9 +69,8 @@ class LoginService < Sinatra::Base
     
     get '/count.json' do
       content_type :json
-      fc = FindConditions.new(params[:with])
-      cnt = User.all(fc).size
-      return { :count => cnt }.to_json
+      fc = FindConditions.new(Rota::User, params[:with])
+      { :count => fc.results.size }.to_json
     end
     
     get '/me.json' do

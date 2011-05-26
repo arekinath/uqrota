@@ -47,9 +47,8 @@ class DataService < Sinatra::Base
   
   get '/programs/find.json' do
     content_type :json
-    fc = FindConditions.new(params[:with])
-    pgms = Rota::Program.all(fc)
-    return pgms.to_a.to_rota_json(0)
+    fc = FindConditions.new(Rota::Program, params[:with])
+    fc.to_json
   end
   
   get '/program/:id.xml' do |id|
@@ -159,6 +158,12 @@ class DataService < Sinatra::Base
     sem = Rota::Semester.get(id.to_i)
     return 404 if sem.nil?
     sem.offerings.to_a.to_rota_json
+  end
+  
+  get '/courses/find.json' do
+    content_type :json
+    fc = FindConditions.new(Rota::Course, params[:with])
+    fc.to_json
   end
   
   get '/course/:code.xml' do |code|
