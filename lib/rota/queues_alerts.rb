@@ -70,36 +70,7 @@ ENDMSG
   class Offering
     def change_alert
       ChangelogEntry.make("updater", "#{self.course.code} added/removed course series")
-      
-      tts = Array.new
-      self.series.each { |s| s.groups.each { |g| g.timetables.each { |tt| tts << tt if not tts.include?(tt) } } }
-      
-      tts.each do |t|
-        srs = "#{self.course.code}"
-        if t.alert_sms
-          sms = QueuedSMS.new
-          sms.recipient = t.owner.mobile
-          sms.text = "UqRota: #{srs} has added/removed entire course series. Pls check site for details"
-          sms.save
-        end
-        
-        if t.alert_email
-          em = QueuedEmail.new
-          em.recipient = t.owner.email
-          em.subject = "UqRota alteration alert: #{srs}"
-          em.body = <<END
-Hi, this is the UqRota timetable monitor.
-
-You have an alert set on the course #{srs}, which has been triggered. This means
-that an entire course series has changed (eg, the course didn't have tutorials before but 
-does now.) Please check the site for further details about the alteration.
-
-Regards,
-UqRota
-END
-          em.save
-        end
-      end
+   
     end
   end
   
@@ -107,68 +78,14 @@ END
     def change_alert
       ChangelogEntry.make("updater", "#{self.offering.course.code} #{self.name} added/removed groups")
       
-      tts = Array.new
-      self.groups.each { |g| g.timetables.each { |tt| tts << tt if not tts.include?(tt) } }
       
-      tts.each do |t|
-        srs = "#{self.offering.course.code} #{self.name}"
-        if t.alert_sms
-          sms = QueuedSMS.new
-          sms.recipient = t.owner.mobile
-          sms.text = "UqRota: #{srs} has added/removed groups. Pls check site for details"
-          sms.save
-        end
-        
-        if t.alert_email
-          em = QueuedEmail.new
-          em.recipient = t.owner.email
-          em.subject = "UqRota alteration alert: #{srs}"
-          em.body = <<END
-Hi, this is the UqRota timetable monitor.
-
-You have an alert set on the timetable series #{srs}, which has been triggered. This
-means that groups (like T3 and T4 in a tutorial series) have been added or removed.
-Please check the site for further details about the alteration.
-
-Regards,
-UqRota
-END
-          em.save
-        end
-      end
     end
   end
   
   class TimetableGroup
     def change_alert
-      code = self.series.offering.course.code
       ChangelogEntry.make("updater", "#{code} #{self.series.name}#{self.name} changed details")
       
-      self.timetables.each do |t|
-        grp = "#{code} #{self.series.name}#{self.name}"
-        if t.alert_sms
-          sms = QueuedSMS.new
-          sms.recipient = t.owner.mobile
-          sms.text = "UqRota: #{grp} has changed in sinet. Pls check site for details"
-          sms.save
-        end
-        
-        if t.alert_email
-          em = QueuedEmail.new
-          em.recipient = t.owner.email
-          em.subject = "UqRota alteration alert: #{grp}"
-          em.body = <<END
-Hi, this is the UqRota timetable monitor.
-
-You have an alert set on the timetable group #{grp}, which has been triggered. Please 
-check the site for further details about the alteration.
-
-Regards,
-UqRota
-END
-          em.save
-        end
-      end
     end
   end
 end
