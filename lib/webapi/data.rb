@@ -63,7 +63,7 @@ class DataService < Sinatra::Base
     content_type :json
     prog = Rota::Program.get(id.to_i)
     return 404 if prog.nil?
-    proj.to_json
+    prog.to_json
   end
   
   get '/plan/:id.xml' do |id|

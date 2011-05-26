@@ -7,7 +7,9 @@ class FindConditions < Hash
       parts = k.split(".")
       sym = parts[0].to_sym
       kk = sym
-      kk = kk.send(parts[1].to_sym) if parts[1]
+      parts.slice(1,parts.size).each do |p| 
+        kk = kk.send(p.to_sym)
+      end
       self[kk] = v
     end
   end
