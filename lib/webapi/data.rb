@@ -45,6 +45,13 @@ class DataService < Sinatra::Base
     Rota::Programs.all.to_a.to_rota_json
   end
   
+  get '/programs/find.json' do
+    content_type :json
+    fc = FindConditions.new(params[:with])
+    pgms = Rota::Program.all(fc)
+    return pgms.to_a.to_rota_json(0)
+  end
+  
   get '/program/:id.xml' do |id|
     content_type :xml
     prog = Rota::Program.get(id.to_i)
