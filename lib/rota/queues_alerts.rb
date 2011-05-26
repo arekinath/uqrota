@@ -84,6 +84,7 @@ ENDMSG
   
   class TimetableGroup
     def change_alert
+      code = self.series.offering.course.code
       ChangelogEntry.make("updater", "#{code} #{self.series.name}#{self.name} changed details")
       
     end
