@@ -58,6 +58,10 @@ module Rota
     has n, :plan_boxes, :constraint => :destroy
     has n, :timetables, :constraint => :destroy
     
+    def owned_by?(user)
+      self.user == user
+    end
+    
     include JSON::Serializable
     json_attrs :visible
     json_parents :user, :semester
@@ -72,6 +76,10 @@ module Rota
     
     belongs_to :user_semester
     has n, :course_selections, :constraint => :destroy
+    
+    def owned_by?(user)
+      self.user_semester.user == user
+    end
     
     include JSON::Serializable
     json_attrs :title
@@ -89,6 +97,10 @@ module Rota
     
     has n, :group_selections, :constraint => :destroy
     has n, :series_selections, :constraint => :destroy
+    
+    def owned_by?(user)
+      self.user_semester.user == user
+    end
     
     def course_selections
       self.user_semester.plan_boxes.course_selections
@@ -110,6 +122,10 @@ module Rota
     has n, :group_selections, :constraint => :destroy
     has n, :series_selections, :constraint => :destroy
     
+    def owned_by?(user)
+      self.plan_box.user_semester.user == user
+    end
+    
     include JSON::Serializable
     json_attrs :course
     json_children :group_selections, :series_selections
@@ -130,6 +146,10 @@ module Rota
     alias :series= :timetable_series=
     belongs_to :selected_group, 'TimetableGroup'
     
+    def owned_by?(user)
+      self.timetable.user_semester.user == user
+    end
+    
     include JSON::Serializable
     json_attrs :visible, :series, :selected_group
     json_parents :course_selection, :timetable
@@ -147,6 +167,10 @@ module Rota
     belongs_to :timetable_group
     alias :group :timetable_group
     alias :group= :timetable_group=
+    
+    def owned_by?(user)
+      self.timetable.user_semester.user == user
+    end
     
     include JSON::Serializable
     json_attrs :visible, :group
@@ -189,6 +213,10 @@ module Rota
     json_attrs :uses_total, :uses_left, :allows_feed, :allows_copy, :expiry, :active
     json_children :logs
     json_parents :timetable
+    
+    def owned_by?(user)
+      self.timetable.user_semester.user == user
+    end
     
     def initialize(*k)
       super(*k)
@@ -252,6 +280,10 @@ module Rota
     
     belongs_to :sharing_link
     
+    def owned_by?(user)
+      self.sharing_link.user == user
+    end
+    
     include JSON::Serializable
     json_attrs :ip, :when, :email
     json_parent :sharing_link
@@ -268,6 +300,10 @@ module Rota
     property :login_count, Integer
     
     belongs_to :user
+    
+    def owned_by?(user)
+      self.user == user
+    end
     
     include JSON::Serializable
     json_attrs :when, :target, :description, :login_count
