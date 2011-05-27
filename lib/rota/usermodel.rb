@@ -23,12 +23,13 @@ module Rota
     
     property :admin, Boolean, :default => false
     
-    has n, :plan_boxes
-    has n, :notifications
+    has n, :user_semesters, :constraint => :destroy
+    has n, :plan_boxes, :through => :user_semesters
+    has n, :notifications, :constraint => :destroy
     
     include JSON::Serializable
     json_attrs :email, :mobile, :last_login, :admin
-    json_children :plan_boxes, :notifications
+    json_children :user_semesters, :notifications
     
     def password=(pw)
       self.password_sha1 = User.hash_password(self.email + pw)
@@ -38,15 +39,31 @@ module Rota
       self.password_sha1 == User.hash_password(self.email + pw)
     end
     
-    def sharing_links
-      self.plan_boxes.timetables.sharing_links
-    end
-    
     # Hash a password for storage and comparison
     # Currently just uses sha-1
     def User.hash_password(pw)
       Digest::SHA1.hexdigest(pw)
     end
+  end
+  
+  class UserSemester
+    include DataMapper::Resource
+    
+    property :id, Serial
+    property :visible, Boolean
+    
+    belongs_to :user
+    belongs_to :semester
+    
+    has n, :plan_boxes, :constraint => :destroy
+    has n, :timetables, :constraint => :destroy
+    
+    has n, :course_selections, :through => :plan_boxes
+    
+    include JSON::Serializable
+    json_attrs :visible
+    json_parents :user, :semester
+    json_children :plan_boxes, :timetables
   end
   
   class PlanBox
@@ -55,15 +72,13 @@ module Rota
     property :id, Serial
     property :title, String, :length => 128
     
-    belongs_to :user
-    belongs_to :semester
-    has n, :courses, :through => Resource
-    has n, :timetables
+    belongs_to :user_semester
+    has n, :course_selections, :constraint => :destroy
     
     include JSON::Serializable
     json_attrs :title
-    json_children :courses, :timetables
-    json_parents :user, :semester
+    json_children :course_selections
+    json_parents :user_semester
   end
   
   class Timetable
@@ -71,31 +86,33 @@ module Rota
     
     property :id, Serial
     
-    belongs_to :plan_box
-    has n, :course_selections, :required => false
-    has n, :sharing_links, :required => false
+    belongs_to :user_semester
+    has n, :course_selections, :through => :user_semesters
+    has n, :sharing_links, :constraint => :destroy
+    
+    has n, :group_selections, :constraint => :destroy
+    has n, :series_selections, :constraint => :destroy
     
     include JSON::Serializable
-    json_children :course_selections
-    json_parents :plan_box
+    json_children :course_selections, :group_selections, :series_selections
+    json_parents :user_semester
   end
   
   class CourseSelection
     include DataMapper::Resource
     
     property :id, Serial
-    property :visible, Boolean, :default => true
     
     belongs_to :course
-    belongs_to :timetable
+    belongs_to :plan_box
     
-    has n, :group_selections
-    has n, :series_selections
+    has n, :group_selections, :constraint => :destroy
+    has n, :series_selections, :constraint => :destroy
     
     include JSON::Serializable
-    json_attrs :visible, :course
+    json_attrs :course
     json_children :group_selections, :series_selections
-    json_parents :timetable
+    json_parents :plan_box
   end
   
   class SeriesSelection
@@ -105,13 +122,16 @@ module Rota
     property :visible, Boolean, :default => true
     
     belongs_to :course_selection
+    belongs_to :timetable
+    
     belongs_to :timetable_series
     alias :series :timetable_series
+    alias :series= :timetable_series=
     belongs_to :selected_group, 'TimetableGroup'
     
     include JSON::Serializable
     json_attrs :visible, :series, :selected_group
-    json_parents :course_selection
+    json_parents :course_selection, :timetable
   end
   
   class GroupSelection
@@ -121,26 +141,28 @@ module Rota
     property :visible, Boolean, :default => true
     
     belongs_to :course_selection
+    belongs_to :timetable
+    
     belongs_to :timetable_group
     alias :group :timetable_group
     alias :group= :timetable_group=
     
     include JSON::Serializable
     json_attrs :visible, :group
-    json_parents :course_selection
+    json_parents :course_selection, :timetable
   end
   
   class TimetableSeries
-    has n, :series_selections, :required => false
+    has n, :series_selections, :constraint => :protect
   end
   
   class TimetableGroup
-    has n, :series_selections, :required => false
-    has n, :group_selections, :required => false
+    has n, :series_selections, :constraint => :protect
+    has n, :group_selections, :constraint => :protect
   end
   
   class Course
-    has n, :plan_boxes, :through => Resource
+    has n, :course_selections, :constraint => :protect
   end
   
   class SharingLink
@@ -158,7 +180,7 @@ module Rota
     
     property :active, Boolean
     
-    has n, :logs, 'SharingLog'
+    has n, :logs, 'SharingLog', :constraint => :destroy
     belongs_to :timetable
     
     include JSON::Serializable
