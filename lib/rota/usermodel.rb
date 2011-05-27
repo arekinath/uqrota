@@ -58,8 +58,6 @@ module Rota
     has n, :plan_boxes, :constraint => :destroy
     has n, :timetables, :constraint => :destroy
     
-    has n, :course_selections, :through => :plan_boxes
-    
     include JSON::Serializable
     json_attrs :visible
     json_parents :user, :semester
@@ -87,11 +85,14 @@ module Rota
     property :id, Serial
     
     belongs_to :user_semester
-    has n, :course_selections, :through => :user_semesters
     has n, :sharing_links, :constraint => :destroy
     
     has n, :group_selections, :constraint => :destroy
     has n, :series_selections, :constraint => :destroy
+    
+    def course_selections
+      self.user_semester.plan_boxes.course_selections
+    end
     
     include JSON::Serializable
     json_children :course_selections, :group_selections, :series_selections
