@@ -166,7 +166,28 @@ class UserService < Sinatra::Base
       elsif @s.user != planbox.user
         403
       else
-        planbox.update(params[:planbox])
+        hash = params[:planbox]
+        hash['user'] = @s.user
+        planbox.update(hash)
+        planbox.to_json
+      end
+    end
+    
+    post '/planbox/:id/courses.json' do |id|
+      content_type :json
+      planbox = Rota::PlanBox.get(id)
+      if planbox.nil?
+        404
+      elsif @s.user != planbox.user
+        403
+      else
+        csl = params[:courses] || []
+        courses = []
+        csl.each do |k,v|
+          courses << Rota::Course.get(v['code'])
+        end
+        planbox.courses = courses
+        planbox.save
         planbox.to_json
       end
     end
@@ -179,6 +200,7 @@ class UserService < Sinatra::Base
       elsif @s.user != planbox.user
         403
       else
+        planbox.courses = []
         planbox.destroy!
         { :success => true }.to_json
       end
@@ -210,12 +232,16 @@ class UserService < Sinatra::Base
     post '/timetable/:id.json' do
       content_type :json
       tt = Rota::Timetable.get(params[:id])
+      
+      hash = params[:timetable]
+      hash['plan_box'] = Rota::PlanBox.get(hash[:plan_box][:id])
+      
       if tt.nil?
         404
-      elsif tt.plan_box.user != @s.user
+      elsif tt.plan_box.user != @s.user or hash['plan_box'].nil? or hash['plan_box'].user != @s.user
         403
       else
-        tt.update(params[:timetable])
+        tt.update(hash)
         tt.to_json
       end
     end
@@ -233,18 +259,19 @@ class UserService < Sinatra::Base
       end
     end
     
-    put '/planbox/:pbid/timetables/new.json' do
+    put '/timetables/new.json' do
       content_type :json
-      pb = Rota::PlanBox.get(params[:pbid])
-      if pb.nil?
+      
+      hash = params[:timetable]
+      hash['plan_box'] = Rota::PlanBox.get(hash[:plan_box][:id])
+      
+      if hash['plan_box'].nil?
         404
-      elsif pb.user != @s.user
+      elsif hash['plan_box'].user != @s.user
         403
       else
-        tt = Rota::Timetable.create(params[:timetable])
-        tt.plan_box = pb
-        tt.save
-        tt.to_json
+        timetable = Rota::Timetable.create(hash)
+        timetable.to_json
       end
     end
     
@@ -262,29 +289,49 @@ class UserService < Sinatra::Base
     
     post '/course_selection/:id.json' do
       content_type :json
-      x = Rota::CourseSelection.get(params[:id])
-      if x.nil?
+      cs = Rota::CourseSelection.get(params[:id])
+      
+      hash = params[:courseselection]
+      hash['timetable'] = Rota::Timetable.get(hash[:timetable][:id])
+      
+      if cs.nil?
         404
-      elsif x.timetable.plan_box.user != @s.user
+      elsif cs.timetable.plan_box.user != @s.user
+        403
+      elsif hash['timetable'].nil? or hash['timetable'].plan_box.user != @s.user
         403
       else
-        x.update(params[:course_selection])
-        x.to_json
+        cs.update(hash)
+        cs.to_json
       end
     end
     
-    put '/timetable/:ttid/course_selections/new.json' do
+    delete '/course_selection/:id.json' do |id|
       content_type :json
-      tt = Rota::Timetable.get(params[:ttid])
-      if tt.nil?
+      cs = Rota::CourseSelection.get(id)
+      if cs.nil?
         404
-      elsif tt.plan_box.user != @s.user
+      elsif @s.user != cs.timetable.plan_box.user
         403
       else
-        x = Rota::CourseSelection.create(params[:course_selection])
-        x.timetable = tt
-        x.save
-        x.to_json
+        cs.destroy!
+        { :success => true }.to_json
+      end
+    end
+    
+    put '/course_selections/new.json' do
+      content_type :json
+      
+      hash = params[:courseselection]
+      hash['timetable'] = Rota::Timetable.get(hash[:timetable][:id])
+      
+      if hash['timetable'].nil?
+        404
+      elsif hash['timetable'].plan_box.user != @s.user
+        403
+      else
+        cs = Rota::CourseSelection.create(hash)
+        cs.to_json
       end
     end
     
@@ -302,19 +349,50 @@ class UserService < Sinatra::Base
     
     post '/series_selection/:id.json' do
       content_type :json
-      x = Rota::SeriesSelection.get(params[:id])
-      if x.nil?
+      ss = Rota::SeriesSelection.get(params[:id])
+      
+      hash = params[:seriesselection]
+      hash['course_selection'] = Rota::CourseSelection.get(hash[:course_selection][:id])
+      
+      if ss.nil?
         404
-      elsif x.timetable.plan_box.user != @s.user
+      elsif ss.course_selection.timetable.plan_box.user != @s.user
+        403
+      elsif hash['course_selection'].nil? or hash['course_selection'].timetable.plan_box.user != @s.user
         403
       else
-        x.update(params[:course_selection])
-        x.to_json
+        ss.update(hash)
+        ss.to_json
       end
     end
     
-    put '/course_selection/:csid/series_selections/new.json' do
+    delete '/series_selection/:id.json' do |id|
       content_type :json
+      ss = Rota::SeriesSelection.get(id)
+      if ss.nil?
+        404
+      elsif @s.user != ss.course_selection.timetable.plan_box.user
+        403
+      else
+        ss.destroy!
+        { :success => true }.to_json
+      end
+    end
+    
+    put '/series_selections/new.json' do
+      content_type :json
+      
+      hash = params[:seriesselection]
+      hash['course_selection'] = Rota::CourseSelection.get(hash[:course_selection][:id])
+      
+      if hash['course_selection'].nil?
+        404
+      elsif hash['course_selection'].timetable.plan_box.user != @s.user
+        403
+      else
+        o = Rota::SeriesSelection.create(hash)
+        o.to_json
+      end
     end
     
     get '/group_selection/:id.json' do
@@ -331,11 +409,50 @@ class UserService < Sinatra::Base
     
     post '/group_selection/:id.json' do
       content_type :json
+      gs = Rota::GroupSelection.get(params[:id])
+      
+      hash = params[:groupselection]
+      hash['course_selection'] = Rota::CourseSelection.get(hash[:course_selection][:id])
+      
+      if gs.nil?
+        404
+      elsif gs.course_selection.timetable.plan_box.user != @s.user
+        403
+      elsif hash['course_selection'].nil? or hash['course_selection'].timetable.plan_box.user != @s.user
+        403
+      else
+        gs.update(hash)
+        gs.to_json
+      end
     end
     
-    put '/course_selection/:csid/group_selections/new.json' do
+    delete '/group_selection/:id.json' do |id|
+      content_type :json
+      gs = Rota::GroupSelection.get(id)
+      if gs.nil?
+        404
+      elsif @s.user != gs.course_selection.timetable.plan_box.user
+        403
+      else
+        gs.destroy!
+        { :success => true }.to_json
+      end
+    end
+    
+    put '/group_selections/new.json' do
       content_type :json
       
+      hash = params[:groupselection]
+      hash['course_selection'] = Rota::CourseSelection.get(hash[:course_selection][:id])
+      
+      if hash['course_selection'].nil?
+        404
+      elsif hash['course_selection'].timetable.plan_box.user != @s.user
+        403
+      else
+        o = Rota::GroupSelection.create(hash)
+        o.to_json
+      end
     end
     
     get '/share/:hashcode.json' do
