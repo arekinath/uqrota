@@ -39,6 +39,10 @@ module Rota
       self.password_sha1 == User.hash_password(self.email + pw)
     end
     
+    def owned_by?(user)
+      self == user
+    end
+    
     # Hash a password for storage and comparison
     # Currently just uses sha-1
     def User.hash_password(pw)

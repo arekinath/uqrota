@@ -209,18 +209,18 @@ class UserService < Sinatra::Base
       end
     end
     
-    put '/:resource/new.json' do |resource, id|
+    put '/:resource/new.json' do |resource|
       content_type :json
       rcl = rmap[resource]
       hash = params[resource]
       rcl.relationships.each do |r|
         if r.min > 0
-          keys = r.parent_model.collect { |k| k.name }
+          keys = r.parent_model.key.collect { |k| k.name }
           keyvals = {}
           keys.each { |k| keyvals[k] = hash[r.name][k] }
           
           obj = r.parent_model.first(keyvals)
-          if obj.nil? or (obj.responds_to?(:owned_by?) and not obj.owned_by?(@s.user))
+          if obj.nil? or (obj.respond_to?(:owned_by?) and not obj.owned_by?(@s.user))
             return 403
           end
           
