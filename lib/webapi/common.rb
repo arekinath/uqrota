@@ -24,10 +24,10 @@ class FindConditions
     
     results = @klass.all(conds)
     if and_child
-      results = results & do_query_level(child)
+      results = results & do_query_level(and_child)
     end
     if or_child
-      results = results + do_query_level(child)
+      results = results + do_query_level(or_child)
     end
     
     return results
