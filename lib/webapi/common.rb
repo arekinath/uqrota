@@ -23,11 +23,11 @@ class FindConditions
     end
     
     results = @klass.all(conds)
-    if or_child
-      results = results + do_query_level(child)
-    end
     if and_child
       results = results & do_query_level(child)
+    end
+    if or_child
+      results = results + do_query_level(child)
     end
     
     return results
