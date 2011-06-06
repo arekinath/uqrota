@@ -9,21 +9,28 @@ class FindConditions
   end
   
   def do_query_level(hash)
-    child = nil
+    or_child = nil
+    and_child = nil
     conds = {}
     hash.each do |k,v|
       if k == 'or'
-        child = v
+        or_child = v
+      elsif k == 'and'
+        and_child = v
       else
         kv_pair(conds, k, v)
       end
     end
     
-    if child
-      return @klass.all(conds) + do_query_level(child)
-    else
-      return @klass.all(conds)
+    results = @klass.all(conds)
+    if or_child
+      results = results + do_query_level(child)
     end
+    if and_child
+      results = results & do_query_level(child)
+    end
+    
+    return results
   end
   
   def kv_pair(hash, k, v)
