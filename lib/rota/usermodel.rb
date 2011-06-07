@@ -24,7 +24,7 @@ module Rota
     
     property :admin, Boolean, :default => false
     
-    has n, :user_semesters, :constraint => :destroy
+    has n, :user_semesters, :constraint => :destroy, :order => [:id.asc]
     has n, :plan_boxes, :through => :user_semesters
     has n, :notifications, :constraint => :destroy
     
@@ -61,8 +61,8 @@ module Rota
     belongs_to :user
     belongs_to :semester
     
-    has n, :plan_boxes, :constraint => :destroy
-    has n, :timetables, :constraint => :destroy
+    has n, :plan_boxes, :constraint => :destroy, :order => [:id.asc]
+    has n, :timetables, :constraint => :destroy, :order => [:id.asc]
     
     def owned_by?(user)
       self.user == user
@@ -81,7 +81,7 @@ module Rota
     property :title, String, :length => 128
     
     belongs_to :user_semester
-    has n, :course_selections, :constraint => :destroy
+    has n, :course_selections, :constraint => :destroy, :order => [:id.asc]
     
     def owned_by?(user)
       self.user_semester.user == user
