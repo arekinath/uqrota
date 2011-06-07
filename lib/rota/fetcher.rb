@@ -403,7 +403,7 @@ module Rota
         Setting.set('current_semester', csem[0])
         sems.each do |opt|
           sem_id, sem_name = opt
-          if (sem_id.to_i > 0 and (sem_id.to_i - csem[0].to_i).abs < 100)
+          if sem_id.to_i > 0
             sem = Semester.get(sem_id.to_i)
             if sem.nil?
               sem = Semester.new
