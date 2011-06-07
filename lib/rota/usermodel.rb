@@ -122,7 +122,7 @@ module Rota
     
     property :id, Serial
     
-    belongs_to :course
+    belongs_to :offering
     belongs_to :plan_box
     
     has n, :group_selections, :constraint => :destroy
@@ -133,7 +133,7 @@ module Rota
     end
     
     include JSON::Serializable
-    json_attrs :course
+    json_attrs :offering
     json_children :group_selections, :series_selections
     json_parents :plan_box
   end
