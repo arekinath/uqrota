@@ -17,6 +17,7 @@ module Rota
     property :id, Serial
     property :email, String, :length => 128, :unique => true, :index => true
     property :password_sha1, String
+    property :salt, String
     property :mobile, String
     
     property :last_login, DateTime
@@ -32,21 +33,22 @@ module Rota
     json_children :user_semesters, :notifications
     
     def password=(pw)
-      self.password_sha1 = User.hash_password(self.email + pw)
+      self.salt = Digest::SHA1.hexdigest(File.new("/dev/urandom").read(500)).slice(0,10)
+      4096.times {
+        pw = Digest::SHA1.hexdigest(self.salt + Digest::SHA1.hexdigest(pw))
+      }
+      self.password_sha1 = pw
     end
     
     def is_password?(pw)
-      self.password_sha1 == User.hash_password(self.email + pw)
+      4096.times {
+        pw = Digest::SHA1.hexdigest(self.salt + Digest::SHA1.hexdigest(pw))
+      }
+      self.password_sha1 == pw
     end
     
     def owned_by?(user)
       self == user
-    end
-    
-    # Hash a password for storage and comparison
-    # Currently just uses sha-1
-    def User.hash_password(pw)
-      Digest::SHA1.hexdigest(pw)
     end
   end
   
