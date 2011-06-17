@@ -50,11 +50,11 @@ module Rota
     end
     
     def pred
-      Semester.first(:id.lt => self.id, :order => [:id.desc])
+      Semester.first(:id.lt => self.id, :name.like => '%Semester%', :order => [:id.desc])
     end
     
     def succ
-      Semester.first(:id.gt => self.id, :order => [:id.asc])
+      Semester.first(:id.gt => self.id, :name.like => '%Semester%', :order => [:id.asc])
     end
     
     def is_current?

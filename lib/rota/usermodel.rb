@@ -24,7 +24,7 @@ module Rota
     
     property :admin, Boolean, :default => false
     
-    has n, :user_semesters, :constraint => :destroy, :order => [:id.asc]
+    has n, :user_semesters, :constraint => :destroy, :order => [:semester_id.asc]
     has n, :plan_boxes, :through => :user_semesters
     has n, :notifications, :constraint => :destroy
     
@@ -57,6 +57,8 @@ module Rota
     
     property :id, Serial
     property :visible, Boolean
+    # bit of a hack to get ordering to work properly
+    property :semester_id, Integer
     
     belongs_to :user
     belongs_to :semester
