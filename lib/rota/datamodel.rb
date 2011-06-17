@@ -43,10 +43,18 @@ module Rota
     has n, :offerings, :constraint => :destroy
     
     include JSON::Serializable
-    json :attrs => [:name, :start_week, :finish_week, :midsem_week, {:current => :is_current?}]
+    json :attrs => [:name, :start_week, :finish_week, :midsem_week, {:current => :is_current?}, :pred, :succ]
     
     def Semester.current
       Semester.get(Setting.get('current_semester').value)
+    end
+    
+    def pred
+      Semester.first(:id.lt => self.id, :order => [:id.desc])
+    end
+    
+    def succ
+      Semester.first(:id.gt => self.id, :order => [:id.asc])
     end
     
     def is_current?
