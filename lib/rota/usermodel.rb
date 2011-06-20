@@ -25,6 +25,8 @@ module Rota
     property :admin, Boolean, :default => false
     
     has n, :user_semesters, :constraint => :destroy, :order => [:semester_id.asc]
+    alias :old_usems :user_semesters
+    
     has n, :plan_boxes, :through => :user_semesters
     has n, :notifications, :constraint => :destroy
     
@@ -38,6 +40,10 @@ module Rota
         pw = Digest::SHA1.hexdigest(self.salt + Digest::SHA1.hexdigest(pw))
       }
       self.password_sha1 = pw
+    end
+    
+    def user_semesters
+      self.old_usems.sort { |us| us.semester.id }
     end
     
     def is_password?(pw)
@@ -57,8 +63,6 @@ module Rota
     
     property :id, Serial
     property :visible, Boolean
-    # bit of a hack to get ordering to work properly
-    property :semester_id, Integer
     
     belongs_to :user
     belongs_to :semester
