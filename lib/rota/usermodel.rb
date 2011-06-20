@@ -24,7 +24,7 @@ module Rota
     
     property :admin, Boolean, :default => false
     
-    has n, :user_semesters, :constraint => :destroy, :order => [:semester_id.asc]
+    has n, :user_semesters, :constraint => :destroy
     alias :old_usems :user_semesters
     
     has n, :plan_boxes, :through => :user_semesters
