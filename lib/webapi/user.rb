@@ -55,15 +55,31 @@ class LoginService < Sinatra::Base
       end
     end
     
+    get '/timetoken.json' do
+      content_type :json
+      t = Time.now
+      tdata = Marshal.dump(t)
+      hash = Digest::SHA1.hexdigest(Digest::SHA1.hexdigest(tdata) + Rota::Config['antispam']['secret'])
+      return { :tdata => tdata, :hash => hash }.to_json
+    end
+    
     put '/me.json' do
       content_type :json
+      
+      # check timestamp
+      t = Marshal.load(params[:tdata])
+      hash = Digest::SHA1.hexdigest(Digest::SHA1.hexdigest(params[:tdata]) + Rota::Config['antispam']['secret'])
+      unless params[:hash] == hash and (Time.now - t) > Rota::Config['antispam']['delay']
+        return 403
+      end
+      
       begin
         user = Rota::User.create(params[:user])
         user.save
         @s.user = user
         return { :success => true, :user => user, :secret => @s.secret }.to_json
       rescue DataMapper::SaveFailureError => boom
-        return { :success => false }
+        return { :success => false }.to_json
       end
     end
     

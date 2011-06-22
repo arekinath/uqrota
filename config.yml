@@ -2,7 +2,12 @@
 
 database:
   uri: mysql://uqrota:uqrota@localhost/uqrota
-  
+
+# used by the anti-spam signup mechanism, which enforces a time delay 
+antispam:
+  delay: 2.0				# enforced delay, in seconds
+  secret: abc123			# secret used to prevent fake timestamps
+
 updater:
   timeout: 30
   useragent: Mozilla/5.0 (Windows; U; Windows NT 5.1; es-ES; rv:1.9.2.10) Gecko/20100914 Firefox/3.6.10 (.NET CLR 3.5.30729)
