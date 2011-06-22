@@ -6,6 +6,9 @@ require 'webapi/common'
 require 'sinatra/base'
 require 'sinatra/namespace'
 
+require 'digest/sha1'
+require 'base64'
+
 class << Sinatra::Base
   def http_options path,opts={}, &blk
     route 'OPTIONS', path, opts, &blk
@@ -60,24 +63,25 @@ class LoginService < Sinatra::Base
       t = Time.now
       tdata = Marshal.dump(t)
       hash = Digest::SHA1.hexdigest(Digest::SHA1.hexdigest(tdata) + Rota::Config['antispam']['secret'])
-      return { :tdata => tdata, :hash => hash }.to_json
+      return { :tdata => Base64.urlsafe_encode64(tdata), :hash => hash }.to_json
     end
     
     put '/me.json' do
       content_type :json
       
       # check timestamp
-      t = Marshal.load(params[:tdata])
-      hash = Digest::SHA1.hexdigest(Digest::SHA1.hexdigest(params[:tdata]) + Rota::Config['antispam']['secret'])
-      unless params[:hash] == hash and (Time.now - t) > Rota::Config['antispam']['delay']
+      tdata = Base64.urlsafe_decode64(params[:tdata])
+      t = Marshal.load(tdata)
+      hash = Digest::SHA1.hexdigest(Digest::SHA1.hexdigest(tdata) + Rota::Config['antispam']['secret'])
+      unless params[:hash] == hash and (Time.now - t) > Rota::Config['antispam']['delay'].to_f
         return 403
       end
       
       begin
         user = Rota::User.create(params[:user])
-        user.save
         @s.user = user
-        return { :success => true, :user => user, :secret => @s.secret }.to_json
+        @s.logged_in = true
+        return { :success => true, :secret => @s.secret }.to_json
       rescue DataMapper::SaveFailureError => boom
         return { :success => false }.to_json
       end

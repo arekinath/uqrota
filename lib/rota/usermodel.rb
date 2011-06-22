@@ -27,6 +27,8 @@ module Rota
     has n, :user_semesters, :constraint => :destroy
     alias :old_usems :user_semesters
     
+    has n, :api_sessions, 'APISession', :constraint => :destroy
+    
     has n, :plan_boxes, :through => :user_semesters
     has n, :notifications, :constraint => :destroy
     
