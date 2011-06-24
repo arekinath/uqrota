@@ -111,6 +111,7 @@ module Rota
     
     has n, :group_selections, :constraint => :destroy
     has n, :series_selections, :constraint => :destroy
+    has n, :hidden_sessions, :constraint => :destroy
     
     def owned_by?(user)
       self.user_semester.user == user
