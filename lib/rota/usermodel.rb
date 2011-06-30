@@ -45,7 +45,7 @@ module Rota
     end
     
     def user_semesters
-      self.old_usems.sort { |us| us.semester.id }
+      self.old_usems.sort_by { |us| us.semester.id }
     end
     
     def is_password?(pw)
