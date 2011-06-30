@@ -133,6 +133,7 @@ module Rota
     
     belongs_to :course
     belongs_to :plan_box
+    belongs_to :offering, :required => false
     
     has n, :group_selections, :constraint => :destroy
     has n, :series_selections, :constraint => :destroy
@@ -143,7 +144,7 @@ module Rota
     end
     
     include JSON::Serializable
-    json_attrs :course
+    json_attrs :course, :offering
     json_children :group_selections, :series_selections, :hidden_sessions
     json_parents :plan_box
   end
@@ -212,6 +213,10 @@ module Rota
     include JSON::Serializable
     json_attrs :visible, :group
     json_parents :course_selection, :timetable
+  end
+  
+  class Offering
+    has n, :course_selections, :constraint => :protect
   end
   
   class TimetableSeries
