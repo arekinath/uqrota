@@ -1,0 +1,36 @@
+digraph usermodel {
+    rankdir=TB;
+    User -> SharingLink ;
+    User -> UserSemester ;
+    User -> APISession ;
+    User -> Notification ;
+    
+    Semester [shape=box];
+    Semester -> UserSemester ;
+    UserSemester -> PlanBox ;
+    UserSemester -> Timetable ;
+    
+    PlanBox -> CourseSelection ;
+    Timetable -> SharingLink ;
+    Timetable -> SeriesSelection;
+    Timetable -> HiddenSession;
+    
+    Course [shape=box];
+    Offering [shape=box];
+    CourseSelection -> Course;
+    CourseSelection -> Offering;
+    CourseSelection -> SeriesSelection;
+    CourseSelection -> HiddenSession;
+    
+    TimetableSeries [shape=box];
+    TimetableGroup [shape=box];
+    TimetableSession [shape=box];
+    
+    SeriesSelection -> TimetableSeries;
+    SeriesSelection -> TimetableGroup;
+    
+    HiddenSession -> TimetableSession;
+    
+    SharingLink -> SharingLog;
+    
+}
