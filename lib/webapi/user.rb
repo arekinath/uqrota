@@ -172,7 +172,10 @@ class UserService < Sinatra::Base
             'usersemester' => Rota::UserSemester,
             'courseselection' => Rota::CourseSelection,
             'seriesselection' => Rota::SeriesSelection,
-            'groupselection' => Rota::GroupSelection
+            'hiddensession' => Rota::HiddenSession,
+            'sharinglink' => Rota::SharingLink,
+            'notification' => Rota::Notification,
+            'sharinglog' => Rota::SharingLog
             }
     
     get '/:resource/:id.json' do |resource, id|
