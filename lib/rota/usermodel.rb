@@ -111,7 +111,6 @@ module Rota
     belongs_to :user_semester
     has n, :sharing_links, :constraint => :destroy
     
-    has n, :group_selections, :constraint => :destroy
     has n, :series_selections, :constraint => :destroy
     has n, :hidden_sessions, :constraint => :destroy
     
@@ -137,7 +136,6 @@ module Rota
     belongs_to :plan_box
     belongs_to :offering, :required => false
     
-    has n, :group_selections, :constraint => :destroy
     has n, :series_selections, :constraint => :destroy
     has n, :hidden_sessions, :constraint => :destroy
     
@@ -192,28 +190,6 @@ module Rota
     
     include JSON::Serializable
     json_attrs :session
-    json_parents :course_selection, :timetable
-  end
-  
-  class GroupSelection
-    include DataMapper::Resource
-    
-    property :id, Serial
-    property :visible, Boolean, :default => true
-    
-    belongs_to :course_selection
-    belongs_to :timetable
-    
-    belongs_to :timetable_group
-    alias :group :timetable_group
-    alias :group= :timetable_group=
-    
-    def owned_by?(user)
-      self.timetable.user_semester.user == user
-    end
-    
-    include JSON::Serializable
-    json_attrs :visible, :group
     json_parents :course_selection, :timetable
   end
   
