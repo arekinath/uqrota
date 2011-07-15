@@ -24,6 +24,8 @@ module Rota
     
     property :admin, Boolean, :default => false
     
+    has n, :sharing_links, :through => Resource, :constraint => :skip
+    
     has n, :user_semesters, :constraint => :destroy
     alias :old_usems :user_semesters
     
@@ -250,6 +252,8 @@ module Rota
     property :expiry, DateTime
     
     property :active, Boolean
+    
+    has n, :users, :constraint => :skip, :through => Resource
     
     has n, :logs, 'SharingLog', :constraint => :destroy
     belongs_to :timetable
