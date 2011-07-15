@@ -123,7 +123,7 @@ module Rota
     end
     
     include JSON::Serializable
-    json_children :course_selections, :group_selections, :series_selections
+    json_children :course_selections, :series_selections
     json_parents :user_semester
   end
   
@@ -145,7 +145,7 @@ module Rota
     
     include JSON::Serializable
     json_attrs :course, :offering
-    json_children :group_selections, :series_selections, :hidden_sessions
+    json_children :series_selections, :hidden_sessions
     json_parents :plan_box
   end
   
@@ -203,7 +203,6 @@ module Rota
   
   class TimetableGroup
     has n, :series_selections, :constraint => :protect
-    has n, :group_selections, :constraint => :protect
   end
   
   class TimetableSession
