@@ -18,39 +18,59 @@ module Rota
   
   class Program
     def Program.fetch_list
-      Fetcher::standard_fetch('http://uq.edu.au/study/browse.html?level=ugpg')
-    end
-    
-    def Program.parse_list(page)
-      page = page.parser
-      DataMapper::Transaction.new.commit do
-        page.css("td.title").each do |tdt|
-          tdt.css("a").each do |link|
-            if link['href'] and link['href'].include?("acad_prog")
-              link['href'].scan(/acad_prog=([0-9]+)([^0-9]|$)/).each do |prog_id, cl|
-                p = Program.get(prog_id.to_i)
-                if p.nil?
-                  p = Program.new
-                  p['id'] = prog_id.to_i
-                  p.name = link.text.chomp.strip
-                  p.save
-                else
-                  p.name = link.text.chomp.strip
-                  p.save
-                end
-              end
+      if @@list_client.nil?
+        @@list_client = Savon::Client.new do
+          wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_SEARCH_REQUEST.1.wsdl"
+        end
+      end
+      
+      builder = Builder::XmlMarkup.new
+
+      response = c.request :uq_cp_search_request do
+        soap.body = builder.MsgData do |m|
+          m.Transaction do |t|
+            t.parameters(:class => 'R') do |p|
+              p.LEVEL('UGRD')
+              p.SEARCHTYPE('PROGRAM')
             end
           end
         end
       end
+      
+      h = response.to_hash
+      return response, h[h.keys.first][:msg_data][:transaction][:search_results]
+    end
+    
+    def Program.parse_list(h)
+      DataMapper::Transaction.new.commit do
+      end
     end
     
     def fetch_courses
-      Fetcher::standard_fetch("http://uq.edu.au/study/program_list.html?acad_prog=#{self['id']}")
+      if @@prog_client.nil?
+        @@prog_client = Savon::Client.new do
+          wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_DISPLAY_PRGLIST_REQUEST.1.wsdl"
+        end
+      end
+      
+      builder = Builder::XmlMarkup.new
+
+      response = c.request :uq_cp_display_prglist_request do
+        soap.body = builder.MsgData do |m|
+          m.Transaction do |t|
+            t.ProgramList(:class => 'R') do |p|
+              p.YEAR('2011')
+              p.CODE('2001')
+            end
+          end
+        end
+      end
+      
+      h = response.to_hash
+      return response, (h[h.keys.first][:msg_data][:transaction][:program_list_detail])
     end
     
-    def parse_courses(page)
-      page = page.parser
+    def parse_courses(h)
       DataMapper::Transaction.new.commit do
         if self.plans.size > 0
           if self.plans.course_groups.size > 0
@@ -59,65 +79,7 @@ module Rota
           self.plans.each { |pl| pl.destroy! }
         end
         
-        plandivs = page.css("div.planlist")
-        if plandivs.size < 1
-          plandivs = page.css("div#program-course-list")
-        end
         
-        plandivs.each do |plandiv|
-          plan = Plan.new
-          
-          plan.name = plandiv.css('h1')[0].text.chomp.strip
-          firstp = plandiv.css('p')[0]
-          if not firstp.nil?
-            txt = firstp.text.chomp.strip.gsub(/\n|\r/,' ').slice(0,50)
-            plan.name += " (#{txt})" if txt.downcase.include?('major')
-          end
-          firsth2 = plandiv.css('h2')[0]
-          if not firsth2.nil?
-            txt = firsth2.text.chomp.strip.gsub(/\n|\r/,' ').slice(0,50)
-            plan.name += " (#{txt})" if txt.downcase.include?('major')
-          end
-          
-          plan.program = self
-          plan.save
-          
-          plandiv.css('div.courselist').each do |listdiv|
-            grp = CourseGroup.new
-            grp.plan = plan
-            
-            text = ""
-            listdiv.css('h1').each do |t|
-              text << t.text.chomp.strip
-            end
-            listdiv.css('h2').each do |t|
-              text << t.text.chomp.strip
-            end
-            listdiv.css('p').each do |t|
-              text << t.text.chomp.strip
-            end
-            
-            grp.text = text
-            grp.save
-            
-            listdiv.css('tr').each do |tr|
-              cells = tr.css('td')
-              unless cells[0].css('a')[0].nil?
-                code = cells[0].css('a')[0].text.chomp.strip
-                
-                cse = Course.get(code)
-                if cse.nil?
-                  cse = Course.new
-                  cse.code = code
-                end
-                cse.course_groups << grp if not cse.course_groups.include?(grp)
-                cse.name = cells[2].text.chomp.strip
-                cse.units = cells[1].text.chomp.strip.to_i
-                cse.save
-              end
-            end
-          end
-        end
       end
     end
   end
