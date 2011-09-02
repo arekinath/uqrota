@@ -175,6 +175,7 @@ module Rota
     
     property :id, Serial
     property :profile_id, Integer
+    property :sinet_class, Integer
     property :location, String
     property :current, Boolean
     property :mode, String

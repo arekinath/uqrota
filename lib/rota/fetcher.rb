@@ -8,6 +8,11 @@ require 'net/https'
 require 'mechanize'
 require 'json'
 require 'date'
+require 'savon'
+
+Savon.configure do |config|
+  config.log = false
+end
 
 module Rota
   
@@ -152,114 +157,86 @@ module Rota
   
   class Course
     def fetch_details
-      Fetcher::standard_fetch("http://uq.edu.au/study/course.html?course_code=#{self.code}")
+      if @@client.nil?
+        @@client = Savon::Client.new do
+          wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_DISPLAY_COURSE_REQUEST.1.wsdl"
+        end
+      end
+      
+      builder = Builder::XmlMarkup.new
+
+      response = c.request :uq_cp_display_course_request do
+        soap.body = builder.MsgData do |m|
+          m.Transaction do |t|
+            t.Course(:class => 'R') do |p|
+              p.CODE(self.code)
+              p.YEAR(Time.now.year.to_s)
+            end
+          end
+        end
+      end
+      
+      h = response.to_hash
+      return response, h[h.keys.first][:msg_data][:transaction][:course_details]
     end
     
-    def parse_details(page)
-      page = page.parser
+    def parse_details(h)
       DataMapper::Transaction.new.commit do
+        self.name = h[:title]
+        self.units = h[:units]
+        self.description = h[:summary]
+        self.coordinator = h[:coordinator]
+        self.faculty = h[:offerings][:offering][-1][:faculty_value]
+        self.school = h[:offerings][:offering][-1][:school][:school_value]
+        
         self.prereqs.each { |p| p.destroy! }
-        
-        sems = []
-        t = page.to_s
-        
-        check_sem = proc do |semname, sym|
-          if t =~ /#{semname}, #{Time.now.year}/ or t =~ /#{semname}, #{Time.now.year-1}/
-            sems << sym
+        prs = ""
+        prs += h[:prerequisite] if h[:prerequisite].is_a?(String)
+        prs += h[:recommendedprerequisite] if h[:recommendedprerequisite].is_a?(String)
+        prereqs = pts.scan(/[A-Z]{4}[0-9]{4}/)
+        prereqs.each do |code|
+          cse = Course.get(code)
+          if cse.nil?
+            cse = Course.new
+            cse.code = code
+            cse.save
           end
+          p = Prereqship.new
+          p.dependent = self
+          p.prereq = cse
+          p.save
         end
-        
-        check_sem.call('Semester 1', 1)
-        check_sem.call('Semester 2', 2)
-        check_sem.call('Summer Semester', :s)
-        
-        t = t.gsub("\n","")
-        m = /<h1>Course description<\/h1>(.*)<h1>Archived offerings<\/h1>/.match(t)
-        self.description = m[1] if m
-        self.semesters_offered = sems.inspect
-        self.save
-        
-        page.css('div#summary').each do |sumdiv|
-          headings = Array.new
-          sumdiv.css('h2').each do |h2|
-            atp = h2.css('a.tooltip')[0]
-            if atp.nil?
-              headings << h2.text.chomp.strip
-            else
-              headings << atp.text.chomp.strip
-            end
-          end
-          
-          data = Hash.new
-          i = 0
-          sumdiv.css('p').each do |p|
-            data[headings[i]] = p.text.chomp.strip
-            i += 1
-          end
-          
-          # now extract the prereq data
-          t = ""
-          data.each do |k,v|
-            t += v.to_s if k.downcase.include?('prerequisite') or k.downcase.include?('recommended')
-          end
-          prereqs = t.scan(/[A-Z]{4}[0-9]{4}/)
-          prereqs.each do |code|
-            cse = Course.get(code)
-            if cse.nil?
-              cse = Course.new
-              cse.code = code
-              cse.save
-            end
-            
-            p = Prereqship.new
-            p.dependent = self
-            p.prereq = cse
-            p.save
-          end
-          
-          # and some other headings
-          self.coordinator = data['Course coordinator'].to_s
-          self.faculty = data['Faculty'].to_s
-          self.school = data['School'].to_s
-          self.save
-        end
-        
       end
     end
     
-    def parse_offerings(page)
-      page = page.parser
+    def parse_offerings(h)
       DataMapper::Transaction.new.commit do
-        page.css('table.offerings').each do |otbl|
-          otbl.css('tr').each do |tr|
-            cells = tr.css('td')
-            if (not cells[0].text.include?('Course offerings'))
-              # not the header row
-              pid = -1
-              if cells[3].at_css('a')
-                link = cells[3].at_css('a').attribute('href').value
-                pid = link.scan(/profileId=([0-9]+)/).first.first
-              end
-              
-              sem = Semester.first(:name => cells[0].text.chomp.strip)
-              if not sem.nil?
-                p = Offering.first(:profile_id => pid)
-                if p.nil? or pid == -1
-                  p = self.offerings.first(:semester => sem)
-                  if p.nil?
-                    p = Offering.new
-                  end
-                end
-                p.course = self
-                p.profile_id = pid
-                p.semester = sem
-                p.location = cells[1].text.chomp.strip
-                p.current = true if tr['class'] and tr['class'].include?('current')
-                p.mode = cells[2].text.chomp.strip
-                p.save
+        first = true
+        h[:offerings][:offering].each do |off|
+          sem = Semester.get(off[:commencement][:semester])
+          camp = Campus.get(off[:campus_key])
+          if camp.nil?
+            camp = Campus.create(:code => off[:campus_key], :name => off[:campus_value])
+            camp.save
+          end
+          if not sem.nil?
+            p = Offering.first(:sinet_class => off[:class].to_i)
+            if p.nil?
+              p = self.offerings.first(:semester => sem, :campus => camp)
+              if p.nil?
+                p = Offering.new
               end
             end
+            p.course = self
+            p.sinet_class = off[:class].to_i
+            p.semester = sem
+            p.campus = camp
+            p.location = off[:location_value]
+            p.current = first
+            p.mode = off[:mode_value]
+            p.save
           end
+          first = false
         end
       end
     end
