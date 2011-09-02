@@ -95,6 +95,18 @@ module Rota
     end
   end
   
+  class Campus
+    include DataMapper::Resource
+    
+    property :code, String, :length => 16, :key => true
+    property :name, String, :length => 64
+    
+    has n, :offerings, :constraint => :destroy
+    
+    include JSON::Serializable
+    json :attrs => [:code, :name]
+  end
+  
   class Program
     include DataMapper::Resource
     
@@ -170,6 +182,7 @@ module Rota
     property :last_update, DateTime
     
     belongs_to :semester
+    belongs_to :campus
     has n, :timetable_series, :model => 'Rota::TimetableSeries', :constraint => :destroy
     alias :series :timetable_series
     
@@ -177,7 +190,7 @@ module Rota
     has n, :assessment_tasks, :constraint => :destroy
     
     include JSON::Serializable
-    json_attrs :location, :mode, :last_update
+    json_attrs :location, :mode, :last_update, :campus
     json_children :series, :assessment_tasks
     json_parents :course, :semester
   end

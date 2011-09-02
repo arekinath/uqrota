@@ -116,6 +116,17 @@ module Rota
       end
     end
     
+    class CampusListTask < SafeRunTask
+      def safe_run
+        agent, page = Campus.fetch_list
+        Campus.parse_list(page)
+      end
+      
+      def to_s
+        "CampusList"
+      end
+    end
+    
     class SemesterTask < SafeRunTask
       def initialize(sem)
         @semester = sem

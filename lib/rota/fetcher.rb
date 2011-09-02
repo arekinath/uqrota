@@ -325,6 +325,29 @@ module Rota
     end
   end
   
+  class Campus
+    def Campus.fetch_list
+      Fetcher::SInet::tt_page
+    end
+    
+    def Campus.parse_list(page)
+      DataMapper::Transaction.new.commit do
+        form = page.form('win0')
+        src_sel = form.field_with(:name => 'UQ_DRV_CRSE_SRC_DESCRSHORT')
+        src_sel.options.each do |opt|
+          code, name = [opt.value, opt.text]
+          if code.size > 1
+            camp = Campus.get(code)
+            if camp.nil?
+              camp = Campus.create(:code => code, :name => name)
+              camp.save
+            end
+          end
+        end
+      end
+    end
+  end
+  
   class Offering
     def fetch_profile
       Fetcher::standard_fetch("http://www.courses.uq.edu.au/student_section_loader.php?section=print_display&profileId=#{self.profile_id}")
