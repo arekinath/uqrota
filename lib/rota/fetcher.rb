@@ -305,27 +305,16 @@ module Rota
     
     def Semester.parse_list(page)
       DataMapper::Transaction.new.commit do
-        code = page.parser.to_s
-        code.gsub!("\n","")
-        code.gsub!(/&[a-z]*;/,"&")
-        m = /var optionsArray_win0 = ([^;]*);/.match(code)
-        json = m[1].gsub("\t","").gsub("'",'"')
-        options = JSON.parse(json)
-        sems = options[0]
+        form = page.form('win0')
+        strm_sel = form.field_with(:id => 'UQ_DRV_TT_GUEST_STRM')
         
-        m = /var selectElemOptions_win0 = ([^;]*);/.match(code)
-        json = m[1].gsub("\t","").gsub("'",'"')
-        selects = JSON.parse(json)
-        idx = selects.find { |d| d[0] == 'UQ_DRV_TT_GUEST_STRM' }[2][0]
-        csem = sems[idx.to_i]
-        
-        Setting.set('current_semester', csem[0])
-        sems.each do |opt|
-          sem_id, sem_name = opt
-          if sem_id.to_i > 0
-            sem = Semester.get(sem_id.to_i)
+        Setting.set('current_semester', strm_sel.value)
+        strm_sel.options.each do |opt|
+          sem_id, sem_name = [opt.value, opt.text]
+          if (sem_id.to_i > 0 and (sem_id.to_i - strm_sel.value.to_i).abs < 100)
+            sem = Model::Semester.get(sem_id.to_i)
             if sem.nil?
-              sem = Semester.new
+              sem = Model::Semester.new
               sem['id'] = sem_id.to_i
               sem.name = sem_name.gsub("#{sem_id} - ", '')
               sem.save
@@ -642,8 +631,7 @@ module Rota
       def self.tt_page
         agent,page = login_page
         
-        page = agent.click(page.link_with(:text => "Course & Timetable Info"))
-        page = agent.click(page.iframe('TargetContent'))
+        page = agent.get('https://test.sinet.uq.edu.au/psc/ps/EMPLOYEE/HRMS/c/UQMY_GUEST.UQMY_GUEST_TTBLE.GBL?FolderPath=PORTAL_ROOT_')
         
         return [agent, page]
       end
@@ -654,9 +642,9 @@ module Rota
         agent.keep_alive = false
         agent.read_timeout = Timeout
         
-        page = agent.get('https://www.sinet.uq.edu.au/')
-        page = agent.get('https://www.sinet.uq.edu.au/psp/ps/?cmd=login')
-        page = agent.get('https://www.sinet.uq.edu.au/psp/ps/EMPLOYEE/HRMS/h/?tab=UQ_GENERAL')
+        page = agent.get('https://test.sinet.uq.edu.au/')
+        page = agent.get('https://test.sinet.uq.edu.au/psp/ps/?cmd=login')
+        page = agent.get('https://test.sinet.uq.edu.au/psp/ps/EMPLOYEE/HRMS/h/?tab=UQ_GENERAL')
         
         return [agent, page]
       end
