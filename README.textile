@@ -13,6 +13,10 @@ h2. Information that Rota tracks
 
 See also "hierarchy of Rota objects":/arekinath/uqrota/wiki/Object-Hierarchy
 
+h2. Mailing list
+
+For people interested in UQrota development and discussion, subscribe to the mailing list: https://cooperi.net/cgi-bin/mailman/listinfo/uqrota
+
 h2. API
 
 More information in the "wiki":/arekinath/uqrota/wiki/
