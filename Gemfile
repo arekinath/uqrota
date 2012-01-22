@@ -13,6 +13,7 @@ gem "dm-yaml-adapter", :group => :unittest
 gem "dm-transactions"
 gem "json"
 gem "mechanize"
+gem "savon"
 gem "nokogiri"
 gem "sinatra"
 gem "sinatra-namespace"

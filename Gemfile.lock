@@ -4,6 +4,8 @@ GEM
     Ascii85 (1.0.1)
     BlueCloth (1.0.1)
     addressable (2.2.6)
+    akami (1.0.0)
+      gyoku (>= 0.4.0)
     bacon (1.1.0)
     bitly (0.6.1)
       crack (>= 0.1.4)
@@ -43,8 +45,12 @@ GEM
       multipart-post (~> 1.1.0)
       rack (>= 1.1.0, < 2)
     gem_plugin (0.2.3)
+    gyoku (0.4.4)
+      builder (>= 2.1.2)
     httparty (0.7.8)
       crack (= 0.1.8)
+    httpi (0.9.5)
+      rack
     json (1.5.3)
     mechanize (2.0.1)
       net-http-digest_auth (~> 1.1, >= 1.1.1)
@@ -59,6 +65,7 @@ GEM
     net-http-digest_auth (1.1.1)
     net-http-persistent (1.8)
     nokogiri (1.5.0)
+    nori (1.0.2)
     oauth2 (0.4.1)
       faraday (~> 0.6.1)
       multi_json (>= 0.0.5)
@@ -77,6 +84,14 @@ GEM
     rack-test (0.6.0)
       rack (>= 1.0)
     ri_cal (0.8.8)
+    savon (0.9.7)
+      akami (~> 1.0)
+      builder (>= 2.1.2)
+      gyoku (>= 0.4.0)
+      httpi (~> 0.9)
+      nokogiri (>= 1.4.0)
+      nori (~> 1.0)
+      wasabi (~> 2.0)
     sinatra (1.2.6)
       rack (~> 1.1)
       tilt (>= 1.2.2, < 2.0)
@@ -87,6 +102,8 @@ GEM
     treetop (1.4.9)
       polyglot (>= 0.3.1)
     ttfunk (1.0.1)
+    wasabi (2.0.0)
+      nokogiri (>= 1.4.0)
     webrobots (0.0.10)
       nokogiri (>= 1.4.4)
 
@@ -114,6 +131,7 @@ DEPENDENCIES
   prawn
   rack-test
   ri_cal
+  savon
   sinatra
   sinatra-namespace
   sprockets
