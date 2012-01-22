@@ -15,8 +15,11 @@ Savon.configure do |config|
 end
 
 module Rota
-  
+
   class Program
+    @@list_client = nil
+    @@prog_client = nil
+
     def Program.fetch_list
       if @@list_client.nil?
         @@list_client = Savon::Client.new do
@@ -26,7 +29,7 @@ module Rota
       
       builder = Builder::XmlMarkup.new
 
-      response = c.request :uq_cp_search_request do
+      response = @@list_client.request :uq_cp_search_request do
         soap.body = builder.MsgData do |m|
           m.Transaction do |t|
             t.parameters(:class => 'R') do |p|
@@ -55,7 +58,7 @@ module Rota
       
       builder = Builder::XmlMarkup.new
 
-      response = c.request :uq_cp_display_prglist_request do
+      response = @@prog_client.request :uq_cp_display_prglist_request do
         soap.body = builder.MsgData do |m|
           m.Transaction do |t|
             t.ProgramList(:class => 'R') do |p|
@@ -118,6 +121,8 @@ module Rota
   end
   
   class Course
+    @@client = nil
+
     def fetch_details
       if @@client.nil?
         @@client = Savon::Client.new do
@@ -127,7 +132,7 @@ module Rota
       
       builder = Builder::XmlMarkup.new
 
-      response = c.request :uq_cp_display_course_request do
+      response = @@client.request :uq_cp_display_course_request do
         soap.body = builder.MsgData do |m|
           m.Transaction do |t|
             t.Course(:class => 'R') do |p|
@@ -593,7 +598,7 @@ module Rota
       def self.tt_page
         agent,page = login_page
         
-        page = agent.get('https://test.sinet.uq.edu.au/psc/ps/EMPLOYEE/HRMS/c/UQMY_GUEST.UQMY_GUEST_TTBLE.GBL?FolderPath=PORTAL_ROOT_')
+        page = agent.get('https://www.sinet.uq.edu.au/psc/ps/EMPLOYEE/HRMS/c/UQMY_GUEST.UQMY_GUEST_TTBLE.GBL?FolderPath=PORTAL_ROOT_')
         
         return [agent, page]
       end
@@ -604,9 +609,9 @@ module Rota
         agent.keep_alive = false
         agent.read_timeout = Timeout
         
-        page = agent.get('https://test.sinet.uq.edu.au/')
-        page = agent.get('https://test.sinet.uq.edu.au/psp/ps/?cmd=login')
-        page = agent.get('https://test.sinet.uq.edu.au/psp/ps/EMPLOYEE/HRMS/h/?tab=UQ_GENERAL')
+        page = agent.get('https://www.sinet.uq.edu.au/')
+        page = agent.get('https://www.sinet.uq.edu.au/psp/ps/?cmd=login')
+        page = agent.get('https://www.sinet.uq.edu.au/psp/ps/EMPLOYEE/HRMS/h/?tab=UQ_GENERAL')
         
         return [agent, page]
       end
