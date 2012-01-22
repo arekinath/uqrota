@@ -24,9 +24,9 @@ GEM
       dm-core (~> 1.1.0)
     dm-migrations (1.1.0)
       dm-core (~> 1.1.0)
-    dm-mysql-adapter (1.1.0)
+    dm-postgres-adapter (1.1.0)
       dm-do-adapter (~> 1.1.0)
-      do_mysql (~> 0.10.2)
+      do_postgres (~> 0.10.2)
     dm-sqlite-adapter (1.1.0)
       dm-do-adapter (~> 1.1.0)
       do_sqlite3 (~> 0.10.2)
@@ -34,23 +34,23 @@ GEM
       dm-core (~> 1.1.0)
     dm-yaml-adapter (1.1.0)
       dm-core (~> 1.1.0)
-    do_mysql (0.10.6)
+    do_postgres (0.10.6)
       data_objects (= 0.10.6)
     do_sqlite3 (0.10.6)
       data_objects (= 0.10.6)
     faraday (0.6.1)
       addressable (~> 2.2.4)
       multipart-post (~> 1.1.0)
-      rack (< 2, >= 1.1.0)
+      rack (>= 1.1.0, < 2)
     gem_plugin (0.2.3)
     httparty (0.7.8)
       crack (= 0.1.8)
     json (1.5.3)
     mechanize (2.0.1)
-      net-http-digest_auth (>= 1.1.1, ~> 1.1)
+      net-http-digest_auth (~> 1.1, >= 1.1.1)
       net-http-persistent (~> 1.8)
       nokogiri (~> 1.4)
-      webrobots (>= 0.0.9, ~> 0.0)
+      webrobots (~> 0.0, >= 0.0.9)
     mongrel (1.2.0.pre2)
       daemons (~> 1.0.10)
       gem_plugin (~> 0.2.3)
@@ -102,7 +102,7 @@ DEPENDENCIES
   dm-constraints
   dm-core
   dm-migrations
-  dm-mysql-adapter
+  dm-postgres-adapter
   dm-sqlite-adapter
   dm-transactions
   dm-yaml-adapter

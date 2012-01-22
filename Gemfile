@@ -6,7 +6,7 @@ gem "daemons"
 gem "dm-constraints"
 gem "dm-core"
 gem "dm-migrations"
-gem "dm-mysql-adapter", :group => :production
+gem "dm-postgres-adapter", :group => :production
 gem "mongrel", "~>1.2.0.pre2", :group => :production
 gem "dm-sqlite-adapter", :group => :unittest
 gem "dm-yaml-adapter", :group => :unittest
