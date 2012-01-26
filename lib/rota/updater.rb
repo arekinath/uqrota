@@ -75,7 +75,7 @@ module Rota
           retry
         rescue Exception => err
           errcount += 1
-          if errcount < 5
+          if errcount < 3
             puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] error #{err.class.inspect} on #{self.to_s}... retrying..."
             sleep(2)
             retry

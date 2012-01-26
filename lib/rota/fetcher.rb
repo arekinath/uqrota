@@ -10,6 +10,7 @@ require 'json'
 require 'date'
 require 'savon'
 
+HTTPI.log = false
 Savon.configure do |config|
   config.log = false
 end
@@ -17,19 +18,13 @@ end
 module Rota
 
   class Program
-    @@list_client = nil
-    @@prog_client = nil
-
-    def Program.fetch_list
-      if @@list_client.nil?
-        @@list_client = Savon::Client.new do
-          wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_SEARCH_REQUEST.1.wsdl"
-        end
+    def Program.fetch_list      
+      list_client = Savon::Client.new do
+        wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_SEARCH_REQUEST.1.wsdl"
       end
       
       builder = Builder::XmlMarkup.new
-
-      response = @@list_client.request :uq_cp_search_request do
+      response = list_client.request :uq_cp_search_request do
         soap.body = builder.MsgData do |m|
           m.Transaction do |t|
             t.parameters(:class => 'R') do |p|
@@ -45,44 +40,145 @@ module Rota
     end
     
     def Program.parse_list(h)
-      DataMapper::Transaction.new.commit do
+      h[:program].each do |ph|
+        Program.transaction do
+          p = Program.get(ph[:code].to_i)
+          if p.nil?
+            p = Program.new
+            p['id'] = ph[:code].to_i
+            p.name = ph[:title]
+            p.save
+          else
+            p.name = ph[:title]
+            p.save
+          end
+        end
       end
     end
     
     def fetch_courses
-      if @@prog_client.nil?
-        @@prog_client = Savon::Client.new do
-          wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_DISPLAY_PRGLIST_REQUEST.1.wsdl"
-        end
+      prog_client = Savon::Client.new do
+        wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_DISPLAY_PRGLIST_REQUEST.1.wsdl"
       end
       
       builder = Builder::XmlMarkup.new
-
-      response = @@prog_client.request :uq_cp_display_prglist_request do
+      response = prog_client.request :uq_cp_display_prglist_request do
         soap.body = builder.MsgData do |m|
           m.Transaction do |t|
             t.ProgramList(:class => 'R') do |p|
-              p.YEAR('2011')
-              p.CODE('2001')
+              p.YEAR(Time.now.year.to_s)
+              p.CODE(self['id'].to_s)
             end
           end
         end
       end
       
-      h = response.to_hash
-      return response, (h[h.keys.first][:msg_data][:transaction][:program_list_detail])
+      h = response.to_xml
+      return response, h
     end
     
-    def parse_courses(h)
-      DataMapper::Transaction.new.commit do
+    def parse_courses(x)
+      Program.transaction do
         if self.plans.size > 0
           if self.plans.course_groups.size > 0
             self.plans.course_groups.each { |cg| cg.destroy! }
           end
           self.plans.each { |pl| pl.destroy! }
         end
+      end
+      
+      defaultplan = Plan.new
+      defaultplan.name = self.name
+      defaultplan.program = self
+      
+      doc = Nokogiri::XML(x)
+      ns = doc.root.namespaces
+      ns['xmlns:soapenv'] = 'http://schemas.xmlsoap.org/soap/envelope/'
+      ns['xmlns:uq'] = 'http://peoplesoft.com/UQ_CP_DISPLAY_PRGLIST_RESPONSEResponse'
+      
+      resp = doc.xpath('/soapenv:Envelope/soapenv:Body/uq:UQ_CP_DISPLAY_PRGLIST_RESPONSE', ns).first
+      orders = resp.xpath('./uq:MsgData/uq:Transaction/uq:ProgramListDetail/uq:Order', ns)
+      
+      orders.each do |order|
+        pl = order.xpath('./uq:PlanListDetail', ns)
+        cl = order.xpath('./uq:CourseListDetail', ns)
         
+        cl.each do |cld|
+          title = cld.xpath('./uq:TITLE', ns)[0].text
+          header = cld.xpath('./uq:HEADER', ns)[0].text
+          
+          cg = CourseGroup.new
+          cg.plan = defaultplan
+          t = []
+          t << title if title.size > 0
+          t << header if header.size > 0
+          cg.text = t.join(" - ")
+          
+          cg.save
+          defaultplan.save
+          
+          cld.xpath('./uq:Course', ns).each do |cs|
+            off = cs.xpath('./uq:Offering', ns)[0]
+            code = off.xpath('./uq:CODE', ns)[0].text
+            title = cs.xpath('./uq:TITLE', ns)[0].text
+            units = cs.xpath('./uq:UNITS', ns)[0].text.to_i
+            
+            c = nil
+            Course.transaction do
+              c = Course.get(code)
+              if c.nil?
+                c = Course.create(:code => code,
+                                  :name => title,
+                                  :units => units)
+                c.save
+              end
+            end
+            c.course_groups << cg unless c.course_groups.include?(cg)
+            c.save
+          end
+        end
         
+        pl.each do |pld|
+          title = pld.xpath('./uq:TITLE', ns)[0].text
+          
+          plan = Plan.new
+          plan.name = title
+          plan.program = self
+          plan.save
+          
+          pld.xpath('./uq:PlanCourseList', ns).each do |pcl|
+            title = pcl.xpath('./uq:TITLE', ns)[0].text
+            header = pcl.xpath('./uq:HEADER', ns)[0].text
+            
+            cg = CourseGroup.new
+            cg.plan = plan
+            t = []
+            t << title if title.size > 0
+            t << header if header.size > 0
+            cg.text = t.join(" - ")
+            cg.save
+            
+            pcl.xpath('./uq:PlanCourse', ns).each do |cs|
+              off = cs.xpath('./uq:PlanOffering', ns)[0]
+              code = off.xpath('./uq:CODE', ns)[0].text
+              title = cs.xpath('./uq:TITLE', ns)[0].text
+              units = cs.xpath('./uq:UNITS', ns)[0].text.to_i
+
+              c = nil
+              Course.transaction do
+                c = Course.get(code)
+                if c.nil?
+                  c = Course.create(:code => code,
+                                    :name => title,
+                                    :units => units)
+                  c.save
+                end
+              end
+              c.course_groups << cg unless c.course_groups.include?(cg)
+              c.save
+            end
+          end
+        end
       end
     end
   end
@@ -121,18 +217,13 @@ module Rota
   end
   
   class Course
-    @@client = nil
 
     def fetch_details
-      if @@client.nil?
-        @@client = Savon::Client.new do
-          wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_DISPLAY_COURSE_REQUEST.1.wsdl"
-        end
+      client = Savon::Client.new do
+        wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_DISPLAY_COURSE_REQUEST.1.wsdl"
       end
-      
       builder = Builder::XmlMarkup.new
-
-      response = @@client.request :uq_cp_display_course_request do
+      response = client.request :uq_cp_display_course_request do
         soap.body = builder.MsgData do |m|
           m.Transaction do |t|
             t.Course(:class => 'R') do |p|
@@ -142,26 +233,40 @@ module Rota
           end
         end
       end
-      
-      h = response.to_hash
-      return response, h[h.keys.first][:msg_data][:transaction][:course_details]
+      return response, response.to_xml
     end
     
-    def parse_details(h)
+    def parse_details(x)
+      doc = Nokogiri::XML(x)
+      ns = doc.root.namespaces
+      ns['xmlns:soapenv'] = 'http://schemas.xmlsoap.org/soap/envelope/'
+      ns['xmlns:uq'] = 'http://peoplesoft.com/UQ_CP_DISPLAY_COURSE_RESPONSEResponse'
+      
+      resp = doc.xpath('/soapenv:Envelope/soapenv:Body/uq:UQ_CP_DISPLAY_COURSE_RESPONSE', ns).first
+      cd = resp.xpath('./uq:MsgData/uq:Transaction/uq:CourseDetails', ns)[0]
+      
       DataMapper::Transaction.new.commit do
-        self.name = h[:title]
-        self.units = h[:units]
-        self.description = h[:summary]
-        self.coordinator = h[:coordinator]
-        self.faculty = h[:offerings][:offering][-1][:faculty_value]
-        self.school = h[:offerings][:offering][-1][:school][:school_value]
+        self.name = cd.xpath('./uq:TITLE', ns).first.text
+        self.units = cd.xpath('./uq:UNITS', ns).first.text.to_i
+        self.description = cd.xpath('./uq:SUMMARY', ns).first.text
+        self.coordinator = cd.xpath('./uq:COORDINATOR', ns).first.text
         
+        foff = cd.xpath('./uq:Offerings/uq:Offering[1]', ns).first
+        unless foff.nil?
+          self.faculty = foff.xpath('./uq:FACULTY_VALUE', ns).first.text
+          self.school = foff.xpath('./uq:School/uq:SCHOOL_VALUE', ns).first.text
+        end
+      end
+        
+      DataMapper::Transaction.new.commit do
         self.prereqs.each { |p| p.destroy! }
         prs = ""
-        prs += h[:prerequisite] if h[:prerequisite].is_a?(String)
-        prs += h[:recommendedprerequisite] if h[:recommendedprerequisite].is_a?(String)
-        prereqs = pts.scan(/[A-Z]{4}[0-9]{4}/)
+        prs += cd.xpath('./uq:PREREQUISITE', ns).first.text
+        prs += cd.xpath('./uq:RECOMMENDEDPREREQUISITE', ns).first.text
+        prereqs = prs.scan(/[A-Z]{4}[0-9]{4}/)
         prereqs.each do |code|
+          next if code == self.code
+          
           cse = Course.get(code)
           if cse.nil?
             cse = Course.new
@@ -176,18 +281,31 @@ module Rota
       end
     end
     
-    def parse_offerings(h)
+    def parse_offerings(x)
+      doc = Nokogiri::XML(x)
+      ns = doc.root.namespaces
+      ns['xmlns:soapenv'] = 'http://schemas.xmlsoap.org/soap/envelope/'
+      ns['xmlns:uq'] = 'http://peoplesoft.com/UQ_CP_DISPLAY_COURSE_RESPONSEResponse'
+      
+      resp = doc.xpath('/soapenv:Envelope/soapenv:Body/uq:UQ_CP_DISPLAY_COURSE_RESPONSE', ns).first
+      cd = resp.xpath('./uq:MsgData/uq:Transaction/uq:CourseDetails', ns)[0]
+      
       DataMapper::Transaction.new.commit do
-        first = true
-        h[:offerings][:offering].each do |off|
-          sem = Semester.get(off[:commencement][:semester])
-          camp = Campus.get(off[:campus_key])
+        is_first = true
+        cd.xpath('./uq:Offerings/uq:Offering', ns).each do |off|
+          sem_id = off.xpath('./uq:Commencement/uq:SEMESTER',ns).first.text.to_i
+          campus_key = off.xpath('./uq:CAMPUS_KEY',ns).first.text
+          campus_val = off.xpath('./uq:CAMPUS_VALUE',ns).first.text
+          classid = off.xpath('./uq:CLASS',ns).first.text.to_i
+          
+          sem = Semester.get(sem_id)
+          camp = Campus.get(campus_key)
           if camp.nil?
-            camp = Campus.create(:code => off[:campus_key], :name => off[:campus_value])
+            camp = Campus.create(:code => campus_key, :name => campus_val)
             camp.save
           end
           if not sem.nil?
-            p = Offering.first(:sinet_class => off[:class].to_i)
+            p = Offering.first(:sinet_class => classid)
             if p.nil?
               p = self.offerings.first(:semester => sem, :campus => camp)
               if p.nil?
@@ -195,15 +313,15 @@ module Rota
               end
             end
             p.course = self
-            p.sinet_class = off[:class].to_i
+            p.sinet_class = classid
             p.semester = sem
             p.campus = camp
-            p.location = off[:location_value]
-            p.current = first
-            p.mode = off[:mode_value]
+            p.location = off.xpath('./uq:LOCATION_VALUE',ns).first.text
+            p.current = is_first
+            p.mode = off.xpath('./uq:MODE_VALUE',ns).first.text
             p.save
           end
-          first = false
+          is_first = false
         end
       end
     end
