@@ -218,6 +218,58 @@ module Rota
   
   class Course
 
+    def Course.fetch_list
+      c = Savon::Client.new do
+        wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_SEARCH_REQUEST.1.wsdl"
+      end
+      builder = Builder::XmlMarkup.new
+      response = c.request :uq_cp_search_request do
+        soap.body = builder.MsgData do |m|
+          m.Transaction do |t|
+            t.parameters(:class => 'R') do |p|
+              p.SEARCHTYPE('COURSE')
+              p.CourseParameters(:class => 'R') do |cp|
+                cp.INCLUDE_UNSCHEDULED('TRUE')
+                cp.Semester(:class => 'R') do |s|
+                  scur = Semester.current
+                  s.SEMESTERID(scur.semester_id)
+                  s.YEAR("#{scur.year}")
+                end
+              end
+            end
+          end
+        end
+      end
+      return response, response.to_xml
+    end
+    
+    def Course.parse_list(x)
+      doc = Nokogiri::XML(x)
+      ns = doc.root.namespaces
+      ns['xmlns:soapenv'] = 'http://schemas.xmlsoap.org/soap/envelope/'
+      ns['xmlns:uq'] = 'http://peoplesoft.com/UQ_CP_SEARCH_RESPONSEResponse'
+      
+      resp = doc.xpath('/soapenv:Envelope/soapenv:Body/uq:UQ_CP_SEARCH_RESPONSE', ns).first
+      courses = resp.xpath('./uq:MsgData/uq:Transaction/uq:SearchResults/uq:Course', ns)
+      
+      courses.each do |cx|
+        code = cx.xpath('./uq:CODE', ns)[0].text
+        title = cx.xpath('./uq:TITLE', ns)[0].text
+        units = cx.xpath('./uq:UNITS', ns)[0].text.to_i
+
+        c = nil
+        Course.transaction do
+          c = Course.get(code)
+          if c.nil?
+            c = Course.create(:code => code,
+                              :name => title,
+                              :units => units)
+            c.save
+          end
+        end
+      end
+    end
+
     def fetch_details
       client = Savon::Client.new do
         wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_DISPLAY_COURSE_REQUEST.1.wsdl"
@@ -244,6 +296,8 @@ module Rota
       
       resp = doc.xpath('/soapenv:Envelope/soapenv:Body/uq:UQ_CP_DISPLAY_COURSE_RESPONSE', ns).first
       cd = resp.xpath('./uq:MsgData/uq:Transaction/uq:CourseDetails', ns)[0]
+      
+      return if cd.nil?
       
       DataMapper::Transaction.new.commit do
         self.name = cd.xpath('./uq:TITLE', ns).first.text
@@ -290,12 +344,16 @@ module Rota
       resp = doc.xpath('/soapenv:Envelope/soapenv:Body/uq:UQ_CP_DISPLAY_COURSE_RESPONSE', ns).first
       cd = resp.xpath('./uq:MsgData/uq:Transaction/uq:CourseDetails', ns)[0]
       
+      return if cd.nil?
+      
       DataMapper::Transaction.new.commit do
         is_first = true
         cd.xpath('./uq:Offerings/uq:Offering', ns).each do |off|
           sem_id = off.xpath('./uq:Commencement/uq:SEMESTER',ns).first.text.to_i
           campus_key = off.xpath('./uq:CAMPUS_KEY',ns).first.text
           campus_val = off.xpath('./uq:CAMPUS_VALUE',ns).first.text
+          mode = off.xpath('./uq:MODE_VALUE',ns).first.text
+          location = off.xpath('./uq:LOCATION_VALUE',ns).first.text
           classid = off.xpath('./uq:CLASS',ns).first.text.to_i
           
           sem = Semester.get(sem_id)
@@ -307,18 +365,23 @@ module Rota
           if not sem.nil?
             p = Offering.first(:sinet_class => classid)
             if p.nil?
-              p = self.offerings.first(:semester => sem, :campus => camp)
+              p = self.offerings.first(:semester => sem, :campus => camp,
+                                       :mode => mode, :location => location)
               if p.nil?
-                p = Offering.new
+                p = self.offerings.first(:semester => sem, :campus => camp)
+                if (p.nil? or (p.mode and p.mode.size > 0) or 
+                    (p.location and p.location.size > 0))
+                  p = Offering.new
+                end
               end
             end
             p.course = self
             p.sinet_class = classid
             p.semester = sem
             p.campus = camp
-            p.location = off.xpath('./uq:LOCATION_VALUE',ns).first.text
+            p.location = location
             p.current = is_first
-            p.mode = off.xpath('./uq:MODE_VALUE',ns).first.text
+            p.mode = mode
             p.save
           end
           is_first = false
@@ -481,7 +544,7 @@ module Rota
       
       # now figure out which row of the table is the one we want (at St Lucia)
       row_n = -1
-      row_to_use = 0
+      row_weights = Hash.new(0)
       page.parser.css('table.PSLEVEL1GRIDNBO tr').each do |row|
         row.css('td').each do |cell|
           txt = cell.text
@@ -489,16 +552,24 @@ module Rota
           txt = sp.text if sp
           if txt
             txt = txt.chomp.strip
-            # TODO: add support for other campuses
-            ['Lucia','St Lucia'].each do |k|
-              if txt.downcase.include?(k.downcase)
-                row_to_use = row_n
-              end
+            if txt.downcase.include?(self.mode.downcase)
+              row_weights[row_n] += 1
+            end
+            if txt.downcase.include?(self.campus.code.downcase)
+              row_weights[row_n] += 1
+            end
+            if txt.downcase.include?(self.campus.name.downcase)
+              row_weights[row_n] += 1
+            end
+            if txt.downcase.include?(self.location.downcase)
+              row_weights[row_n] += 1
             end
           end
         end
         row_n += 1
       end
+      
+      row_to_use = row_weights.sort_by { |r,w| w }.reverse.first[0]
       
       # and tick the check box on that row
       form = page.form('win0')

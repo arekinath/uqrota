@@ -153,6 +153,17 @@ module Rota
       end
     end
     
+    class CourseListTask < SafeRunTask
+      def safe_run
+        agent, page = Course.fetch_list
+        Course.parse_list(page)
+      end
+      
+      def to_s
+        "CourseList"
+      end
+    end
+    
     class ProgramTask < SafeRunTask
       def initialize(program)
         @program = program

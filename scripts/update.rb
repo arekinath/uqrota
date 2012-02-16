@@ -55,8 +55,10 @@ while (arg = ARGV.shift)
   elsif arg == '--progress' or arg == '-p'
     terminal = true
   elsif arg == 'timetables'
+    mode << :courses
     mode << :timetables
   elsif arg == 'profiles'
+    mode << :courses
     mode << :profiles
   elsif arg == 'programs'
     mode << :programs
@@ -85,6 +87,11 @@ if mode.include? :programs
   tasks = programs.collect { |p| UpdateTasks::ProgramTask.new(p) }
   t = TaskRunner.new(tasks)
   t.run("All Programs update", terminal)
+end
+
+if mode.include? :courses
+  log "Updating supplementary course index..."
+  UpdateTasks::CourseListTask.new.run
 end
 
 if mode.include? :profiles

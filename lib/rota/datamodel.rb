@@ -65,6 +65,20 @@ module Rota
       self.name.split(",").last.to_i
     end
     
+    def semester_id
+      part = self.name.split(",").first
+      if part =~ /Summer/
+        return '3'
+      else
+        m = /^Semester ([0-9]+)$/.match(part)
+        if m
+          return m[1]
+        else
+          return '?'
+        end
+      end
+    end
+    
     def week(n)
       dt = DateTime.strptime("Mon #{self.start_week} #{self.year}", '%A %W %Y')
       
