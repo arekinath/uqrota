@@ -119,22 +119,24 @@ module Rota
           
           cld.xpath('./uq:Course', ns).each do |cs|
             off = cs.xpath('./uq:Offering', ns)[0]
-            code = off.xpath('./uq:CODE', ns)[0].text
-            title = cs.xpath('./uq:TITLE', ns)[0].text
-            units = cs.xpath('./uq:UNITS', ns)[0].text.to_i
+            if not off.nil?
+              code = off.xpath('./uq:CODE', ns)[0].text
+              title = cs.xpath('./uq:TITLE', ns)[0].text
+              units = cs.xpath('./uq:UNITS', ns)[0].text.to_i
             
-            c = nil
-            Course.transaction do
-              c = Course.get(code)
-              if c.nil?
-                c = Course.create(:code => code,
-                                  :name => title,
-                                  :units => units)
-                c.save
+              c = nil
+              Course.transaction do
+                c = Course.get(code)
+                if c.nil?
+                  c = Course.create(:code => code,
+                                    :name => title,
+                                    :units => units)
+                  c.save
+                end
               end
+              c.course_groups << cg unless c.course_groups.include?(cg)
+              c.save
             end
-            c.course_groups << cg unless c.course_groups.include?(cg)
-            c.save
           end
         end
         
