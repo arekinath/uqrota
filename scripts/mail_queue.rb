@@ -1,7 +1,6 @@
 #!/usr/bin/ruby
 
-$LOAD_PATH << File.expand_path("../../lib", __FILE__)
-require 'config'
+require File.expand_path("../../lib/config", __FILE__)
 require 'rota/model'
 require 'rota/fetcher'
 require 'rota/queues_alerts'
@@ -9,7 +8,7 @@ require 'rota/queues_alerts'
 puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] Starting mail queue sender..."
 
 puts "  > Sending emails.."
-qes = Rota::Model::QueuedEmail.all
+qes = Rota::QueuedEmail.all
 qes.size.times do |i|
   qem = qes[i]
   puts "[%2i/%2i] to #{qem.recipient}.." % [i, qes.size]
