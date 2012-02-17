@@ -50,8 +50,12 @@ while (arg = ARGV.shift)
       end
       Kernel.exit()
     end
-    semid = semid.to_i
-    target_semester = Semester.get(semid)
+    if semid.downcase == "current"
+      semid = :current
+    else
+      semid = semid.to_i
+      target_semester = Semester.get(semid)
+    end
   elsif arg == '--progress' or arg == '-p'
     terminal = true
   elsif arg == 'timetables'
