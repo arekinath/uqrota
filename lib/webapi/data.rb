@@ -3,6 +3,7 @@ require 'config'
 require 'rota/model'
 require 'utils/ical'
 require 'utils/xml'
+require 'utils/cache'
 require 'rota/temporal'
 require 'webapi/common'
 require 'sinatra/base'
@@ -240,22 +241,28 @@ class DataService < Sinatra::Base
     content_type :xml
     offering = Rota::Offering.get(id.to_i)
     return 404 if offering.nil?
-    Utils.xml(offering)
+    Sinatra::Cache.cache("offering.xml" + id + offering.last_update.to_s) do
+      Utils.xml(offering)
+    end
   end
   
   get '/offering/:id.json' do |id|
     content_type :json
     offering = Rota::Offering.get(id.to_i)
     return 404 if offering.nil?
-    offering.to_json(5)
+    Sinatra::Cache.cache("offering.json" + id + offering.last_update.to_s) do
+      offering.to_json(5)
+    end
   end
   
   get '/offering/:id.ics' do |id|
     content_type :ical
     offering = Rota::Offering.get(id.to_i)
     return 404 if offering.nil?
-    Utils.ical do |i|
-      offering.to_ical(i, :all)
+    Sinatra::Cache.cache("offering.ics" + id + offering.last_update.to_s) do
+      Utils.ical do |i|
+        offering.to_ical(i, :all)
+      end
     end
   end
   
@@ -263,8 +270,10 @@ class DataService < Sinatra::Base
     content_type :ical
     offering = Rota::Offering.get(id.to_i)
     return 404 if offering.nil?
-    Utils.ical do |i|
-      offering.to_ical(i, :assessment)
+    Sinatra::Cache.cache("offering/assessment.ics" + id + offering.last_update.to_s) do
+      Utils.ical do |i|
+        offering.to_ical(i, :assessment)
+      end
     end
   end
   
@@ -272,8 +281,10 @@ class DataService < Sinatra::Base
     content_type :ical
     offering = Rota::Offering.get(id.to_i)
     return 404 if offering.nil?
-    Utils.ical do |i|
-      offering.to_ical(i, :timetable)
+    Sinatra::Cache.cache("offering/timetable.ics" + id + offering.last_update.to_s) do
+      Utils.ical do |i|
+        offering.to_ical(i, :timetable)
+      end
     end
   end
   
@@ -281,27 +292,35 @@ class DataService < Sinatra::Base
     content_type :xml
     group = Rota::TimetableGroup.get(id.to_i)
     return 404 if group.nil?
-    Utils.xml(group)
+    Sinatra::Cache.cache("group.xml" + id + group.series.offering.last_update.to_s) do
+      Utils.xml(group)
+    end
   end
   
   get '/group/:id.ics' do |id|
     content_type :ical
     group = Rota::TimetableGroup.get(id.to_i)
     return 404 if group.nil?
-    Utils.ical(group)
+    Sinatra::Cache.cache("group.ics" + id + group.series.offering.last_update.to_s) do
+      Utils.ical(group)
+    end
   end
   
   get '/session/:id.xml' do |id|
     content_type :xml
     session = Rota::TimetableSession.get(id.to_i)
     return 404 if session.nil?
-    Utils.xml(session)
+    Sinatra::Cache.cache("session.xml" + id + session.group.series.offering.last_update.to_s) do
+      Utils.xml(session)
+    end
   end
   
   get '/session/:id.ics' do |id|
     content_type :ical
     session = Rota::TimetableSession.get(id.to_i)
     return 404 if session.nil?
-    Utils.ical(session)
+    Sinatra::Cache.cache("session.ics" + id + session.group.series.offering.last_update.to_s) do
+      Utils.ical(session)
+    end
   end
 end
