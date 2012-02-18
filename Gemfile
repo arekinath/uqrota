@@ -4,6 +4,7 @@ gem "rack-test"
 gem "sprockets"
 gem "daemons"
 gem "dm-constraints"
+gem "memcache-client"
 gem "dm-core"
 gem "dm-migrations"
 gem "dm-postgres-adapter", :group => :production

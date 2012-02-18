@@ -57,6 +57,7 @@ GEM
       net-http-persistent (~> 1.8)
       nokogiri (~> 1.4)
       webrobots (~> 0.0, >= 0.0.9)
+    memcache-client (1.8.5)
     mongrel (1.2.0.pre2)
       daemons (~> 1.0.10)
       gem_plugin (~> 0.2.3)
@@ -125,6 +126,7 @@ DEPENDENCIES
   dm-yaml-adapter
   json
   mechanize
+  memcache-client
   mongrel (~> 1.2.0.pre2)
   nokogiri
   pdoc
