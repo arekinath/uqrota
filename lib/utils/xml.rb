@@ -145,6 +145,19 @@ module Rota
       b.semester do |sem|
         sem.id(self['id'])
         sem.name(self.name)
+        sem.year(self.year)
+        unless opts.include?(:no_children)
+          unless self.succ.nil?
+            sem.succ do |s|
+              s.id(self.succ['id'])
+            end
+          end
+          unless self.pred.nil?
+            sem.pred do |s|
+              s.id(self.pred['id'])
+            end
+          end
+        end
         sem.weeks do |w|
           w.start(self.start_week)
           w.finish(self.finish_week)
