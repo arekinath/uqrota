@@ -8,6 +8,9 @@ antispam:
   delay: 2.0				# enforced delay, in seconds
   secret: abc123			# secret used to prevent fake timestamps
 
+memcached:
+  host: localhost:11211
+
 updater:
   timeout: 30
   useragent: Mozilla/5.0 (Windows; U; Windows NT 5.1; es-ES; rv:1.9.2.10) Gecko/20100914 Firefox/3.6.10 (.NET CLR 3.5.30729)
