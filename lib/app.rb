@@ -15,7 +15,11 @@ class RotaApp < Sinatra::Base
   mime_type :json, 'application/json'
   mime_type :ical, 'text/calendar'
   mime_type :plain, 'text/plain'
-  
+
+  get '/' do
+		redirect 'https://github.com/arekinath/uqrota/wiki/HTTPS-API-Reference'
+	end
+
   use DataService
   use LoginService
   use UserService
