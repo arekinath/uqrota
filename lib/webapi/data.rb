@@ -153,6 +153,13 @@ class DataService < Sinatra::Base
     end
   end
   
+  get '/semester/:id/courses.json' do |id|
+    content_type :json
+    sem = Rota::Semester.get(id.to_i)
+    return 404 if sem.nil?
+    sem.offerings.courses.to_a.uniq.to_rota_json
+  end
+  
   get '/semester/:id/offerings.json' do |id|
     content_type :json
     sem = Rota::Semester.get(id.to_i)
