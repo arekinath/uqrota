@@ -23,7 +23,7 @@ qes.size.times do |i|
 end
 
 puts "  > Sending sms..."
-qsmses = Rota::Model::QueuedSMS.all
+qsmses = Rota::QueuedSMS.all
 qsmses.size.times do |i|
   qsms = qsmses[i]
   puts "[%2i/%2i] to #{qsms.recipient}..." % [i, qsmses.size]

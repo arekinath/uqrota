@@ -59,7 +59,7 @@ Date: #{Time.now.to_s}
 ENDMSG
       smtpc = Rota::Config['smtp']
       
-      Net::SMTP.start(smtpc['host'], smtpc['port'].to_i, 'mail.uqrota.net', smtpc['user'], smtpc['password'], :plain) do |smtp|
+      Net::SMTP.start(smtpc['host'], smtpc['port'].to_i, 'mail.uqrota.net', smtpc['user'], smtpc['password'], smtpc['user'].nil? ? nil : :plain) do |smtp|
         smtp.send_message msg, origin, self.recipient
       end
       
