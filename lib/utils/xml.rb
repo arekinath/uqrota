@@ -154,6 +154,15 @@ module Rota
     end
   end
   
+  class Campus
+    def to_xml(b, *opts)
+      b.campus do |camp|
+        camp.code(self.code)
+        camp.name(self.name)
+      end
+    end
+  end
+
   class Offering
     def to_xml(b, *opts)
       b.offering do |off|
@@ -162,6 +171,7 @@ module Rota
         off.semester(self.semester['id']) unless opts.include?(:no_semester)
         off.location(self.location)
         off.mode(self.mode)
+        self.campus.to_xml(off)
         off.lastupdated(self.last_update.strftime("%Y-%m-%d")) if self.last_update
         unless opts.include?(:no_children) or opts.include?(:no_series)
           off.series do |ss|

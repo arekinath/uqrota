@@ -29,7 +29,7 @@ class DataService < Sinatra::Base
     ''
   end
   
-  get '/programs/undergrad.xml' do
+  get '/programs.xml' do
     content_type :xml
     Utils.xml do |x|
       x.programs do |b|
@@ -40,7 +40,7 @@ class DataService < Sinatra::Base
     end
   end
   
-  get '/programs/undergrad.json' do
+  get '/programs.json' do
     content_type :json
     Rota::Programs.all.to_a.to_rota_json
   end
@@ -222,7 +222,13 @@ class DataService < Sinatra::Base
     cs = Rota::ClashSummary.new(o1, o2)
     Utils.xml(cs)
   end
-  
+ 
+  get '/offerings/find.json' do 
+    content_type :json
+    fc = FindConditions.new(Rota::Offering, params[:with])
+    fc.to_json
+  end
+
   get '/offering/:id.xml' do |id|
     content_type :xml
     offering = Rota::Offering.get(id.to_i)

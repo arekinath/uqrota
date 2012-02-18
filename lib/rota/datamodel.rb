@@ -118,7 +118,7 @@ module Rota
     has n, :offerings, :constraint => :destroy
     
     include JSON::Serializable
-    json :attrs => [:code, :name]
+    json :attrs => [:code, :name], :key => [:code]
   end
   
   class Program
@@ -205,9 +205,9 @@ module Rota
     has n, :assessment_tasks, :constraint => :destroy
     
     include JSON::Serializable
-    json_attrs :location, :mode, :last_update, :campus
+    json_attrs :location, :mode, :last_update, :sinet_class
     json_children :series, :assessment_tasks
-    json_parents :course, :semester
+    json_parents :course, :semester, :campus
   end
   
   class AssessmentTask
