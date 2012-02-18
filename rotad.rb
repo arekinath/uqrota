@@ -5,7 +5,9 @@ require 'app'
 
 class RotaApp 
   configure do
-    set :port, ARGV[0] ? ARGV[0].to_i : 4567 
+    set :port, ARGV[0] ? ARGV[0].to_i : 4567
+    set :server, %w[passenger thin mongrel webrick]
+    set :bind, '127.0.0.1' 
   end
 end
 

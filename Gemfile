@@ -16,6 +16,7 @@ gem "json"
 gem "mechanize"
 gem "savon"
 gem "nokogiri"
+gem "thin"
 gem "sinatra"
 gem "sinatra-namespace"
 # Optional dependencies
