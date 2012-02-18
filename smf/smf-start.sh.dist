@@ -1,0 +1,15 @@
+#!/usr/bin/bash
+
+getproparg() {
+	val=`svcprop -p $1 $SMF_FMRI`
+	[ -n "$val" ] && echo $val
+}
+
+PORT=`getproparg worker/port`
+
+if [ -z $PORT ]; then
+	echo "worker/port property not set"
+	exit $SMF_EXIT_ERR_CONFIG
+fi
+
+exec /opt/local/bin/ruby19 /PATH/TO/uqrota/rotad.rb $PORT >> /var/log/uqrota/daemon-$PORT.out

@@ -1,0 +1,39 @@
+
+user   www  www;
+worker_processes  1;
+
+events {
+    worker_connections  8192;
+}
+
+
+http {
+    include       /opt/local/etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    upstream rota {
+      server 127.0.0.1:8001;
+      server 127.0.0.1:8002;
+      server 127.0.0.1:8003;
+    }
+
+    server {
+        listen       80;
+        server_name  rota.foo.com;
+
+        location / {
+            root   share/examples/nginx/html;
+            index  index.html index.htm;
+            proxy_pass http://rota;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   share/examples/nginx/html;
+        }
+
+    }
+}

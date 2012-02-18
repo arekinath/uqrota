@@ -1,0 +1,4 @@
+This directory contains an SMF manifest for uqrota, as well as a start script
+to enable multi-instance operation. Included as well is an example nginx
+config file showing how to load-balance between the instances of the daemon
+created by the SMF manifest.
