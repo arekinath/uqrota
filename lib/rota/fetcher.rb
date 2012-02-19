@@ -310,7 +310,8 @@ module Rota
         foff = cd.xpath('./uq:Offerings/uq:Offering[1]', ns).first
         unless foff.nil?
           self.faculty = foff.xpath('./uq:FACULTY_VALUE', ns).first.text
-          self.school = foff.xpath('./uq:School/uq:SCHOOL_VALUE', ns).first.text
+          school = foff.xpath('./uq:School/uq:SCHOOL_VALUE', ns).first
+          self.school = school.text unless school.nil?
         end
       end
         
