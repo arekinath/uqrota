@@ -49,7 +49,11 @@ class FindConditions
     end
     hash[kk] = v
   end
-  
+ 
+  def to_a
+    @resultset.to_a
+  end
+
   def to_json
     @resultset.to_a.to_rota_json(0)
   end

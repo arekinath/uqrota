@@ -51,6 +51,18 @@ class DataService < Sinatra::Base
     fc = FindConditions.new(Rota::Program, params[:with])
     fc.to_json
   end
+
+  get '/programs/find.xml' do
+    content_type :xml
+    fc = FindConditions.new(Rota::Program, params[:with])
+    Utils.xml do |x|
+      x.programs do |b|
+        fc.to_a.each do |prog|
+          prog.to_xml(b, :no_children)
+        end
+      end
+    end
+  end
   
   get '/program/:id.xml' do |id|
     content_type :xml
@@ -174,6 +186,18 @@ class DataService < Sinatra::Base
     fc.to_json
   end
   
+  get '/courses/find.xml' do
+    content_type :xml
+    fc = FindConditions.new(Rota::Course, params[:with])
+    Utils.xml do |x|
+      x.courses do |b|
+        fc.to_a.each do |crs|
+          crs.to_xml(b, :no_children)
+        end
+      end
+    end
+  end
+  
   get '/course/:code.xml' do |code|
     content_type :xml
     course = Rota::Course.get(code.upcase)
@@ -235,6 +259,18 @@ class DataService < Sinatra::Base
     content_type :json
     fc = FindConditions.new(Rota::Offering, params[:with])
     fc.to_json
+  end
+
+  get '/offerings/find.xml' do
+    content_type :xml
+    fc = FindConditions.new(Rota::Offering, params[:with])
+    Utils.xml do |x|
+      x.offerings do |b|
+        fc.to_a.each do |off|
+          off.to_xml(b, :no_children)
+        end
+      end
+    end
   end
 
   get '/offering/:id.xml' do |id|
