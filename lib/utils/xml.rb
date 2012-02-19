@@ -184,6 +184,7 @@ module Rota
         off.semester(self.semester['id']) unless opts.include?(:no_semester)
         off.location(self.location)
         off.mode(self.mode)
+        off.sinet_class(self.sinet_class)
         self.campus.to_xml(off)
         off.lastupdated(self.last_update.strftime("%Y-%m-%d")) if self.last_update
         unless opts.include?(:no_children) or opts.include?(:no_series)
