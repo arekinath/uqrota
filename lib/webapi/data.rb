@@ -275,7 +275,12 @@ class DataService < Sinatra::Base
 
   get '/offering/:id.xml' do |id|
     content_type :xml
-    offering = Rota::Offering.get(id.to_i)
+    offering = nil
+    if id.start_with?('sinet.')
+      offering = Rota::Offering.first(:sinet_class => id.split('.')[1].to_i)
+    else
+      offering = Rota::Offering.get(id.to_i)
+    end
     return 404 if offering.nil?
     Sinatra::Cache.cache("offering.xml" + id + offering.last_update.to_s) do
       Utils.xml(offering)
@@ -284,7 +289,12 @@ class DataService < Sinatra::Base
   
   get '/offering/:id.json' do |id|
     content_type :json
-    offering = Rota::Offering.get(id.to_i)
+    offering = nil
+    if id.start_with?('sinet.')
+      offering = Rota::Offering.first(:sinet_class => id.split('.')[1].to_i)
+    else
+      offering = Rota::Offering.get(id.to_i)
+    end
     return 404 if offering.nil?
     Sinatra::Cache.cache("offering.json" + id + offering.last_update.to_s) do
       offering.to_json(5)
@@ -293,7 +303,12 @@ class DataService < Sinatra::Base
   
   get '/offering/:id.ics' do |id|
     content_type :ical
-    offering = Rota::Offering.get(id.to_i)
+    offering = nil
+    if id.start_with?('sinet.')
+      offering = Rota::Offering.first(:sinet_class => id.split('.')[1].to_i)
+    else
+      offering = Rota::Offering.get(id.to_i)
+    end
     return 404 if offering.nil?
     Sinatra::Cache.cache("offering.ics" + id + offering.last_update.to_s) do
       Utils.ical do |i|
@@ -304,7 +319,12 @@ class DataService < Sinatra::Base
   
   get '/offering/:id/assessment.ics' do |id|
     content_type :ical
-    offering = Rota::Offering.get(id.to_i)
+    offering = nil
+    if id.start_with?('sinet.')
+      offering = Rota::Offering.first(:sinet_class => id.split('.')[1].to_i)
+    else
+      offering = Rota::Offering.get(id.to_i)
+    end
     return 404 if offering.nil?
     Sinatra::Cache.cache("offering/assessment.ics" + id + offering.last_update.to_s) do
       Utils.ical do |i|
@@ -315,7 +335,12 @@ class DataService < Sinatra::Base
   
   get '/offering/:id/timetable.ics' do |id|
     content_type :ical
-    offering = Rota::Offering.get(id.to_i)
+    offering = nil
+    if id.start_with?('sinet.')
+      offering = Rota::Offering.first(:sinet_class => id.split('.')[1].to_i)
+    else
+      offering = Rota::Offering.get(id.to_i)
+    end
     return 404 if offering.nil?
     Sinatra::Cache.cache("offering/timetable.ics" + id + offering.last_update.to_s) do
       Utils.ical do |i|
