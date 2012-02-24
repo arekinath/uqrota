@@ -277,7 +277,9 @@ class DataService < Sinatra::Base
     content_type :xml
     offering = nil
     if id.start_with?('sinet.')
-      offering = Rota::Offering.first(:sinet_class => id.split('.')[1].to_i)
+      sem, siclass = id.gsub(/^sinet\./, '').split('-')
+      offering = Rota::Offering.first(:semester => Rota::Semester.get(sem.to_i), 
+                                      :sinet_class => siclass.to_i)
     else
       offering = Rota::Offering.get(id.to_i)
     end
@@ -291,7 +293,9 @@ class DataService < Sinatra::Base
     content_type :json
     offering = nil
     if id.start_with?('sinet.')
-      offering = Rota::Offering.first(:sinet_class => id.split('.')[1].to_i)
+      sem, siclass = id.gsub(/^sinet\./, '').split('-')
+      offering = Rota::Offering.first(:semester => Rota::Semester.get(sem.to_i), 
+                                      :sinet_class => siclass.to_i)
     else
       offering = Rota::Offering.get(id.to_i)
     end
@@ -305,7 +309,9 @@ class DataService < Sinatra::Base
     content_type :ical
     offering = nil
     if id.start_with?('sinet.')
-      offering = Rota::Offering.first(:sinet_class => id.split('.')[1].to_i)
+      sem, siclass = id.gsub(/^sinet\./, '').split('-')
+      offering = Rota::Offering.first(:semester => Rota::Semester.get(sem.to_i), 
+                                      :sinet_class => siclass.to_i)
     else
       offering = Rota::Offering.get(id.to_i)
     end
@@ -321,7 +327,9 @@ class DataService < Sinatra::Base
     content_type :ical
     offering = nil
     if id.start_with?('sinet.')
-      offering = Rota::Offering.first(:sinet_class => id.split('.')[1].to_i)
+      sem, siclass = id.gsub(/^sinet\./, '').split('-')
+      offering = Rota::Offering.first(:semester => Rota::Semester.get(sem.to_i), 
+                                      :sinet_class => siclass.to_i)
     else
       offering = Rota::Offering.get(id.to_i)
     end
@@ -337,7 +345,9 @@ class DataService < Sinatra::Base
     content_type :ical
     offering = nil
     if id.start_with?('sinet.')
-      offering = Rota::Offering.first(:sinet_class => id.split('.')[1].to_i)
+      sem, siclass = id.gsub(/^sinet\./, '').split('-')
+      offering = Rota::Offering.first(:semester => Rota::Semester.get(sem.to_i), 
+                                      :sinet_class => siclass.to_i)
     else
       offering = Rota::Offering.get(id.to_i)
     end

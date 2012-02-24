@@ -366,7 +366,7 @@ module Rota
             camp.save
           end
           if not sem.nil?
-            p = Offering.first(:sinet_class => classid)
+            p = Offering.first(:semester => sem, :sinet_class => classid)
             if p.nil?
               p = self.offerings.first(:semester => sem, :campus => camp,
                                        :mode => mode, :location => location)
