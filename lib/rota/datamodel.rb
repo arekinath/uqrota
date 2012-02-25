@@ -181,7 +181,7 @@ module Rota
     
     include JSON::Serializable
     json_key :code
-    json_attrs :units, :name, :description, :coordinator, :faculty, :school
+    json_attrs :units, :name, :description, :coordinator, :faculty, :school, :last_update
     json_children :prereqs, :dependents, :offerings
   end
   

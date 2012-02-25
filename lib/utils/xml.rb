@@ -215,6 +215,7 @@ module Rota
         cs.coordinator(self.coordinator)
         cs.faculty(self.faculty)
         cs.school(self.school)
+        cs.last_update(self.last_update.to_s)
         cs.prereqs do |p|
           self.prereqs.each do |c|
             p.course(c.code)
