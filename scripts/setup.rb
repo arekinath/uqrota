@@ -16,6 +16,8 @@ while (arg = ARGV.shift)
   end
 end
 
+Rota.setup_and_finalize
+
 puts "Creating database tables..."
 if mode == :fresh
   DataMapper.auto_migrate!

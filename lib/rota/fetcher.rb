@@ -224,6 +224,7 @@ module Rota
       c = Savon::Client.new do
         wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_SEARCH_REQUEST.1.wsdl"
       end
+      c.http.read_timeout = 300
       builder = Builder::XmlMarkup.new
       response = c.request :uq_cp_search_request do
         soap.body = builder.MsgData do |m|
@@ -317,7 +318,7 @@ module Rota
       end
         
       DataMapper::Transaction.new.commit do
-        self.prereqs.each { |p| p.destroy! }
+        self.prereqships.each { |p| p.destroy! }
         prs = ""
         prs += cd.xpath('./uq:PREREQUISITE', ns).first.text
         prs += cd.xpath('./uq:RECOMMENDEDPREREQUISITE', ns).first.text
@@ -328,6 +329,7 @@ module Rota
           cse = Course.get(code)
           if cse.nil?
             cse = Course.new
+            puts "discovered #{cse.code}"
             cse.code = code
             cse.save
           end
@@ -572,7 +574,10 @@ module Rota
         end
         row_n += 1
       end
-      
+     
+      if row_n == -1
+        raise Exception.new("SI-net returned zero matching classes")
+      end
       row_to_use = row_weights.sort_by { |r,w| w }.reverse.first[0]
       
       # and tick the check box on that row

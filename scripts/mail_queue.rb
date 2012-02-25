@@ -5,6 +5,8 @@ require 'rota/model'
 require 'rota/fetcher'
 require 'rota/queues_alerts'
 
+Rota.setup_and_finalize
+
 puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] Starting mail queue sender..."
 
 puts "  > Sending emails.."

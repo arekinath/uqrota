@@ -6,10 +6,14 @@ require 'digest/sha1'
 require 'config'
 require 'utils/json'
 
-DataMapper.setup(:default, Rota::Config['database']['uri'])
-DataMapper::Model.raise_on_save_failure = true
-
 module Rota
+
+  def Rota.setup_and_finalize
+    DataMapper.setup(:default, Rota::Config['database']['uri'])
+    DataMapper::Model.raise_on_save_failure = true
+    DataMapper.finalize
+  end
+
   class Setting
     include DataMapper::Resource
     

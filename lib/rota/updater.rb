@@ -2,63 +2,108 @@ require 'config'
 require 'rota/model'
 require 'rota/queues_alerts'
 require 'rota/fetcher'
+require 'io/wait'
 require 'thread'
 
 module Rota
   
+  class TaskWorker
+    def initialize
+      @parent_read, @child_write = IO.pipe
+      @child_read, @parent_write = IO.pipe
+    end
+
+    def read_pipe; @parent_read; end
+    def write_pipe; @parent_write; end
+    def ready?; @parent_read.ready?; end
+    def _ready?; @child_read.ready?; end
+    def send(msg); Marshal.dump(msg, @parent_write); end
+    def recv; Marshal.load(@parent_read); end
+    def _send(msg); Marshal.dump(msg, @child_write); end
+    def _recv; Marshal.load(@child_read); end
+
+    def run
+      sleep 0.5 
+      @pid = fork {
+
+        # we have to re-do the connection in the child otherwise fork will screw things up
+        Rota.setup_and_finalize
+
+        loop do
+          resp = nil
+          while resp.nil?
+            _send([:next_job])
+            resp = IO.select([@child_read], [], [], 5)
+          end
+          
+          job = _recv()
+          if job[0] == :job
+            task = job[1]
+            begin
+              task.run
+            rescue Exception => err
+              puts err.inspect
+              puts err.backtrace.join("\n")
+              exit(1)
+              #Thread.exit()
+            end
+          elsif job[0] == :done
+            exit(0)
+            #Thread.exit()
+          end
+        end
+        exit(0)
+        #Thread.exit()
+      }
+    end
+
+    def wait
+      Process.waitpid(@pid, 0)
+      #@pid.join
+    end
+  end
+
   class TaskRunner
-    def initialize(tasks, nth=Rota::Config['updater']['threads']['default'])
+    def initialize(tasks, workers)
       @tasks = tasks
-      @mutex = Mutex.new
-      @nthreads = nth
-      @total = tasks.size
+      @workers = workers
     end
     
     def run(desc, terminal=false)
-      mutex, tasks = [@mutex, @tasks]
-      ths = []
-      @nthreads.times do
-        ths << Thread.new do
-          count = 1
-          while count > 0
-            task = nil
-            mutex.synchronize { task = tasks.pop }
-            if task
-              begin
-                task.run
-              rescue Exception => err
-                puts err.inspect
-                puts err.backtrace.join("\n")
-                exit(1)
-              end
-            end
-            
-            mutex.synchronize { count = tasks.size }
+      puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] Beginning #{desc}..."
+
+      idx = 0
+      last_pc = Time.now
+      last_idx = 0
+      rdpipes = []
+      @workers.each { |w| rdpipes << w.read_pipe }
+      while idx < @tasks.size
+        rios, wios = IO.select(Array.new(rdpipes), [])
+
+        rios.each do |io|
+          i = rdpipes.index(io)
+          w = @workers[i]
+          req = nil
+          req = w.recv while w.ready?
+          if req[0] == :next_job and idx < @tasks.size
+            resp = [:job, @tasks[idx]]
+            w.send(resp)
+            idx += 1
           end
         end
-      end
-      
-      if terminal
-        print "[#{desc}] starting..."
-        count = 1
-        while count > 0
-          sleep(1)
-          @mutex.synchronize { count = @tasks.size }
-          pc = "%.2f" % ((@total-count).to_f / @total.to_f * 100.0)
-          print "\r[#{desc}] #{@total-count}/#{@total} tasks taken (#{pc}\%)"
+
+        pcdone = 100.0 * (idx.to_f / @tasks.size.to_f)
+        t = Time.now
+        if terminal and (t - last_pc > 5.0)
+          rate = (idx - last_idx).to_f / (t - last_pc).to_f
+          print ("[#{Time.now.strftime('%Y-%m-%d %H:%M')}] dispensed %d/%d jobs (%.02f%%) @%.2f/sec   \r" % [idx+1, @tasks.size, pcdone, rate])
+          last_pc = Time.now
+          last_idx = idx
         end
-        ths.each { |th| th.join }
-        print "\n[#{@desc}] done.\n"
-      else
-        puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] Beginning #{desc}..."
-        count = 1
-        while count > 0
-          sleep(5)
-          @mutex.synchronize { count = @tasks.size }
-        end
-        ths.each { |th| th.join }
-        puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] #{desc} completed."
       end
+
+      print "\n" if terminal
+      puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] #{desc} completed."
     end
   end
   
@@ -129,16 +174,17 @@ module Rota
     
     class SemesterTask < SafeRunTask
       def initialize(sem)
-        @semester = sem
+        @semester_id = sem.id
       end
       
       def safe_run
-        agent, page = @semester.fetch_dates
-        @semester.parse_dates(page)
+        semester = Semester.get(@semester_id)
+        agent, page = semester.fetch_dates
+        semester.parse_dates(page)
       end
       
       def to_s
-        "SemesterTask<#{@semester['id']}>"
+        "SemesterTask<#{@semester_id}>"
       end
     end
     
@@ -166,32 +212,34 @@ module Rota
     
     class ProgramTask < SafeRunTask
       def initialize(program)
-        @program = program
+        @program_id = program.id
       end
       
       def safe_run
-        agent, page = @program.fetch_courses
-        @program.parse_courses(page)
+        program = Program.get(@program_id)
+        agent, page = program.fetch_courses
+        program.parse_courses(page)
       end
       
       def to_s
-        "Program<#{@program.name}>"
+        "Program<#{Program.get(@program_id).name}>"
       end
     end
     
     class CourseTask < SafeRunTask
       def initialize(course)
-        @course = course
+        @course_code = course.code
       end
       
       def safe_run
-        agent, page = @course.fetch_details
-        @course.parse_details(page)
-        @course.parse_offerings(page)
+        course = Course.get(@course_code)
+        agent, page = course.fetch_details
+        course.parse_details(page)
+        course.parse_offerings(page)
       end
       
       def to_s
-        "Course<#{@course.code}>"
+        "Course<#{@course_code}>"
       end
     end
     
@@ -212,16 +260,18 @@ module Rota
     
     class TimetableTask < SafeRunTask
       def initialize(offering)
-        @offering = offering
+        @offering_id = offering.id
       end
       
       def safe_run
-        agent, page = @offering.fetch_timetable
-        @offering.parse_timetable(page)
+        offering = Offering.get(@offering_id)
+        agent, page = offering.fetch_timetable
+        offering.parse_timetable(page)
       end
       
       def to_s
-        "Timetable<#{@offering.course.code}/#{@offering.semester['id']}>"
+        offering = Offering.get(@offering_id)
+        "Timetable<#{offering.course.code}/#{offering.semester['id']}>"
       end
     end
     

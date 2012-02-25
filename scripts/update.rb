@@ -7,6 +7,23 @@ require 'rota/updater'
 
 include Rota
 
+# start workers
+$workers = []
+Rota::Config['updater']['threads']['default'].times do
+  w = TaskWorker.new
+  $workers << w
+  w.run
+end
+
+at_exit do
+  $workers.each do |w|
+    w.send([:done])
+    w.wait
+  end
+end
+
+Rota.setup_and_finalize
+
 def log(msg)
   puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] #{msg}"
 end
@@ -31,7 +48,7 @@ end
 log "Updating semester list..."
 UpdateTasks::SemesterListTask.new.run
 
-t = TaskRunner.new(Semester.all.collect { |s| UpdateTasks::SemesterTask.new(s) })
+t = TaskRunner.new(Semester.all.collect { |s| UpdateTasks::SemesterTask.new(s) }, $workers)
 t.run("Update semester details")
 
 log "Updating campus list..."
@@ -89,7 +106,7 @@ if mode.include? :programs
   
   programs = Program.all
   tasks = programs.collect { |p| UpdateTasks::ProgramTask.new(p) }
-  t = TaskRunner.new(tasks)
+  t = TaskRunner.new(tasks, $workers)
   t.run("All Programs update", terminal)
 end
 
@@ -101,7 +118,7 @@ end
 if mode.include? :profiles
   courses = Course.all
   tasks = courses.collect { |c| UpdateTasks::CourseTask.new(c) }
-  t = TaskRunner.new(tasks)
+  t = TaskRunner.new(tasks, $workers)
   t.run("All Course information update", terminal)
 end
 
@@ -109,7 +126,7 @@ if mode.include? :timetables
   offerings = Offering.all(:semester => target_semester)
   tasks = offerings.collect { |o| UpdateTasks::TimetableTask.new(o) }
   
-  t = TaskRunner.new(tasks)
+  t = TaskRunner.new(tasks, $workers)
   t.run("Timetable update for #{target_semester['id']}/#{target_semester.name}", terminal)
 end
 
@@ -122,6 +139,6 @@ if mode.include? :profiles
     end
     tasks << UpdateTasks::ProfileTask.new(pp) unless pp.nil?
   end
-  t = TaskRunner.new(tasks, Rota::Config['updater']['threads']['profiles'])
+  t = TaskRunner.new(tasks, $workers)
   t.run("Current course profiles update", terminal)
 end
