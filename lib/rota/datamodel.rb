@@ -169,6 +169,7 @@ module Rota
     property :coordinator, String, :length => 512, :required => false
     property :faculty, String, :length => 512, :required => false
     property :school, String, :length => 512, :required => false
+    property :last_update, DateTime
     
     has n, :course_groups, :through => Resource, :constraint => :skip
     has n, :offerings, :constraint => :destroy

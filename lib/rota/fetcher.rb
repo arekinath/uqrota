@@ -306,6 +306,7 @@ module Rota
         self.units = cd.xpath('./uq:UNITS', ns).first.text.to_i
         self.description = cd.xpath('./uq:SUMMARY', ns).first.text
         self.coordinator = cd.xpath('./uq:COORDINATOR', ns).first.text
+        self.last_update = DateTime.now
         
         foff = cd.xpath('./uq:Offerings/uq:Offering[1]', ns).first
         unless foff.nil?
