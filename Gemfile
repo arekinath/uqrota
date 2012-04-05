@@ -8,10 +8,10 @@ gem "dm-is-remixable"
 gem "memcache-client"
 gem "dm-core"
 gem "dm-migrations"
+gem "dm-sweatshop"
 gem "dm-postgres-adapter", :group => :production
 gem "mongrel", "~>1.2.0.pre2", :group => :production
 gem "dm-sqlite-adapter", :group => :unittest
-gem "dm-yaml-adapter", :group => :unittest
 gem "dm-transactions"
 gem "json"
 gem "mechanize"
