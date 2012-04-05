@@ -20,6 +20,9 @@ module Rota
     property :name, String, :key => true
     property :value, String
     
+    include JSON::Serializable
+    json :attrs => [:value], :key => :name
+    
     def Setting.set(name, value)
       s = Setting.get(name)
       if s.nil?
@@ -95,6 +98,32 @@ module Rota
       end
       
       return [dt.year, dt.strftime('%W').to_i]
+    end
+    
+    def week_of(dt)
+      sdt = DateTime.strptime("Mon #{self.start_week} #{self.year}", '%A %W %Y')
+      
+      if dt < sdt
+        return :before
+      end
+      
+      n = 1
+      while dt.strftime('%W %Y') != sdt.strftime('%W %Y')
+        sdt += Rational(7, 1)
+        if sdt.strftime('%W').to_i == midsem_week
+          if dt.strftime('%W %Y') == sdt.strftime('%W %Y')
+            return :midsem
+          end
+          sdt += Rational(7, 1)
+        end
+        n += 1
+      end
+      
+      if sdt.strftime('%W').to_i > self.finish_week
+        return :after
+      else
+        return n
+      end
     end
     
     def each_week(&block)
@@ -400,22 +429,24 @@ module Rota
       end
       
       self.exceptions = "" unless self.exceptions
-      ds = self.exceptions.scan(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/)
+      ds = self.exceptions.scan(/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})/)
       excepts = ds.collect do |d,m,y|
-          "#{y}-#{m}-#{d}"
+          "%04d-%02d-%02d" % [y.to_i, m.to_i, d.to_i]
       end
       
       # now create the new ones
       while date.strftime('%W').to_i <= end_week.to_i or date.year < end_year.to_i
         sdate = date.strftime('%Y-%m-%d')
-        evt = TimetableEvent.new
-        evt.date = sdate
-        evt.timetable_session = self
-        evt.week_number = date.strftime('%W').to_i
-        evt.taught = (not excepts.include?(sdate))
-        evt.update_times
-        evt.save
-        self.timetable_events << evt
+        if date >= start_date and date <= end_date
+          evt = TimetableEvent.new
+          evt.date = sdate
+          evt.timetable_session = self
+          evt.week_number = date.strftime('%W').to_i
+          evt.taught = (not excepts.include?(sdate))
+          evt.update_times
+          evt.save
+          self.timetable_events << evt
+        end
         date += Rational(7,1)
       end
     end

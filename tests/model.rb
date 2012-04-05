@@ -7,15 +7,17 @@ require 'rubygems'
 
 Rota.setup_and_finalize
 
+require 'dm-sweatshop'
 require 'dm-migrations'
-DataMapper.auto_migrate!
-
 require 'bacon'
-require 'fixtures'
 
 include Rota
 
 describe 'The Setting class' do
+  before do
+    DataMapper.auto_migrate!
+  end
+
   it 'should allow setting' do
     s = Setting.set('test', 'blah')
     s.is_a?(Setting).should.equal true
@@ -27,42 +29,19 @@ describe 'The Setting class' do
   end
 end
 
-describe 'A user object' do
-  it 'should encrypt the stored password' do
-    u = User.new
-    u.email = 'test@test.com'
-    u.password = 'blah'
-    u.password_sha1.should.not.equal 'blah'
-  end
-  
-  it 'should check the encrypted password correctly' do
-    u = User.new
-    u.email = 'test@test.com'
-    u.password = 'blah'
-    u.is_password?('blah').should.equal true
-  end
-end
-
-describe 'A course object' do
+describe 'JSON serializer' do
   before do
-    @fix = FixtureSet.new('tests/fixtures/prereqs.yml')
-    @fix.save
+    DataMapper.auto_migrate!
   end
   
-  after do
-    @fix.destroy!
-  end
-  
-  it 'should recognise its prereqs' do
-    @fix.course3.reload
-    @fix.course3.prereqs.should.include? @fix.course1
-    @fix.course3.prereqs.should.include? @fix.course2
-    @fix.course3.prereqs.size.should.equal 2
-  end
-  
-  it 'should recognise its dependents' do
-    @fix.course3.reload
-    @fix.course3.dependents.should.equal [@fix.course4]
+  it 'should serialize a Setting object' do
+    s = Setting.set('test', 'foo')
+    o = JSON.parse(s.to_json)
+    o['name'].should.equal 'test'
+    o['value'].should.equal 'foo'
+    o['_class'].should.equal 'Setting'
+    o['_keys'].size.should.equal 1
+    o['_keys'][0].should.equal 'name'
   end
 end
 
@@ -96,6 +75,15 @@ describe 'A semester object' do
     @sem_b.week(7).should.equal [2013, 4]
   end
   
+  it 'should correctly tell the week number of a date' do
+    @sem.week_of(DateTime.parse("5/4/2010")).should.equal 2
+    @sem.week_of(DateTime.parse("1/1/2010")).should.equal :before
+    @sem.week_of(DateTime.parse("21/4/2010")).should.equal 4
+    @sem.week_of(DateTime.parse("27/4/2010")).should.equal :midsem
+    @sem.week_of(DateTime.parse("5/5/2010")).should.equal 5
+    @sem.week_of(DateTime.parse("1/9/2010")).should.equal :after
+  end
+  
   it 'should iterate over weeks during one year' do
     weeks = [13,14,15,16,17,18,19,20,21]
     ns =    [ 1, 2, 3, 4, :midsem, 5, 6, 7, 8]
@@ -125,36 +113,55 @@ end
 
 describe 'A session object' do
   before do
-    @fix = FixtureSet.new('tests/fixtures/sessions.yml')
-    @fix.save
+    DataMapper.auto_migrate!
     
-    @fix.s1.build_events
-    @fix.s2.build_events
-    @fix.s3.build_events
-  end
-  
-  after do
-    @fix.destroy!
+    course = Course.create(:code => 'BLAH1234')
+    sem = Semester.create(:name => 'foo', :start_week => 12, :finish_week => 18, :midsem_week => 14)
+    camp = Campus.create(:code => 'FOO')
+    off = Offering.create(:semester => sem, :course => course, :campus => camp)
+    series = TimetableSeries.create(:name => 'L', :offering => off)
+    group = TimetableGroup.create(:name => '1', :timetable_series => series)
+    build = Building.create(:number => 42)
+    
+    @s1 = TimetableSession.create(:timetable_group => group, 
+                                  :day => 'Tue', :building => build,
+                                  :start => 8*60, :finish => 9*60,
+                                  :dates => '1/4/2012 - 13/5/2012',
+                                  :exceptions => '24/4/2012; 1/5/2012')
+    @s2 = TimetableSession.create(:timetable_group => group,
+                                  :day => 'Tue', :building => build,
+                                  :start => 8*60, :finish => 9*60,
+                                  :dates => '1/4/2012 - 13/5/2012',
+                                  :exceptions => ' ')
+    @s3 = TimetableSession.create(:timetable_group => group,
+                                  :day => ' ', :building => build,
+                                  :start => 0, :finish => 0,
+                                  :dates => ' ',
+                                  :exceptions => ' ')
+    
+    @s1.build_events
+    @s2.build_events
+    @s3.build_events
   end
 
   it 'should build the correct number of events with everything specified' do
-    @fix.s1.events.size.should.equal 5
+    @s1.events.size.should.equal 6
   end
   
   it 'should build the correct number with whitespace in exceptions' do
-    @fix.s2.events.size.should.equal 5
+    @s2.events.size.should.equal 6
   end
   
   it 'should build the correct number with whitespace in all fields' do
-    @fix.s3.events.size.should.equal 0
+    @s3.events.size.should.equal 0
   end
   
   it 'should exclude exceptions' do
-    @fix.s1.events.select { |ev| ev.taught }.size.should.equal 3
-    @fix.s2.events.select { |ev| ev.taught }.size.should.equal 5
+    @s1.events.select { |ev| ev.taught }.size.should.equal 4
+    @s2.events.select { |ev| ev.taught }.size.should.equal 6
     
-    weeks = @fix.s1.events.select { |ev| not ev.taught }.collect { |ev| ev.week_number }
-    weeks.should.equal [ 2, 4 ]
+    weeks = @s1.events.select { |ev| not ev.taught }.collect { |ev| ev.week_number }
+    weeks.should.equal [ 17, 18 ]
   end
   
   it 'should convert times to mins-from-midnight correctly' do
