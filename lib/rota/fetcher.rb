@@ -18,6 +18,15 @@ end
 module Rota
 
   class Program
+    @@newprogram = Message.new("854d3d56-0958-487a-b867-479dc9ea00c0",
+                               "New program available",
+                               "A new program has become available.",
+                               [:program])
+    @@programname = Message.new("6b6dc097-631f-4622-9d6f-a444e0c06331",
+                                "Program name changed",
+                                "The name of a program has been changed.",
+                                [:program, :old_name])
+  
     def Program.fetch_list      
       list_client = Savon::Client.new do
         wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_SEARCH_REQUEST.1.wsdl"
@@ -48,7 +57,11 @@ module Rota
             p['id'] = ph[:code].to_i
             p.name = ph[:title]
             p.save
+            ChangelogEntry.make($0, @@newprogram, {:program => p})
           else
+            if (p.name != ph[:title])
+              ChangelogEntry.make($0, @@programname, {:program => p, :old_name => p.name})
+            end
             p.name = ph[:title]
             p.save
           end
@@ -291,6 +304,19 @@ module Rota
       return response, response.to_xml
     end
     
+    @@coursename = Message.new("edd36b27-9b53-4d27-bcaf-7b400a047ca7",
+                               "Course name or description changed",
+                               "The name of a course or its detailed description has been changed.",
+                               [:course, :old_name, :old_description])
+    @@courseunits = Message.new("4369daf7-839f-4720-9292-e46e8561c346",
+                                "Course unit value changed",
+                                "The unit value of a course has changed.",
+                                [:course, :old_units])
+    @@coursecoord = Message.new("be66aa23-1190-4146-bbed-1033f614b428",
+                                "Course coordinator, school or faculty changed",
+                                "The coordinator, school or faculty responsible for a course has been changed.",
+                                [:course, :old_coordinator, :old_faculty, :old_school])
+    
     def parse_details(x)
       doc = Nokogiri::XML(x)
       ns = doc.root.namespaces
@@ -303,18 +329,39 @@ module Rota
       return if cd.nil?
       
       DataMapper::Transaction.new.commit do
-        self.name = cd.xpath('./uq:TITLE', ns).first.text
-        self.units = cd.xpath('./uq:UNITS', ns).first.text.to_i
-        self.description = cd.xpath('./uq:SUMMARY', ns).first.text
-        self.coordinator = cd.xpath('./uq:COORDINATOR', ns).first.text
-        self.last_update = DateTime.now
+        name = cd.xpath('./uq:TITLE', ns).first.text
+        units = cd.xpath('./uq:UNITS', ns).first.text.to_i
+        desc = cd.xpath('./uq:SUMMARY', ns).first.text
+        coord = cd.xpath('./uq:COORDINATOR', ns).first.text
+        faculty = self.faculty
+        school = self.school
         
         foff = cd.xpath('./uq:Offerings/uq:Offering[1]', ns).first
         unless foff.nil?
-          self.faculty = foff.xpath('./uq:FACULTY_VALUE', ns).first.text
-          school = foff.xpath('./uq:School/uq:SCHOOL_VALUE', ns).first
-          self.school = school.text unless school.nil?
+          faculty = foff.xpath('./uq:FACULTY_VALUE', ns).first.text
+          schoole = foff.xpath('./uq:School/uq:SCHOOL_VALUE', ns).first
+          unless schoole.nil?
+            school = schoole.text
+          end
         end
+        
+        if self.name != name or self.description != desc
+          ChangelogEntry.make($0, @@coursename, {:course => self, :old_name => self.name, :old_description => self.description})
+        end
+        if self.units != units
+          ChangelogEntry.make($0, @@courseunits, {:course => self, :old_units => self.units})
+        end
+        if self.coordinator != coord or self.faculty != faculty or self.school != school
+          ChangelogEntry.make($0, @@coursecoord, {:course => self, :old_coordinator => self.coordinator, :old_faculty => self.faculty, :old_school => self.school})
+        end
+        
+        self.name = name
+        self.units = units
+        self.description = desc
+        self.coordinator = coord
+        self.last_update = DateTime.now
+        self.faculty = faculty
+        self.school = school
       end
         
       DataMapper::Transaction.new.commit do
@@ -329,7 +376,6 @@ module Rota
           cse = Course.get(code)
           if cse.nil?
             cse = Course.new
-            puts "discovered #{cse.code}"
             cse.code = code
             cse.save
           end
@@ -341,6 +387,15 @@ module Rota
       end
     end
     
+    @@newoffering = Message.new("a071e8a7-8ed2-4300-a166-6cc07f064737",
+                                "New offering available",
+                                "A new offering is available for the course.",
+                                [:offering])
+    @@goneoffering = Message.new("478c4d82-5174-4b3a-a61f-1290b0d246ae",
+                                 "Offering withdrawn",
+                                 "An offering for the course has been withdrawn.",
+                                 [:course, :old_id, :old_sinet_class, :old_semester, :old_campus])
+    
     def parse_offerings(x)
       doc = Nokogiri::XML(x)
       ns = doc.root.namespaces
@@ -351,6 +406,8 @@ module Rota
       cd = resp.xpath('./uq:MsgData/uq:Transaction/uq:CourseDetails', ns)[0]
       
       return if cd.nil?
+      
+      cur_offerings = self.offerings
       
       DataMapper::Transaction.new.commit do
         is_first = true
@@ -369,6 +426,7 @@ module Rota
             camp.save
           end
           if not sem.nil?
+            is_new = false
             p = Offering.first(:semester => sem, :sinet_class => classid)
             if p.nil?
               p = self.offerings.first(:semester => sem, :campus => camp,
@@ -378,6 +436,7 @@ module Rota
                 if (p.nil? or (p.mode and p.mode.size > 0) or 
                     (p.location and p.location.size > 0))
                   p = Offering.new
+                  is_new = true
                 end
               end
             end
@@ -389,9 +448,21 @@ module Rota
             p.current = is_first
             p.mode = mode
             p.save
+            
+            if is_new
+              ChangelogEntry.make($0, @@newoffering, {:offering => p})
+            end
+            
+            cur_offerings.remove(p)
           end
           is_first = false
         end
+      end
+      
+      # remove outdated offerings
+      cur_offerings.each do |off|
+        ChangelogEntry.make($0, @@goneoffering, {:course => self, :old_id => off.id, :old_sinet_class => off.sinet_class, :old_semester => off.semester, :old_campus => off.campus})
+        off.destroy!
       end
     end
   end
@@ -533,6 +604,61 @@ module Rota
       end
     end
     
+    @@zeromatch = Message.new("ead0ca85-27b4-4d2a-ab70-95caafce5079",
+                              "SI-net returned no matching classes",
+                              "Occurs when SI-net's timetable search page returns no results for a course, even though that course has previously been indexed by SOAP services.",
+                              [:offering])
+    @@newseries = Message.new("90ec190c-f5e6-4edf-8c74-186ba23b797d",
+                              "New series available in offering",
+                              "A new timetable series has been made available for the course. For example, the course has begun offering prac sessions as well as just lectures.",
+                              [:series])
+    @@goneseries = Message.new("d8f91a66-bae6-4a00-b66d-2912354bdcab",
+                               "Series removed from offering",
+                               "A timetable series has been withdrawn from the course offering. For example, previously prac sessions were offered, but now only lectures are.",
+                               [:offering, :old_name, :old_id])
+    @@newgroup = Message.new("b71a3c12-78ec-4fac-9c60-4231b1397d56",
+                             "New group available in series",
+                             "A new timetable group has been made available in the series for course. For example, a new prac session has been made available.",
+                             [:group])
+    @@locationchanged = Message.new("e1580d7e-8954-4ae8-a99f-579139d989d7",
+                                    "Session location changed",
+                                    "The location (building/room) of the target session has changed, and it has been moved to a new location.",
+                                    [:session, :old_building, :old_room])
+    @@timechanged = Message.new("6623a30d-7321-4e7b-99fc-b3e9d585039a",
+                                "Session time changed",
+                                "The day of the week, start or finish time of the target session has changed.",
+                                [:session, :old_day, :old_start_time, :old_finish_time])
+    @@schedulechanged = Message.new("bb16ed5e-e20f-4005-b0d3-5206c3d1b704",
+                                    "Session schedule changed",
+                                    "The by-week schedule for the session changed -- either the start and end dates of its run or the 'not taught weeks' have been updated.",
+                                    [:session, :old_dates, :old_exceptions])
+    @@newsession = Message.new("0172961a-963b-4aba-89d8-2a6f834358f9",
+                               "New session available",
+                               "A new session is available within a timetable group. For example, a prac P2 is now occuring on Monday as well as Wednesday.",
+                               [:session])
+    @@gonesession = Message.new("66ef1585-dfc9-493c-a6e4-5f9c92f83f8c",
+                                "Session removed from group",
+                                "A session that was previously associated with this group has been removed.",
+                                [:group, :old_id, :old_day, :old_start_time])
+    @@groupbubble = Message.new("60d6e320-758f-445e-897d-7ad315db48c0",
+                                "Sessions within group have been changed",
+                                "Sessions in this group have changed -- these may be additions, removals or alterations.",
+                                [:group])
+    @@seriesbubble = Message.new("d1a45481-ca57-4ba0-9902-d31e13175823",
+                                 "Groups within series have been changed",
+                                 "Groups within this series have changed -- these may be additions, removals or alterations.",
+                                 [:series])
+    @@coursebubble = Message.new("a2ce5857-2d79-4de6-bf44-08c5df7f4b96",
+                                 "Timetable information for offering has changed",
+                                 "Timetable information for this offering has been changed -- these may be additions, removals or alterations.",
+                                 [:offering])                                 
+    @@gonegroup = Message.new("b57d0973-a49a-4624-83f9-4174bd1c5ece",
+                              "Timetable group withdrawn from series",
+                              "A timetable group (eg P1) has been withdrawn from the series (eg P) and no close equivalent was found.",
+                              [:series, :old_id, :old_name])
+                                    
+                                    
+    
     def fetch_timetable
       agent, page = Fetcher::SInet::sem_page(self.semester)
       form = page.form('win0')
@@ -576,7 +702,8 @@ module Rota
       end
      
       if row_n == -1
-        raise Exception.new("SI-net returned zero matching classes")
+        ChangelogEntry.make($0, @@zeromatch, {:offering => self})
+        return [agent, nil]
       end
       row_to_use = row_weights.sort_by { |r,w| w }.reverse.first[0]
       
@@ -597,6 +724,8 @@ module Rota
     end
     
     def parse_timetable(page)
+      return if page.nil?
+    
       page = page.parser
       DataMapper::Transaction.new.commit do    
         self.last_update = DateTime.now
@@ -649,6 +778,7 @@ module Rota
               s.offering = self
               s.save
               series << s
+              ChangelogEntry.make($0, @@newseries, {:series => s})
               course_changed = true
             end
             done_series << s
@@ -661,6 +791,7 @@ module Rota
               g.name = group_name
               g.series = s
               g.save
+              ChangelogEntry.make($0, @@newgroup, {:group => g})
               groups << g
               changed_series << s
             else
@@ -708,12 +839,22 @@ module Rota
               if sim_map[[r, best_s]] < 7
                 # we have to make changes
                 # TODO: handle alerts here
-                best_s.day = r['Day']
                 b = Building.find_or_create(r['Building'], r['Building Name'])
+                if (best_s.building != b or best_s.room != r['Room'])
+                  ChangelogEntry.make($0, @@locationchanged, {:session => best_s, :old_building => best_s.building, :old_room => best_s.room})
+                end
                 best_s.building = b
                 best_s.room = r['Room']
+                if (best_s.day != r['Day'] or best_s.start_time != r['Start'] or best_s.finish_time != r['End'])
+                  ChangelogEntry.make($0, @@timechanged, {:session => best_s, :old_day => best_s.day, :old_start_time => best_s.start_time, :old_finish_time => best_s.finish_time})
+                end
+                best_s.day = r['Day']
                 best_s.start_time = r['Start']
                 best_s.finish_time = r['End']
+                
+                if (best_s.dates != r['Start/End Date (DD/MM/YYYY)'] or best_s.exceptions != r['Not taught on these dates (DD/MM/YYYY)'])
+                  ChangelogEntry.make($0, @@schedulechanged, {:session => best_s, :old_dates => best_s.dates, :old_exceptions => best_s.exceptions})
+                end
                 best_s.dates = r['Start/End Date (DD/MM/YYYY)']
                 best_s.exceptions = r['Not taught on these dates (DD/MM/YYYY)']
                 best_s.save
@@ -741,6 +882,8 @@ module Rota
               s.exceptions = r['Not taught on these dates (DD/MM/YYYY)']
               s.save
               
+              ChangelogEntry.make($0, @@newsession, [:session => s])
+              
               s.build_events
               changed = true
             end
@@ -748,33 +891,45 @@ module Rota
             # old sessions to destroy
             while sess_of_concern.size > 0
               s = sess_of_concern.pop
+              ChangelogEntry.make($0, @@gonesession, {:group => g, :old_id => s.id, :old_day => s.day, :old_start_time => s.start_time})
               s.destroy!
               changed = true
             end
             
-            g.change_alert if changed
+            ChangelogEntry.make($0, @@groupbubble, {:group => g}) if changed
             
           end
         end
         
         # fire off series/course alerts
         if course_changed
-          self.change_alert
+          ChangelogEntry.make($0, @@coursebubble, {:offering => self})
         end
         
         changed_series.each do |s|
-          s.change_alert
+          ChangelogEntry.make($0, @@seriesbubble, {:series => s})
         end
         
         # any groups which haven't been touched have been removed from sinet!
-        all_groups = series.collect { |s| s.groups }.flatten
+        all_groups = self.series.collect { |s| s.groups }.flatten
         all_groups -= done_groups
         
         all_groups.each do |g|
-          g.change_alert
+          ChangelogEntry.make($0, @@gonegroup, {:series => g.series, :old_id => g.id, :old_name => g.name})
           g.destroy!
         end
+        
+        # any series that haven't been touched are gone, too
+        all_series = self.series
+        all_series -= done_series
+        
+        all_series.each do |s|
+          ChangelogEntry.make($0, @goneseries, {:offering => self, :old_id => s.id, :old_name => s.name})
+          s.destroy!
+        end
+        
       end
+      
     end
   end
   

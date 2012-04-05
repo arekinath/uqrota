@@ -4,6 +4,7 @@ gem "rack-test"
 gem "sprockets"
 gem "daemons"
 gem "dm-constraints"
+gem "dm-is-remixable"
 gem "memcache-client"
 gem "dm-core"
 gem "dm-migrations"
@@ -19,6 +20,7 @@ gem "nokogiri"
 gem "thin"
 gem "sinatra"
 gem "sinatra-namespace"
+gem "treetop"
 # Optional dependencies
 gem "ri_cal", :group => :api
 gem "builder", :group => :api

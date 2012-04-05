@@ -21,6 +21,5 @@ class RotaApp < Sinatra::Base
 	end
 
   use DataService
-  use LoginService
   use UserService
 end

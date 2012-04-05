@@ -394,4 +394,69 @@ class DataService < Sinatra::Base
       Utils.ical(session)
     end
   end
+  
+  get '/messages.xml' do
+    content_type :xml
+    Utils.xml do |x|
+      x.messages do |m|
+        Rota::Message.all.each do |mes|
+          m.message do |mm|
+            mm.uuid(mes.uuid)
+            mm.name(mes.short)
+            mm.description(mes.full)
+            mm.parameters do |pr|
+              mes.params.each do |pp|
+                pr.parameter(pp.to_s)
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+  
+  get '/messages.json' do
+    content_type :json
+    Rota::Message.all.to_json
+  end
+  
+  get '/changes/:class/:key.xml' do |cls,key|
+    changes = []
+    Rota::ChangelogEntry.all.each do |ce|
+      o = JSON.parse(ce.objkey)
+      o.values.each do |v|
+        if (v.is_a?(Hash) \
+            and (v['class'].downcase == cls or v['class'].downcase == 'timetable' + cls) \
+            and v['key'].first == key)
+          changes << ce
+        end          
+      end
+    end
+    
+    content_type :xml
+    Utils.xml do |x|
+      x.changes do |x|
+        changes.each do |ch|
+          x.change do |x|
+            x.id(ch.id)
+            x.message do |x|
+              x.uuid(ch.message.uuid)
+              x.name(ch.message.short)
+            end
+            x.parameters do |x|
+              ch.targets.each do |k,v|
+                if v.respond_to?(:to_xml)
+                  x.parameter(:name => k) do |x|
+                    v.to_xml(x, :no_children)
+                  end
+                else
+                  x.parameter(v, :name => k)
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
 end

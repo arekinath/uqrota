@@ -1,0 +1,49 @@
+grammar MessageQuery
+  rule expr
+     first:cond exprpart* <Expression>
+  end
+  
+  rule exprpart
+    space* op:('&&' / '||') space* second:cond <ExpressionPart>
+  end
+  
+  rule cond
+    lhs:primary space* op:operator space* rhs:primary <Condition> / '(' ex:expr ')' <NestedExpression> 
+  end
+  
+  rule primary
+    path / string / int
+  end
+  
+  rule path
+    base:( [a-zA-Z] [a-zA-Z0-9_\?\!]* ) ( '.' nxt:path )? <DotPath>
+  end
+  
+  rule string
+    ['"] [^'"]+ ['"] {
+      def compile
+        text_value
+      end
+    }
+  end
+  
+  rule int
+    '-'? [1-9] [0-9]* ( '.' [0-9]+ )? {
+      def compile
+        text_value
+      end
+    }
+  end
+  
+  rule operator
+    ('==' / '<' / '>' / '<=' / '>=' / '!=') {
+      def compile
+        text_value
+      end
+    }
+  end
+  
+  rule space
+    ' ' / "\t" / "\n"
+  end
+end

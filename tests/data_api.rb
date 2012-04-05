@@ -1,12 +1,12 @@
-# Require config, but in way that it won't ever be included twice
-$:<< File.expand_path("../../lib/", __FILE__)
-require 'config'
-$:.pop
+require File.expand_path("../../lib/config", __FILE__)
 
 Rota::Config['database']['uri'] = 'yaml:tests/fixtures/apitests'
 
 require 'rota/model'
 require 'rota/fetcher'
+
+Rota.setup_and_finalize
+
 require 'rubygems'
 
 require 'dm-migrations'

@@ -1,10 +1,11 @@
-
 require File.expand_path("../../lib/config", __FILE__)
 
 Rota::Config['database']['uri'] = 'sqlite::memory:'
 
 require 'rota/model'
 require 'rubygems'
+
+Rota.setup_and_finalize
 
 require 'dm-migrations'
 DataMapper.auto_migrate!
