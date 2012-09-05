@@ -223,14 +223,14 @@ module Rota
     
     property :id, Serial
     property :profile_id, Integer
-    property :sinet_class, Integer, :index => :sinet_lookup
+    property :sinet_class, Integer
     property :location, String
     property :current, Boolean
     property :mode, String
     
     property :last_update, DateTime
     
-    belongs_to :semester, :index => :sinet_lookup
+    belongs_to :semester 
     belongs_to :campus
     has n, :timetable_series, :model => 'Rota::TimetableSeries', :constraint => :destroy
     alias :series :timetable_series
@@ -345,9 +345,9 @@ module Rota
     include DataMapper::Resource
     
     property :id, Serial
-    property :name, String, :index => :series_lookup
+    property :name, String
     
-    belongs_to :offering, :index => :series_lookup
+    belongs_to :offering
     has n, :timetable_groups, :constraint => :destroy
     alias :groups :timetable_groups
     

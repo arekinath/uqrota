@@ -1,15 +1,14 @@
-$LOAD_PATH << File.expand_path("../../lib", __FILE__)
-require 'config'
+require File.expand_path("../../lib/config", __FILE__)
 require 'rota/model'
-include Rota::Model
+include Rota
 
 puts "#{Time.now} -- starting orphan check"
 
 puts "#{Time.now} -- orphans: check series"
-ss = Series.all
+ss = TimetableSeries.all
 ss.size.times do |i|
   ser = ss[i]
-  if ser.course.nil?
+  if ser.offering.nil?
     puts "#{Time.now} -- >> unlinking series #{ser['id']}"
     ser.groups.each do |g|
       g.sessions.each do |s|
@@ -25,7 +24,7 @@ ss.size.times do |i|
 end
 
 puts "#{Time.now} -- orphans: check groups"
-gs = Group.all
+gs = TimetableGroup.all
 gs.size.times do |i|
   g = gs[i]
   if g.series.nil?
@@ -42,7 +41,7 @@ end
 
 puts "#{Time.now} -- orphans: check sessions"
 
-ss = Session.all
+ss = TimetableSession.all
 ss.size.times do |i|
   s = ss[i]
 
@@ -56,7 +55,7 @@ ss.size.times do |i|
 end
 
 puts "#{Time.now} -- orphans: check events"
-evs = Event.all
+evs = TimetableEvent.all
 evs.size.times do |i|
   ev = evs[i]
 
