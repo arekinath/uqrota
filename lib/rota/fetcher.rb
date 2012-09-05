@@ -17,6 +17,8 @@ end
 
 module Rota
 
+  SinetEndpoint = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector"
+
   class Program
     @@newprogram = Message.new("854d3d56-0958-487a-b867-479dc9ea00c0",
                                "New program available",
@@ -29,7 +31,8 @@ module Rota
   
     def Program.fetch_list      
       list_client = Savon::Client.new do
-        wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_SEARCH_REQUEST.1.wsdl"
+        wsdl.document = "#{SinetEndpoint}/UQ_CP_SEARCH_REQUEST.1.wsdl"
+        wsdl.endpoint = SinetEndpoint
       end
       
       builder = Builder::XmlMarkup.new
@@ -71,7 +74,8 @@ module Rota
     
     def fetch_courses
       prog_client = Savon::Client.new do
-        wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_DISPLAY_PRGLIST_REQUEST.1.wsdl"
+        wsdl.document = "#{SinetEndpoint}/UQ_CP_DISPLAY_PRGLIST_REQUEST.1.wsdl"
+        wsdl.endpoint = SinetEndpoint
       end
       
       builder = Builder::XmlMarkup.new
@@ -235,7 +239,8 @@ module Rota
 
     def Course.fetch_list
       c = Savon::Client.new do
-        wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_SEARCH_REQUEST.1.wsdl"
+        wsdl.document = "#{SinetEndpoint}/UQ_CP_SEARCH_REQUEST.1.wsdl"
+        wsdl.endpoint = SinetEndpoint
       end
       c.http.read_timeout = 300
       builder = Builder::XmlMarkup.new
@@ -288,7 +293,8 @@ module Rota
 
     def fetch_details
       client = Savon::Client.new do
-        wsdl.document = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector/UQ_CP_DISPLAY_COURSE_REQUEST.1.wsdl"
+        wsdl.document = "#{SinetEndpoint}/UQ_CP_DISPLAY_COURSE_REQUEST.1.wsdl"
+        wsdl.endpoint = SinetEndpoint
       end
       builder = Builder::XmlMarkup.new
       response = client.request :uq_cp_display_course_request do
@@ -307,7 +313,7 @@ module Rota
     @@coursename = Message.new("edd36b27-9b53-4d27-bcaf-7b400a047ca7",
                                "Course name or description changed",
                                "The name of a course or its detailed description has been changed.",
-                               [:course, :old_name, :old_description])
+                               [:course, :old_name])
     @@courseunits = Message.new("4369daf7-839f-4720-9292-e46e8561c346",
                                 "Course unit value changed",
                                 "The unit value of a course has changed.",
@@ -346,7 +352,7 @@ module Rota
         end
         
         if self.name != name or self.description != desc
-          ChangelogEntry.make($0, @@coursename, {:course => self, :old_name => self.name, :old_description => self.description})
+          ChangelogEntry.make($0, @@coursename, {:course => self, :old_name => self.name})
         end
         if self.units != units
           ChangelogEntry.make($0, @@courseunits, {:course => self, :old_units => self.units})
@@ -453,7 +459,7 @@ module Rota
               ChangelogEntry.make($0, @@newoffering, {:offering => p})
             end
             
-            cur_offerings.remove(p)
+            cur_offerings.delete(p)
           end
           is_first = false
         end
