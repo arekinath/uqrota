@@ -889,7 +889,7 @@ module Rota
               s.exceptions = r['Not taught on these dates (DD/MM/YYYY)']
               s.save
               
-              ChangelogEntry.make($0, @@newsession, [:session => s])
+              ChangelogEntry.make($0, @@newsession, {:session => s})
               
               s.build_events
               changed = true
