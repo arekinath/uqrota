@@ -175,6 +175,7 @@ module Rota
             t << title if title.size > 0
             t << header if header.size > 0
             cg.text = t.join(" - ")
+            cg.text = cg.text.slice(0,500)
             cg.save
             
             pcl.xpath('./uq:PlanCourse', ns).each do |cs|

@@ -17,7 +17,7 @@ module Rota
     
     def is_valid?(obj)
       @params.each do |p|
-        if obj[p].nil?
+        if not obj.has_key?(p)
           return false
         end
       end
