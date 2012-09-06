@@ -6,11 +6,12 @@ require 'config'
 require 'rota/model'
 
 module Rota
-  
+
   class Semester
     def to_ical(cal)
       self.each_week do |n, yweek, mon, fri|
         cal.event do |event|
+          event.uid = "semester-#{self.id}-w#{n}@uqrota.net"
           event.dtstart = mon.to_date
           event.dtend = fri.to_date
           if n == :midsem
@@ -22,10 +23,11 @@ module Rota
       end
     end
   end
-  
+
   class TimetableEvent
     def to_ical(cal)
       cal.event do |event|
+        event.uid = "ttevent-#{self.id}@uqrota.net"
         event.dtstart = self.start_dt.to_time.utc
         event.dtend = self.finish_dt.to_time.utc
         event.summary = self.session.group.fancy_name
@@ -33,12 +35,13 @@ module Rota
       end
     end
   end
-  
+
   class AssessmentTask
     def to_ical(cal)
       due = self.due_date_dt
       unless due.nil?
         cal.event do |event|
+          event.uid = "atask-#{self.id}@uqrota.net"
           event.dtstart = due.to_time.utc
           event.dtend = (due + Rational(1,24)).to_time.utc
           event.summary = self.to_s
@@ -46,7 +49,7 @@ module Rota
       end
     end
   end
-  
+
   class TimetableSession
     def to_ical(cal)
       self.events.each do |ev|
@@ -54,7 +57,7 @@ module Rota
       end
     end
   end
-  
+
   class TimetableGroup
     def to_ical(cal, excepts=[])
       self.sessions.each do |s|
@@ -64,7 +67,7 @@ module Rota
       end
     end
   end
-  
+
   class TimetableSeries
     def to_ical(cal, excepts=[])
       self.groups.each do |g|
@@ -74,7 +77,7 @@ module Rota
       end
     end
   end
-  
+
   class Offering
     def to_ical(cal, type=:all, excepts=[])
       if type == :timetable or type == :all
@@ -93,7 +96,7 @@ module Rota
       end
     end
   end
-  
+
   class Course
     def to_ical(cal, excepts=[])
       self.offerings.each do |o|
@@ -103,7 +106,7 @@ module Rota
       end
     end
   end
-  
+
   class Timetable
     def to_ical(cal)
       self.groups.each do |g|
@@ -111,11 +114,11 @@ module Rota
       end
     end
   end
-  
+
 end
 
 module Utils
-  
+
   def self.ical(*ps, &block)
     ical = RiCal.Calendar do |cal|
       ps.each do |p|
