@@ -512,7 +512,7 @@ class DataService < Sinatra::Base
         o.values.each do |v|
           if (v.is_a?(Hash) \
               and (v['class'].downcase == cls or v['class'].downcase == 'timetable' + cls) \
-              and v['key'].first == key)
+              and v['key'].first.to_s == key)
             changes << ce
           end
         end
