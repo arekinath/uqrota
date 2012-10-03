@@ -506,8 +506,8 @@ class DataService < Sinatra::Base
 
   get '/changes/:class/:key.xml' do |cls,key|
     changes = []
-    Rota::ChangelogEntry.all.each do |ce|
-      if ce.objkey and ce.objkey.is_a?(String) and ce.objkey.size > 2
+    Rota::ChangelogEntry.all(:objkey.like => "%[#{key}]%").each do |ce|
+      if ce.objkey and ce.objkey.kind_of?(String) and ce.objkey.size > 2
         o = JSON.parse(ce.objkey)
         o.values.each do |v|
           if (v.is_a?(Hash) \
