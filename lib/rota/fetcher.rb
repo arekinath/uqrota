@@ -222,6 +222,7 @@ module Rota
           bid = a['href'].scan(/id=([0-9]+)/)
           if bid[0] and bid[0][0] and bnum[0] and bnum[0][0]
             bnum, bid = [bnum[0][0], bid[0][0]]
+            bnum = bnum.gsub(/^0+/,'').upcase
             b = Building.first(:campus => campus, :number => bnum)
             if b.nil?
               b = Building.new

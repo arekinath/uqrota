@@ -325,11 +325,14 @@ module Rota
     def Building.find_or_create(campus, num, name)
       b = Building.first(:campus => campus, :number => num)
       if b.nil?
-        b = Building.new
-        b.campus = campus
-        b.number = num
-        b.name = name
-        b.save
+        b = Building.first(:campus => campus, :number => num.to_s.gsub(/^0+/,'').upcase)
+        if b.nil?
+          b = Building.new
+          b.campus = campus
+          b.number = num.to_s.gsub(/^0+/,'').upcase
+          b.name = name
+          b.save
+        end
       end
       return b
     end
