@@ -4,13 +4,13 @@ require 'config'
 require 'rota/model'
 
 module Rota
-  
+
   class TimetableEvent
     def to_xml(b)
       b.event(:date => self.date, :taught => self.taught)
     end
   end
-  
+
   class Clash
     def to_xml(b)
       b.clash do |c|
@@ -20,7 +20,7 @@ module Rota
       end
     end
   end
-  
+
   class ClashSummary
     def to_xml(b)
       b.summary do |s|
@@ -33,7 +33,7 @@ module Rota
       end
     end
   end
-  
+
   class Program
     def to_xml(b, *opts)
       b.program do |p|
@@ -49,7 +49,7 @@ module Rota
       end
     end
   end
-  
+
   class Plan
     def to_xml(bu, *opts)
       bu.plan do |b|
@@ -66,7 +66,7 @@ module Rota
       end
     end
   end
-  
+
   class CourseGroup
     def to_xml(bu, *opts)
       bu.group do |b|
@@ -81,11 +81,13 @@ module Rota
       end
     end
   end
-  
+
   class TimetableSession
     def to_xml(b, *opts)
       b.session do |s|
         s.id(self['id'])
+        s.group(self.group.id) unless opts.include?(:no_group) or opts.include?(:no_parents)
+        s.series(self.group.series.id) unless opts.include?(:no_series) or opts.include?(:no_parents)
         s.day(self.day)
         s.start(self.start_time)
         s.finish(self.finish_time)
@@ -93,6 +95,7 @@ module Rota
         s.finishmins(self.finish)
         s.room(self.room)
         s.building do |b|
+          b.id(self.building.id)
           b.number(self.building.number)
           b.name(self.building.name)
         end
@@ -106,7 +109,18 @@ module Rota
       end
     end
   end
-  
+
+  class Building
+    def to_xml(b, *opts)
+      b.building do |b|
+        b.id(self.id)
+        b.number(self.number)
+        b.name(self.name)
+        b.map_id(self.map_id)
+      end
+    end
+  end
+
   class TimetableGroup
     def to_xml(b, *opts)
       b.group do |g|
@@ -116,14 +130,14 @@ module Rota
         unless opts.include?(:no_children)
           g.sessions do |s|
             self.sessions.each do |se|
-              se.to_xml(s)
+              se.to_xml(s, :no_parents)
             end
           end
         end
       end
     end
   end
-  
+
   class TimetableSeries
     def to_xml(b, *opts)
       b.series do |ss|
@@ -139,7 +153,7 @@ module Rota
       end
     end
   end
-  
+
   class Semester
     def to_xml(b, *opts)
       b.semester do |sem|
@@ -166,7 +180,7 @@ module Rota
       end
     end
   end
-  
+
   class Campus
     def to_xml(b, *opts)
       b.campus do |camp|
@@ -204,7 +218,7 @@ module Rota
       end
     end
   end
-  
+
   class Course
     def to_xml(b, *opts)
       b.course do |cs|
@@ -236,7 +250,7 @@ module Rota
       end
     end
   end
-  
+
   class AssessmentTask
     def to_xml(b, *opts)
       b.task do |task|
@@ -249,7 +263,7 @@ module Rota
       end
     end
   end
-  
+
 end
 
 module Utils
