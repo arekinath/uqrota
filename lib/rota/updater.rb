@@ -6,7 +6,7 @@ require 'io/wait'
 require 'thread'
 
 module Rota
-  
+
   class TaskWorker
     def initialize
       @parent_read, @child_write = IO.pipe
@@ -23,7 +23,7 @@ module Rota
     def _recv; Marshal.load(@child_read); end
 
     def run
-      sleep 0.5 
+      sleep 0.5
       @pid = fork {
 
         # we have to re-do the connection in the child otherwise fork will screw things up
@@ -35,7 +35,7 @@ module Rota
             _send([:next_job])
             resp = IO.select([@child_read], [], [], 5)
           end
-          
+
           job = _recv()
           if job[0] == :job
             task = job[1]
@@ -68,7 +68,7 @@ module Rota
       @tasks = tasks
       @workers = workers
     end
-    
+
     def run(desc, terminal=false)
       puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] Beginning #{desc}..."
 
@@ -106,9 +106,9 @@ module Rota
       puts "[#{Time.now.strftime('%Y-%m-%d %H:%M')}] #{desc} completed."
     end
   end
-  
+
   module UpdateTasks
-    
+
     class SafeRunTask
       def run
         errcount = 0
@@ -129,7 +129,7 @@ module Rota
             errstr += err.inspect + "\n"
             errstr += err.backtrace.join("\n\t")
             puts errstr
-            
+
             em = Rota::QueuedEmail.new(:recipient => Rota::Config['updater']['reports'])
             em.subject = "Update task error: #{self.to_s}"
             em.body = errstr
@@ -138,143 +138,146 @@ module Rota
         end
       end
     end
-    
+
     class ProgramListTask < SafeRunTask
       def safe_run
         agent, page = Program.fetch_list
         Program.parse_list(page)
       end
-      
+
       def to_s
         "ProgramList"
       end
     end
-    
+
     class SemesterListTask < SafeRunTask
       def safe_run
         agent, page = Semester.fetch_list
         Semester.parse_list(page)
       end
-      
+
       def to_s
         "SemesterList"
       end
     end
-    
+
     class CampusListTask < SafeRunTask
       def safe_run
         agent, page = Campus.fetch_list
         Campus.parse_list(page)
       end
-      
+
       def to_s
         "CampusList"
       end
     end
-    
+
     class SemesterTask < SafeRunTask
       def initialize(sem)
         @semester_id = sem.id
       end
-      
+
       def safe_run
         semester = Semester.get(@semester_id)
         agent, page = semester.fetch_dates
         semester.parse_dates(page)
       end
-      
+
       def to_s
         "SemesterTask<#{@semester_id}>"
       end
     end
-    
+
     class BuildingListTask < SafeRunTask
       def safe_run
-        agent, page = Building.fetch_list
-        Building.parse_list(page)
+        [[1, 'STLUC'], [3, 'IPSWC'], [2, 'GATTN']].each do |n,camp|
+          campus = Campus.get(camp)
+          agent, page = Building.fetch_list(n)
+          Building.parse_list(page, campus)
+        end
       end
-      
+
       def to_s
         "BuildingList"
       end
     end
-    
+
     class CourseListTask < SafeRunTask
       def safe_run
         agent, page = Course.fetch_list
         Course.parse_list(page)
       end
-      
+
       def to_s
         "CourseList"
       end
     end
-    
+
     class ProgramTask < SafeRunTask
       def initialize(program)
         @program_id = program.id
       end
-      
+
       def safe_run
         program = Program.get(@program_id)
         agent, page = program.fetch_courses
         program.parse_courses(page)
       end
-      
+
       def to_s
         "Program<#{Program.get(@program_id).name}>"
       end
     end
-    
+
     class CourseTask < SafeRunTask
       def initialize(course)
         @course_code = course.code
       end
-      
+
       def safe_run
         course = Course.get(@course_code)
         agent, page = course.fetch_details
         course.parse_details(page)
         course.parse_offerings(page)
       end
-      
+
       def to_s
         "Course<#{@course_code}>"
       end
     end
-    
+
     class ProfileTask < SafeRunTask
       def initialize(offering)
         @offering = offering
       end
-      
+
       def safe_run
         agent,page = @offering.fetch_profile
         @offering.parse_profile(page)
       end
-      
+
       def to_s
         "Profile<#{@offering.course.code}/#{@offering.semester['id']}>"
       end
     end
-    
+
     class TimetableTask < SafeRunTask
       def initialize(offering)
         @offering_id = offering.id
       end
-      
+
       def safe_run
         offering = Offering.get(@offering_id)
         agent, page = offering.fetch_timetable
         offering.parse_timetable(page)
       end
-      
+
       def to_s
         offering = Offering.get(@offering_id)
         "Timetable<#{offering.course.code}/#{offering.semester['id']}>"
       end
     end
-    
+
   end
-  
+
 end

@@ -312,6 +312,7 @@ module Rota
     property :number, String, :index => true
     property :name, String, :length => 128
 
+    belongs_to :campus
     has n, :timetable_sessions, :constraint => :skip
 
     include JSON::Serializable
@@ -321,10 +322,11 @@ module Rota
       "#{self.name} #{self.number}-#{r}"
     end
 
-    def Building.find_or_create(num, name)
-      b = Building.first(:number => num)
+    def Building.find_or_create(campus, num, name)
+      b = Building.first(:campus => campus, :number => num)
       if b.nil?
         b = Building.new
+        b.campus = campus
         b.number = num
         b.name = name
         b.save

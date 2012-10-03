@@ -95,6 +95,7 @@ module Rota
         s.room(self.room)
         s.building do |b|
           b.id(self.building.id)
+          b.campus(self.building.campus.code)
           b.number(self.building.number)
           b.name(self.building.name)
         end
@@ -113,6 +114,7 @@ module Rota
     def to_xml(b, *opts)
       b.building do |b|
         b.id(self.id)
+        self.campus.to_xml(b)
         b.number(self.number)
         b.name(self.name)
         b.map_id(self.map_id)
