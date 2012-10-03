@@ -468,6 +468,17 @@ class DataService < Sinatra::Base
     end
   end
 
+  get '/building/:id/room/:room/sessions.ics' do |id, room|
+    content_type :ical
+    building = Rota::Building.get(id.to_i)
+    building = Rota::Building.first(:number => id.upcase) if building.nil?
+    return 404 if building.nil?
+    sessions = building.timetable_sessions.all(:room => room)
+    Utils.ical do |i|
+      sessions.each { |s| s.to_ical(i) }
+    end
+  end
+
   get '/messages.xml' do
     content_type :xml
     Utils.xml do |x|
