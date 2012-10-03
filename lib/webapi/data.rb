@@ -525,6 +525,7 @@ class DataService < Sinatra::Base
         changes.each do |ch|
           x.change do |x|
             x.id(ch.id)
+            x.created(ch.created)
             x.message do |x|
               x.uuid(ch.message.uuid)
               x.name(ch.message.short)
