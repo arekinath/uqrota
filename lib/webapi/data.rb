@@ -462,7 +462,7 @@ class DataService < Sinatra::Base
     Utils.xml do |x|
       x.sessions do |ss|
         sessions.each do |sess|
-          sess.to_xml(ss)
+          sess.to_xml(ss, :parents)
         end
       end
     end

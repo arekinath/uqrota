@@ -86,8 +86,7 @@ module Rota
     def to_xml(b, *opts)
       b.session do |s|
         s.id(self['id'])
-        s.group(self.group.id) unless opts.include?(:no_group) or opts.include?(:no_parents)
-        s.series(self.group.series.id) unless opts.include?(:no_series) or opts.include?(:no_parents)
+        self.group.to_xml(s, :parents, :no_children) if opts.include?(:parents)
         s.day(self.day)
         s.start(self.start_time)
         s.finish(self.finish_time)
@@ -125,6 +124,7 @@ module Rota
     def to_xml(b, *opts)
       b.group do |g|
         g.id(self['id'])
+        self.series.to_xml(g, :parents, :no_children) if opts.include?(:parents)
         g.name(self.name)
         g.groupname(self.group_name)
         unless opts.include?(:no_children)
@@ -142,6 +142,7 @@ module Rota
     def to_xml(b, *opts)
       b.series do |ss|
         ss.id(self['id'])
+        self.offering.to_xml(ss, :parents, :no_children) if opts.include?(:parents)
         ss.name(self.name)
         unless opts.include?(:no_children)
           ss.groups do |g|
