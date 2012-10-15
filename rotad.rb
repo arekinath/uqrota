@@ -13,7 +13,13 @@ class RotaApp
   end
 end
 
+$stderr.reopen(File.new("/var/log/uqrota/webserv.log", "a"))
+$stdout.reopen(File.new("/var/log/uqrota/webserv.log", "a"))
+$stderr.sync = true
+$stdout.sync = true
+
+Rota.setup_and_finalize
+
 if __FILE__ == $0
-  Rota.setup_and_finalize
   RotaApp.run!
 end

@@ -1,0 +1,2 @@
+require './rotad'
+run RotaApp 
