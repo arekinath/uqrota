@@ -933,7 +933,7 @@ module Rota
         all_series -= done_series
 
         all_series.each do |s|
-          ChangelogEntry.make($0, @goneseries, {:offering => self, :old_id => s.id, :old_name => s.name})
+          ChangelogEntry.make($0, @@goneseries, {:offering => self, :old_id => s.id, :old_name => s.name})
           s.destroy!
         end
 
