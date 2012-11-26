@@ -433,7 +433,7 @@ module Rota
       start_week = start_date.strftime('%W')
       end_week = end_date.strftime('%W')
       start_year = start_date.strftime('%Y')
-      end_year = start_date.strftime('%Y')
+      end_year = end_date.strftime('%Y')
       date = DateTime.strptime("#{start_week} #{start_year} #{self.day} 00:01 +1000", '%W %Y %a %H:%M %Z')
 
       # destroy all current events
