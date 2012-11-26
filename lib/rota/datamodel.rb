@@ -213,7 +213,11 @@ module Rota
     has n, :dependents, self, :through => :dependentships, :via => :dependent
     has n, :prereqs, self, :through => :prereqships, :via => :prereq
 
-    def prereq_struct; JSON.parse(self.prereq_struct_blob or "{}", :symbolize_names => true, :max_nesting => false); end
+    def prereq_struct
+      blob = self.prereq_struct_blob
+      blob = "{}" if blob.nil?
+      JSON.parse(blob, :symbolize_names => true, :max_nesting => false)
+    end
     def prereq_struct=(v); self.prereq_struct_blob = v.to_json(:max_nesting => false); end
 
     include JSON::Serializable
