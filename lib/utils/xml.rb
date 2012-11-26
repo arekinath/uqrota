@@ -5,7 +5,6 @@ require 'rota/model'
 
 class Hash
   def _prereq_to_xml(x)
-    puts "_prereq_to_xml: #{self.inspect}"
     opmap = {'+' => 'all_of', '&' => 'all_of', "|" => 'any_of', '/' => 'any_of', 'and' => 'all_of', 'or' => 'any_of'}
     if self[:operation]
       base = self[:operation][0][:base]
