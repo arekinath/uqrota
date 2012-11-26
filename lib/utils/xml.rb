@@ -282,8 +282,10 @@ module Rota
           self.prereqs.each do |c|
             x.course(c.code)
           end
-          x.expression do |top|
-            self.prereq_struct[:required][:expression]._prereq_to_xml(top)
+          if self.prereq_struct and self.prereq_struct[:required] and self.prereq_struct[:required][:expression]
+            x.expression do |top|
+              self.prereq_struct[:required][:expression]._prereq_to_xml(top)
+            end
           end
         end
         cs.dependents do |d|
