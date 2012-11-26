@@ -1,6 +1,7 @@
 require 'config'
 require 'rota/model'
 require 'rota/queues_alerts'
+require 'rota/parsers'
 
 require 'rubygems'
 require 'logger'
@@ -375,9 +376,24 @@ module Rota
 
       DataMapper::Transaction.new.commit do
         self.prereqships.each { |p| p.destroy! }
-        prs = ""
-        prs += cd.xpath('./uq:PREREQUISITE', ns).first.text
-        prs += cd.xpath('./uq:RECOMMENDEDPREREQUISITE', ns).first.text
+
+        prs = cd.xpath('./uq:PREREQUISITE', ns).first.text
+        rprs = cd.xpath('./uq:RECOMMENDEDPREREQUISITE', ns).first.text
+
+        p = PrereqParser.new
+        pst = {}
+        begin
+          pst[:text] = prs
+          pst[:required] = p.parse(prs) if prs.strip != ""
+          pst[:recommended] = p.parse(rprs) if rprs.strip != ""
+        rescue Exception => ex
+          pst[:exception] = ex.inspect
+          pst[:backtrace] = ex.backtrace
+          pst[:text] = prs
+        end
+        self.prereq_struct = pst
+
+        prs = prs + rprs
         prereqs = prs.scan(/[A-Z]{4}[0-9]{4}/)
         prereqs.each do |code|
           next if code == self.code

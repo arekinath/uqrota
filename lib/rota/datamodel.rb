@@ -202,6 +202,7 @@ module Rota
     property :coordinator, String, :length => 512, :required => false
     property :faculty, String, :length => 512, :required => false
     property :school, String, :length => 512, :required => false
+    property :prereq_struct_blob, Text, :required => false
     property :last_update, DateTime
 
     has n, :course_groups, :through => Resource, :constraint => :skip
@@ -212,9 +213,12 @@ module Rota
     has n, :dependents, self, :through => :dependentships, :via => :dependent
     has n, :prereqs, self, :through => :prereqships, :via => :prereq
 
+    def prereq_struct; JSON.parse(self.prereq_struct_blob, :symbolize_names => true, :max_nesting => false); end
+    def prereq_struct=(v); self.prereq_struct_blob = v.to_json(:max_nesting => false); end
+
     include JSON::Serializable
     json_key :code
-    json_attrs :units, :name, :description, :coordinator, :faculty, :school, :last_update
+    json_attrs :units, :name, :description, :coordinator, :faculty, :school, :last_update, :prereq_struct
     json_children :prereqs, :dependents, :offerings
   end
 

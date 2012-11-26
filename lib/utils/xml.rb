@@ -3,6 +3,51 @@ require 'builder'
 require 'config'
 require 'rota/model'
 
+class Hash
+  def _prereq_to_xml(x)
+    puts "_prereq_to_xml: #{self.inspect}"
+    opmap = {'+' => 'all_of', '&' => 'all_of', "|" => 'any_of', '/' => 'any_of', 'and' => 'all_of', 'or' => 'any_of'}
+    if self[:operation]
+      base = self[:operation][0][:base]
+      nextoperand = 1
+      loop do
+        break if self[:operation][nextoperand].nil?
+        op = self[:operation][nextoperand][:operator]
+        op = opmap[op] if opmap[op]
+
+        x.__send__(op.to_sym) do |inx|
+          base._prereq_to_xml(inx) if nextoperand == 1
+          loop do
+            step = self[:operation][nextoperand]
+            break if step.nil?
+
+            myop = step[:operator]
+            myop = opmap[myop] if opmap[myop]
+            break if myop != op
+
+            step[:base] = base[:course] or (base[:spec] and base[:spec][:course])
+            step._prereq_to_xml(inx)
+            nextoperand += 1
+          end
+        end
+        nextoperand += 1
+      end
+    elsif self[:list]
+      x.all_of do |inx|
+        self[:list].each do |item|
+          item._prereq_to_xml(inx)
+        end
+      end
+    elsif self[:course]
+      x.course(self[:course])
+    elsif self[:stem]
+      x.course(self[:base].gsub(/[0-9]+[A-Z]*$/, '') + self[:stem])
+    elsif self[:spec]
+      self[:spec]._prereq_to_xml(x)
+    end
+  end
+end
+
 module Rota
 
   class TimetableEvent
@@ -233,9 +278,13 @@ module Rota
         cs.faculty(self.faculty)
         cs.school(self.school)
         cs.last_update(self.last_update.to_s)
-        cs.prereqs do |p|
+        cs.prereqs do |x|
+          x.text(self.prereq_struct[:text])
           self.prereqs.each do |c|
-            p.course(c.code)
+            x.course(c.code)
+          end
+          x.expression do |top|
+            self.prereq_struct[:required][:expression]._prereq_to_xml(top)
           end
         end
         cs.dependents do |d|
