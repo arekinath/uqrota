@@ -5,44 +5,40 @@ require 'rota/model'
 
 class Hash
   def _prereq_to_xml(x)
-    opmap = {'+' => 'all_of', '&' => 'all_of', "|" => 'any_of', '/' => 'any_of', 'and' => 'all_of', 'or' => 'any_of', 'xor' => 'one_of'}
-    if self[:operation]
-      base = self[:operation][0][:base]
-      nextoperand = 1
-      loop do
-        break if self[:operation][nextoperand].nil?
-        op = self[:operation][nextoperand][:operator]
-        op = opmap[op] if opmap[op]
-
-        x.__send__(op.to_sym) do |inx|
-          base._prereq_to_xml(inx) if nextoperand == 1
-          loop do
-            step = self[:operation][nextoperand]
-            break if step.nil?
-
-            myop = step[:operator]
-            myop = opmap[myop] if opmap[myop]
-            break if myop != op
-
-            step[:base] = base[:course] or (base[:spec] and base[:spec][:course])
-            step._prereq_to_xml(inx)
-            nextoperand += 1
-          end
-        end
-        nextoperand += 1
-      end
-    elsif self[:list]
-      x.all_of do |inx|
-        self[:list].each do |item|
-          item._prereq_to_xml(inx)
+    if self[:any_of] or self[:all_of] or self[:one_of]
+      prop = self[:any_of] ? :any_of : (self[:all_of] ? :all_of : (self[:one_of] ? :one_of : nil))
+      puts self.inspect if prop.nil?
+      x.__send__(prop) do |inx|
+        left = self[prop].first[:left]
+        last = nil
+        self[prop].each do |kid|
+          kid[:left] = left
+          kid[:last] = last ? (last[:right] ? last[:right] : last[:left]) : nil
+          kid._prereq_to_xml(inx)
+          last = kid
         end
       end
+    elsif self[:right]
+      if self[:right][:stem]
+        self[:right] = {:course => {:root => self[:last][:course][:root], :stem => self[:right][:stem]}}
+        self[:right]._prereq_to_xml(x)
+      elsif self[:right][:equivalent]
+        x.equivalent_to do |eq|
+          self[:last]._prereq_to_xml(eq)
+        end
+      else
+        self[:right]._prereq_to_xml(x)
+      end
+    elsif self[:left]
+      self[:left]._prereq_to_xml(x)
     elsif self[:course]
-      x.course(self[:course])
-    elsif self[:stem]
-      x.course(self[:base].gsub(/[0-9]+[A-Z]*$/, '') + self[:stem])
-    elsif self[:spec]
-      self[:spec]._prereq_to_xml(x)
+      x.course(self[:course][:root] + self[:course][:stem])
+    elsif self[:highschool]
+      x.highschool_subject do |hs|
+        self[:highschool].each do |k,v|
+          hs.__send__(k, v)
+        end
+      end
     end
   end
 end
@@ -282,9 +278,16 @@ module Rota
           self.prereqs.each do |c|
             x.course(c.code)
           end
-          if self.prereq_struct and self.prereq_struct[:required] and self.prereq_struct[:required][:expression]
+          if self.prereq_struct and self.prereq_struct[:required]
             x.expression do |top|
-              self.prereq_struct[:required][:expression]._prereq_to_xml(top)
+              self.prereq_struct[:required]._prereq_to_xml(top)
+            end
+          end
+        end
+        cs.recommended do |x|
+          if self.prereq_struct and self.prereq_struct[:recommended]
+            x.expression do |top|
+              self.prereq_struct[:recommended]._prereq_to_xml(top)
             end
           end
         end
