@@ -382,14 +382,19 @@ module Rota
 
         p = PrereqParser.new
         pst = {}
+        pst[:text] = prs
+        pst[:recommended_text] = rprs
         begin
-          pst[:text] = prs
           pst[:required] = p.parse(prs) if prs.strip != ""
+          if pst[:required].is_a?(Array)
+            pst[:required] = pst[:required].find { |c| c[:course][:root] + c[:course][:stem] == self.code }
+          end
           pst[:recommended] = p.parse(rprs) if rprs.strip != ""
+          if pst[:recommended].is_a?(Array)
+            pst[:recommended] = pst[:recommended].find { |c| c[:course][:root] + c[:course][:stem] == self.code }
+          end
         rescue Exception => ex
           pst[:exception] = ex.inspect
-          pst[:backtrace] = ex.backtrace
-          pst[:text] = prs
         end
         self.prereq_struct = pst
 

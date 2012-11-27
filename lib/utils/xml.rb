@@ -285,6 +285,7 @@ module Rota
           end
         end
         cs.recommended do |x|
+          x.text(self.prereq_struct[:recommended_text])
           if self.prereq_struct and self.prereq_struct[:recommended]
             x.expression do |top|
               self.prereq_struct[:recommended]._prereq_to_xml(top)
