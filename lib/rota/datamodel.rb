@@ -202,7 +202,11 @@ module Rota
     property :coordinator, String, :length => 512, :required => false
     property :faculty, String, :length => 512, :required => false
     property :school, String, :length => 512, :required => false
-    property :prereq_struct_blob, Text, :required => false
+    property :prereq_text, String, :length => 512, :required => false
+    property :prereq_expr, Text, :required => false
+    property :recommended_text, String, :length => 512, :required => false
+    property :recommended_expr, Text, :required => false
+    property :incompatible_text, String, :length => 512, :required => false
     property :last_update, DateTime
 
     has n, :course_groups, :through => Resource, :constraint => :skip
@@ -213,17 +217,28 @@ module Rota
     has n, :dependents, self, :through => :dependentships, :via => :dependent
     has n, :prereqs, self, :through => :prereqships, :via => :prereq
 
+    has n, :incompatibilities, 'Incompatibility', :child_key => :source_code, :constraint => :destroy
+    has n, :target_incompats, 'Incompatibility', :child_key => :target_code, :constraint => :destroy
+    has n, :incompatibles, self, :through => :incompatibilities, :via => :target
+
     def prereq_struct
-      blob = self.prereq_struct_blob
-      blob = "{}" if blob.nil?
+      blob = self.prereq_expr
+      blob = "{}" if blob.nil? or blob == "null"
       JSON.parse(blob, :symbolize_names => true, :max_nesting => false)
     end
-    def prereq_struct=(v); self.prereq_struct_blob = v.to_json(:max_nesting => false); end
+    def prereq_struct=(v); self.prereq_expr = v.to_json(:max_nesting => false); end
+
+    def recommended_struct
+      blob = self.recommended_expr
+      blob = "{}" if blob.nil? or blob == "null"
+      JSON.parse(blob, :symbolize_names => true, :max_nesting => false)
+    end
+    def recommended_struct=(v); self.recommended_expr = v.to_json(:max_nesting => false); end
 
     include JSON::Serializable
     json_key :code
-    json_attrs :units, :name, :description, :coordinator, :faculty, :school, :last_update, :prereq_struct
-    json_children :prereqs, :dependents, :offerings
+    json_attrs :units, :name, :description, :coordinator, :faculty, :school, :last_update, :prereq_struct, :recommended_struct, :prereq_text, :recommended_text, :incompatible_text
+    json_children :prereqs, :dependents, :incompatibles, :offerings
   end
 
   class Offering
@@ -352,6 +367,14 @@ module Rota
 
     belongs_to :dependent, 'Course'
     belongs_to :prereq, 'Course'
+  end
+
+  class Incompatibility
+    include DataMapper::Resource
+    property :id, Serial
+
+    belongs_to :source, 'Course'
+    belongs_to :target, 'Course'
   end
 
   class TimetableSeries

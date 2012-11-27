@@ -376,27 +376,32 @@ module Rota
 
       DataMapper::Transaction.new.commit do
         self.prereqships.each { |p| p.destroy! }
+        self.incompatibilities.each { |p| p.destroy! }
 
         prs = cd.xpath('./uq:PREREQUISITE', ns).first.text
         rprs = cd.xpath('./uq:RECOMMENDEDPREREQUISITE', ns).first.text
 
         p = PrereqParser.new
-        pst = {}
-        pst[:text] = prs
-        pst[:recommended_text] = rprs
+        self.prereq_text = prs
+        self.recommended_text = rprs
         begin
-          pst[:required] = p.parse(prs) if prs.strip != ""
-          if pst[:required].is_a?(Array)
-            pst[:required] = pst[:required].find { |c| c[:course][:root] + c[:course][:stem] == self.code }
+          req = p.parse(prs) if prs.strip != ""
+          if req.is_a?(Array)
+            req = req.find { |c| c[:course][:root] + c[:course][:stem] == self.code }
           end
-          pst[:recommended] = p.parse(rprs) if rprs.strip != ""
-          if pst[:recommended].is_a?(Array)
-            pst[:recommended] = pst[:recommended].find { |c| c[:course][:root] + c[:course][:stem] == self.code }
-          end
+          self.prereq_struct = req
         rescue Exception => ex
-          pst[:exception] = ex.inspect
+          self.prereq_struct = {:exception => ex.inspect}
         end
-        self.prereq_struct = pst
+        begin
+          rec = p.parse(rprs) if rprs.strip != ""
+          if rec.is_a?(Array)
+            rec = rec.find { |c| c[:course][:root] + c[:course][:stem] == self.code }
+          end
+          self.recommended_struct = rec
+        rescue Exception => ex
+          self.recommended_struct = {:exception => ex.inspect}
+        end
 
         prs = prs + rprs
         prereqs = prs.scan(/[A-Z]{4}[0-9]{4}/)
@@ -412,6 +417,24 @@ module Rota
           p = Prereqship.new
           p.dependent = self
           p.prereq = cse
+          p.save
+        end
+
+        ics = cd.xpath('./uq:INCOMPATIBLE', ns).first.text
+        self.incompatible_text = ics
+        incompats = ics.scan(/[A-Z]{4}[0-9]{4}/)
+        incompats.each do |code|
+          next if code == self.code
+
+          cse = Course.get(code)
+          if cse.nil?
+            cse = Course.new
+            cse.code = code
+            cse.save
+          end
+          p = Incompatibility.new
+          p.source = self
+          p.target = cse
           p.save
         end
       end

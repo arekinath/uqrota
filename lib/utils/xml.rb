@@ -274,22 +274,28 @@ module Rota
         cs.school(self.school)
         cs.last_update(self.last_update.to_s)
         cs.prereqs do |x|
-          x.text(self.prereq_struct[:text])
+          x.text(self.prereq_text)
           self.prereqs.each do |c|
             x.course(c.code)
           end
-          if self.prereq_struct and self.prereq_struct[:required]
+          if self.prereq_struct and not self.prereq_struct[:exception]
             x.expression do |top|
-              self.prereq_struct[:required]._prereq_to_xml(top)
+              self.prereq_struct._prereq_to_xml(top)
             end
           end
         end
         cs.recommended do |x|
-          x.text(self.prereq_struct[:recommended_text])
-          if self.prereq_struct and self.prereq_struct[:recommended]
+          x.text(self.recommended_text)
+          if self.recommended_struct and not self.recommended_struct[:exception]
             x.expression do |top|
-              self.prereq_struct[:recommended]._prereq_to_xml(top)
+              self.recommended_struct._prereq_to_xml(top)
             end
+          end
+        end
+        cs.incompatible do |x|
+          x.text(self.incompatible_text)
+          self.incompatibles.each do |c|
+            x.course(c.code)
           end
         end
         cs.dependents do |d|
