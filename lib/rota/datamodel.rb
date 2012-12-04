@@ -228,6 +228,53 @@ module Rota
     end
     def prereq_struct=(v); self.prereq_expr = v.to_json(:max_nesting => false); end
 
+    def _clean(s, x)
+      if s[:any_of] or s[:all_of] or s[:one_of]
+        prop = s[:any_of] ? :any_of : (s[:all_of] ? :all_of : (s[:one_of] ? :one_of : nil))
+        puts s.inspect if prop.nil?
+        inx = []
+        left = s[prop].first[:left]
+        last = nil
+        s[prop].each do |kid|
+          kid[:left] = left
+          kid[:last] = last ? (last[:right] ? last[:right] : last[:left]) : nil
+          newx = {}
+          _clean(kid, newx)
+          inx << newx
+          last = kid
+        end
+        x[prop] = inx
+      elsif s[:right]
+        if s[:right][:stem]
+          s[:right] = {:course => {:root => s[:last][:course][:root], :stem => s[:right][:stem]}}
+          _clean(s[:right], x)
+        elsif s[:right][:equivalent]
+          eq = {}
+          _clean(s[:last], eq)
+          x[:equivalent] = eq
+        else
+          _clean(s[:right], x)
+        end
+      elsif s[:left]
+        _clean(s[:left], x)
+      elsif s[:course]
+        x[:course] = s[:course][:root] + s[:course][:stem]
+      elsif s[:highschool]
+        hs = {}
+        s[:highschool].each do |k,v|
+          hs[k.to_sym] = v
+        end
+        x[:highschool_subject] = hs
+      end
+    end
+
+    def prereq_struct_clean
+      h = {}
+      _clean(self.prereq_struct, h)
+      h = {:all_of => [h]} if h[:course]
+      h
+    end
+
     def recommended_struct
       blob = self.recommended_expr
       blob = "{}" if blob.nil? or blob == "null"
@@ -235,9 +282,16 @@ module Rota
     end
     def recommended_struct=(v); self.recommended_expr = v.to_json(:max_nesting => false); end
 
+    def recommended_struct_clean
+      h = {}
+      _clean(self.recommended_struct, h)
+      h = {:all_of => [h]} if h[:course]
+      h
+    end
+
     include JSON::Serializable
     json_key :code
-    json_attrs :units, :name, :description, :coordinator, :faculty, :school, :last_update, :prereq_struct, :recommended_struct, :prereq_text, :recommended_text, :incompatible_text
+    json_attrs :units, :name, :description, :coordinator, :faculty, :school, :last_update, {:prereq_struct => :prereq_struct_clean}, {:recommended_struct => :recommended_struct_clean}, :prereq_text, :recommended_text, :incompatible_text
     json_children :prereqs, :dependents, :incompatibles, :offerings
   end
 

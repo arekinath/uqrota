@@ -4,7 +4,7 @@ require 'config'
 require 'rota/model'
 
 class Hash
-  def _prereq_to_xml(x)
+  def _prereq_to_xml(x, amtop=false)
     if self[:any_of] or self[:all_of] or self[:one_of]
       prop = self[:any_of] ? :any_of : (self[:all_of] ? :all_of : (self[:one_of] ? :one_of : nil))
       puts self.inspect if prop.nil?
@@ -32,11 +32,19 @@ class Hash
     elsif self[:left]
       self[:left]._prereq_to_xml(x)
     elsif self[:course]
-      x.course(self[:course][:root] + self[:course][:stem])
+      if amtop
+        x.all_of { |a| self._prereq_to_xml(a) }
+      else
+        x.course(self[:course][:root] + self[:course][:stem])
+      end
     elsif self[:highschool]
-      x.highschool_subject do |hs|
-        self[:highschool].each do |k,v|
-          hs.__send__(k, v)
+      if amtop
+        x.all_of { |a| self._prereq_to_xml(a) }
+      else
+        x.highschool_subject do |hs|
+          self[:highschool].each do |k,v|
+            hs.__send__(k, v)
+          end
         end
       end
     end
@@ -280,7 +288,7 @@ module Rota
           end
           if self.prereq_struct and not self.prereq_struct[:exception]
             x.expression do |top|
-              self.prereq_struct._prereq_to_xml(top)
+              self.prereq_struct._prereq_to_xml(top, true)
             end
           end
         end
@@ -288,7 +296,7 @@ module Rota
           x.text(self.recommended_text)
           if self.recommended_struct and not self.recommended_struct[:exception]
             x.expression do |top|
-              self.recommended_struct._prereq_to_xml(top)
+              self.recommended_struct._prereq_to_xml(top, true)
             end
           end
         end
