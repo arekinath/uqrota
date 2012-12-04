@@ -270,6 +270,9 @@ module Rota
 
     def prereq_struct_clean
       h = {}
+      if self.prereq_struct[:exception]
+        return {:failure => self.recommended_struct[:exception]}
+      end
       _clean(self.prereq_struct, h)
       h = {:all_of => [h]} if h[:course]
       h
@@ -284,6 +287,9 @@ module Rota
 
     def recommended_struct_clean
       h = {}
+      if self.recommended_struct[:exception]
+        return {:failure => self.recommended_struct[:exception]}
+      end
       _clean(self.recommended_struct, h)
       h = {:all_of => [h]} if h[:course]
       h

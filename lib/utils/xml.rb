@@ -290,6 +290,8 @@ module Rota
             x.expression do |top|
               self.prereq_struct._prereq_to_xml(top, true)
             end
+          else
+            x.expression_failure(self.prereq_struct[:exception])
           end
         end
         cs.recommended do |x|
@@ -298,6 +300,8 @@ module Rota
             x.expression do |top|
               self.recommended_struct._prereq_to_xml(top, true)
             end
+          else
+            x.expression_failure(self.recommended_struct[:exception])
           end
         end
         cs.incompatible do |x|
