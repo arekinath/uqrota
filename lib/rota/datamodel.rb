@@ -235,14 +235,11 @@ module Rota
         puts s.inspect if prop.nil?
         inx = []
         left = s[prop].first[:left]
-        last = nil
         s[prop].each do |kid|
           kid[:left] = left
-          ctx[:last] = last ? (last[:right] ? last[:right] : last[:left]) : nil
           newx = {}
           _clean(ctx, kid, newx)
           inx << newx
-          last = kid
         end
         x[prop] = inx
       elsif s[:right]
@@ -260,6 +257,7 @@ module Rota
         _clean(ctx, s[:left], x)
       elsif s[:course]
         x[:course] = s[:course][:root] + s[:course][:stem]
+        ctx[:last] = s
       elsif s[:highschool]
         hs = {}
         s[:highschool].each do |k,v|
