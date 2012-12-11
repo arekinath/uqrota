@@ -209,7 +209,7 @@ class DataService < Sinatra::Base
     content_type :json
     course = Rota::Course.get(code.upcase)
     return 404 if course.nil?
-    course.to_json
+    course.to_json(3)
   end
 
   get '/course/:code/plans.xml' do |code|
