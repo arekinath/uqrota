@@ -106,8 +106,7 @@ module JSON
         end
       end
 
-      puts hash.inspect, k.inspect
-      return hash.to_json(*k)
+      return JSON.pretty_generate(hash, *k)
     end
 
     module ClassMethods
