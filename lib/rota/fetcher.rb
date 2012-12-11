@@ -423,7 +423,12 @@ module Rota
           self.recommended_struct = {:exception => ex.inspect}
         end
 
-        prereqs = self.prereq_struct_courses
+        prereqs = []
+        begin
+          prereqs = self.prereq_struct_courses
+        rescue Exception => ex
+          # do nothing
+        end
         if self.prereq_struct[:exception]
           prereqs = (prs + rprs).scan(/[A-Z]{4}[0-9]{4}/)
         end
@@ -462,6 +467,8 @@ module Rota
           p.target = cse
           p.save
         end
+
+        self.save
       end
     end
 
