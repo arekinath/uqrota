@@ -254,7 +254,7 @@ module Rota
           _clean(ctx, ctx[:last], eq)
           x[:equivalent] = eq
         else
-          _clean(s[:right], x)
+          _clean(ctx, s[:right], x)
         end
       elsif s[:left]
         _clean(ctx, s[:left], x)
@@ -277,6 +277,24 @@ module Rota
       _clean({}, self.prereq_struct, h)
       h = {:all_of => [h]} if h[:course]
       h
+    end
+
+    def prereq_struct_courses
+      s = prereq_struct_clean
+      def walk(h)
+        if h[:all_of]
+          return h[:all_of].collect { |hh| walk(hh) }.flatten
+        elsif h[:any_of]
+          return h[:any_of].collect { |hh| walk(hh) }.flatten
+        elsif h[:one_of]
+          return h[:one_of].collect { |hh| walk(hh) }.flatten
+        elsif h[:course]
+          return [h[:course]]
+        else
+          return []
+        end
+      end
+      walk(s)
     end
 
     def recommended_struct

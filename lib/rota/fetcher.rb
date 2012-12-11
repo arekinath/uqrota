@@ -29,6 +29,10 @@ module Rota
                                 "Program name changed",
                                 "The name of a program has been changed.",
                                 [:program, :old_name])
+    @@proglistdiscov = Message.new("4e6066ad-367f-4acc-a99f-5c0a37604a5a",
+                                   "New course discovered via program list",
+                                   "A program list has revealed the existence of a new course",
+                                   [:course, :program])
 
     def Program.fetch_list
       list_client = Savon::Client.new do
@@ -150,6 +154,7 @@ module Rota
                                     :name => title,
                                     :units => units)
                   c.save
+                  ChangelogEntry.make($0, @@proglistdiscov, {:course => c, :program => self})
                 end
               end
               c.course_groups << cg unless c.course_groups.include?(cg)
@@ -193,6 +198,7 @@ module Rota
                                     :name => title,
                                     :units => units)
                   c.save
+                  ChangelogEntry.make($0, @@proglistdiscov, {:course => c, :program => self})
                 end
               end
               c.course_groups << cg unless c.course_groups.include?(cg)
@@ -268,6 +274,11 @@ module Rota
       return response, response.to_xml
     end
 
+    @@discov = Message.new("55630fd9-ddcb-446f-abb1-e5757340050b",
+                                 "New course discovered via semester search",
+                                 "Course discovered by using the SI-net UQ_CP_SEARCH_REQUEST API",
+                                 [:course])
+
     def Course.parse_list(x)
       doc = Nokogiri::XML(x)
       ns = doc.root.namespaces
@@ -290,6 +301,7 @@ module Rota
                               :name => title,
                               :units => units)
             c.save
+            ChangelogEntry.make($0, @@discov, {:course => c})
           end
         end
       end
@@ -314,6 +326,14 @@ module Rota
       return response, response.to_xml
     end
 
+    @@prereqdiscov = Message.new("62e16578-762c-4356-bc8a-85fa13d58788",
+                                 "New course discovered via pre-requisite or incompatibility",
+                                 "The pre-requisites or incompatibilities for another course have revealed this course's existence",
+                                 [:course, :informant_course])
+    @bruteforcediscov = Message.new("e40d89db-e8c4-478d-9912-abccf2810114",
+                                    "A brute-force discovery method has revealed a new course",
+                                    "Brute-force discovery involving a large trial of random course codes has discovered a new course",
+                                    [:course])
     @@coursename = Message.new("edd36b27-9b53-4d27-bcaf-7b400a047ca7",
                                "Course name or description changed",
                                "The name of a course or its detailed description has been changed.",
@@ -403,8 +423,11 @@ module Rota
           self.recommended_struct = {:exception => ex.inspect}
         end
 
-        prs = prs + rprs
-        prereqs = prs.scan(/[A-Z]{4}[0-9]{4}/)
+        prereqs = self.prereq_struct_courses
+        if self.prereq_struct[:exception]
+          prereqs = (prs + rprs).scan(/[A-Z]{4}[0-9]{4}/)
+        end
+
         prereqs.each do |code|
           next if code == self.code
 
@@ -413,6 +436,7 @@ module Rota
             cse = Course.new
             cse.code = code
             cse.save
+            ChangelogEntry.make($0, @@prereqdiscov, {:course => cse, :informant_course => self})
           end
           p = Prereqship.new
           p.dependent = self
@@ -431,6 +455,7 @@ module Rota
             cse = Course.new
             cse.code = code
             cse.save
+            ChangelogEntry.make($0, @@prereqdiscov, {:course => cse, :informant_course => self})
           end
           p = Incompatibility.new
           p.source = self
