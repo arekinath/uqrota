@@ -210,6 +210,7 @@ module Rota
       b.semester do |sem|
         sem.id(self['id'])
         sem.name(self.name)
+        sem.number(self.semester_id)
         sem.year(self.year)
         unless opts.include?(:no_children)
           unless self.succ.nil?
@@ -246,7 +247,14 @@ module Rota
       b.offering do |off|
         off.id(self['id'])
         off.course(self.course.code) unless opts.include?(:no_course)
-        off.semester(self.semester['id']) unless opts.include?(:no_semester)
+        unless opts.include?(:no_semester)
+          off.semester do |sem|
+            sem.id(self.semester.id)
+            sem.name(self.semester.name)
+            sem.number(self.semester.semester_id)
+            sem.year(self.semester.year)
+          end
+        end
         off.location(self.location)
         off.mode(self.mode)
         off.sinet_class(self.sinet_class)
