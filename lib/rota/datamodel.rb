@@ -229,7 +229,7 @@ module Rota
     end
     def prereq_struct=(v); self.prereq_expr = v.to_json(:max_nesting => false); end
 
-    def _clean(s, x)
+    def _clean(ctx, s, x)
       if s[:any_of] or s[:all_of] or s[:one_of]
         prop = s[:any_of] ? :any_of : (s[:all_of] ? :all_of : (s[:one_of] ? :one_of : nil))
         puts s.inspect if prop.nil?
@@ -238,26 +238,26 @@ module Rota
         last = nil
         s[prop].each do |kid|
           kid[:left] = left
-          kid[:last] = last ? (last[:right] ? last[:right] : last[:left]) : nil
+          ctx[:last] = last ? (last[:right] ? last[:right] : last[:left]) : nil
           newx = {}
-          _clean(kid, newx)
+          _clean(ctx, kid, newx)
           inx << newx
           last = kid
         end
         x[prop] = inx
       elsif s[:right]
         if s[:right][:stem]
-          s[:right] = {:course => {:root => s[:last][:course][:root], :stem => s[:right][:stem]}}
-          _clean(s[:right], x)
+          s[:right] = {:course => {:root => ctx[:last][:course][:root], :stem => s[:right][:stem]}}
+          _clean(ctx, s[:right], x)
         elsif s[:right][:equivalent]
           eq = {}
-          _clean(s[:last], eq)
+          _clean(ctx, ctx[:last], eq)
           x[:equivalent] = eq
         else
           _clean(s[:right], x)
         end
       elsif s[:left]
-        _clean(s[:left], x)
+        _clean(ctx, s[:left], x)
       elsif s[:course]
         x[:course] = s[:course][:root] + s[:course][:stem]
       elsif s[:highschool]
@@ -274,7 +274,7 @@ module Rota
       if self.prereq_struct[:exception]
         return {:failure => (self.prereq_struct[:exception] or true)}
       end
-      _clean(self.prereq_struct, h)
+      _clean({}, self.prereq_struct, h)
       h = {:all_of => [h]} if h[:course]
       h
     end
@@ -291,7 +291,7 @@ module Rota
       if self.recommended_struct[:exception]
         return {:failure => (self.recommended_struct[:exception] or true)}
       end
-      _clean(self.recommended_struct, h)
+      _clean({}, self.recommended_struct, h)
       h = {:all_of => [h]} if h[:course]
       h
     end

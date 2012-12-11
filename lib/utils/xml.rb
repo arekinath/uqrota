@@ -4,7 +4,7 @@ require 'config'
 require 'rota/model'
 
 class Hash
-  def _prereq_to_xml(x, amtop=false)
+  def _prereq_to_xml(ctx, x, amtop=false)
     if self[:any_of] or self[:all_of] or self[:one_of]
       prop = self[:any_of] ? :any_of : (self[:all_of] ? :all_of : (self[:one_of] ? :one_of : nil))
       puts self.inspect if prop.nil?
@@ -13,33 +13,33 @@ class Hash
         last = nil
         self[prop].each do |kid|
           kid[:left] = left
-          kid[:last] = last ? (last[:right] ? last[:right] : last[:left]) : nil
-          kid._prereq_to_xml(inx)
+          ctx[:last] = last ? (last[:right] ? last[:right] : last[:left]) : nil
+          kid._prereq_to_xml(ctx, inx)
           last = kid
         end
       end
     elsif self[:right]
       if self[:right][:stem]
-        self[:right] = {:course => {:root => self[:last][:course][:root], :stem => self[:right][:stem]}}
-        self[:right]._prereq_to_xml(x)
+        self[:right] = {:course => {:root => ctx[:last][:course][:root], :stem => self[:right][:stem]}}
+        self[:right]._prereq_to_xml(ctx, x)
       elsif self[:right][:equivalent]
         x.equivalent_to do |eq|
-          self[:last]._prereq_to_xml(eq)
+          ctx[:last]._prereq_to_xml(ctx, eq)
         end
       else
-        self[:right]._prereq_to_xml(x)
+        self[:right]._prereq_to_xml(ctx, x)
       end
     elsif self[:left]
-      self[:left]._prereq_to_xml(x)
+      self[:left]._prereq_to_xml(ctx, x)
     elsif self[:course]
       if amtop
-        x.all_of { |a| self._prereq_to_xml(a) }
+        x.all_of { |a| self._prereq_to_xml(ctx, a) }
       else
         x.course(self[:course][:root] + self[:course][:stem])
       end
     elsif self[:highschool]
       if amtop
-        x.all_of { |a| self._prereq_to_xml(a) }
+        x.all_of { |a| self._prereq_to_xml(ctx, a) }
       else
         x.highschool_subject do |hs|
           self[:highschool].each do |k,v|
@@ -296,7 +296,7 @@ module Rota
           end
           if self.prereq_struct and not self.prereq_struct[:exception]
             x.expression do |top|
-              self.prereq_struct._prereq_to_xml(top, true)
+              self.prereq_struct._prereq_to_xml({}, top, true)
             end
           else
             x.expression_failure(self.prereq_struct[:exception])
@@ -306,7 +306,7 @@ module Rota
           x.text(self.recommended_text)
           if self.recommended_struct and not self.recommended_struct[:exception]
             x.expression do |top|
-              self.recommended_struct._prereq_to_xml(top, true)
+              self.recommended_struct._prereq_to_xml({}, top, true)
             end
           else
             x.expression_failure(self.recommended_struct[:exception])
