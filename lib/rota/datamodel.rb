@@ -51,6 +51,7 @@ module Rota
 
     include JSON::Serializable
     json :attrs => [:name, {:number => :semester_id}, :start_week, :finish_week, :midsem_week, {:current => :is_current?}, :pred, :succ]
+    json_coreattrs :name, {:number => :semester_id}, :year
 
     def Semester.current
       Semester.get(Setting.get('current_semester').value)

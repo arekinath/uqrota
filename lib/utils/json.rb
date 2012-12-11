@@ -35,6 +35,7 @@ module JSON
       klass.extend(ClassMethods)
       klass.instance_variable_set(:@json_keys, Array.new)
       klass.instance_variable_set(:@json_attrs, Array.new)
+      klass.instance_variable_set(:@json_coreattrs, Array.new)
       klass.instance_variable_set(:@json_parents, Array.new)
       klass.instance_variable_set(:@json_children, Array.new)
     end
@@ -54,6 +55,8 @@ module JSON
       hash[:_keys] = msgs.collect { |m| m.to_s }
       if level >= 1
         msgs += self.class.instance_variable_get(:@json_attrs).flatten
+      else
+        msgs += self.class.instance_variable_get(:@json_coreattrs).flatten
       end
 
       msgs = msgs.collect do |m|
@@ -116,6 +119,8 @@ module JSON
             @json_keys << v
           elsif [:attrs].include?(k)
             @json_attrs << v
+          elsif [:coreattrs].include?(k)
+            @json_coreattrs << v
           elsif [:children].include?(k)
             @json_children << v
           elsif [:parent, :parents].include?(k)
@@ -132,6 +137,10 @@ module JSON
 
       def json_attrs(*k)
         @json_attrs << k
+      end
+
+      def json_coreattrs(*k)
+        @json_coreattrs << k
       end
 
       def json_children(*k)
