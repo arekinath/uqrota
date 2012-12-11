@@ -297,8 +297,8 @@ module Rota
 
     include JSON::Serializable
     json_key :code
-    json_attrs :units, :name, :description, :coordinator, :faculty, :school, :last_update, {:prereq_struct => :prereq_struct_clean}, {:recommended_struct => :recommended_struct_clean}, :prereq_text, :recommended_text, :incompatible_text
-    json_children :prereqs, :dependents, :incompatibles, :offerings
+    json_attrs :units, :name, :description, :coordinator, :faculty, :school, :last_update, :prereqs, :dependents, :incompatibles, {:prereq_struct => :prereq_struct_clean}, {:recommended_struct => :recommended_struct_clean}, :prereq_text, :recommended_text, :incompatible_text
+    json_children :offerings
   end
 
   class Offering
