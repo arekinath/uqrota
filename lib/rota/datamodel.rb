@@ -254,7 +254,12 @@ module Rota
           _clean(ctx, s[:right], x)
         end
       elsif s[:left]
-        _clean(ctx, s[:left], x)
+        if s[:left][:stem]
+          s[:left] = {:course => {:root => ctx[:last][:course][:root], :stem => s[:left][:stem]}}
+          _clean(ctx, s[:left], x)
+        else
+          _clean(ctx, s[:left], x)
+        end
       elsif s[:course]
         x[:course] = s[:course][:root] + s[:course][:stem]
         ctx[:last] = s
@@ -272,8 +277,8 @@ module Rota
       if self.prereq_struct[:exception]
         return {:failure => (self.prereq_struct[:exception] or true)}
       end
-      stem, _ = self.code.scan(/^([A-Z]+)([0-9]+)/).first
-      _clean({:last => {:course => {:stem => stem}}}, self.prereq_struct, h)
+      root, stem = self.code.scan(/^([A-Z]+)([0-9]+)/).first
+      _clean({:last => {:course => {:root => root, :stem => stem}}}, self.prereq_struct, h)
       h = {:all_of => [h]} if h[:course]
       h
     end
@@ -308,8 +313,8 @@ module Rota
       if self.recommended_struct[:exception]
         return {:failure => (self.recommended_struct[:exception] or true)}
       end
-      stem, _ = self.code.scan(/^([A-Z]+)([0-9]+)/).first
-      _clean({:last => {:course => {:stem => stem}}}, self.recommended_struct, h)
+      root, stem = self.code.scan(/^([A-Z]+)([0-9]+)/).first
+      _clean({:last => {:course => {:root => root, :stem => stem}}}, self.recommended_struct, h)
       h = {:all_of => [h]} if h[:course]
       h
     end

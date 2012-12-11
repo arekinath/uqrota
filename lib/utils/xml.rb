@@ -10,12 +10,9 @@ class Hash
       puts self.inspect if prop.nil?
       x.__send__(prop) do |inx|
         left = self[prop].first[:left]
-        last = nil
         self[prop].each do |kid|
           kid[:left] = left
-          ctx[:last] = last ? (last[:right] ? last[:right] : last[:left]) : nil
           kid._prereq_to_xml(ctx, inx)
-          last = kid
         end
       end
     elsif self[:right]
@@ -30,13 +27,19 @@ class Hash
         self[:right]._prereq_to_xml(ctx, x)
       end
     elsif self[:left]
-      self[:left]._prereq_to_xml(ctx, x)
+      if self[:left][:stem]
+        self[:left] = {:course => {:root => ctx[:last][:course][:root], :stem => self[:left][:stem]}}
+        self[:left]._prereq_to_xml(ctx, x)
+      else
+        self[:left]._prereq_to_xml(ctx, x)
+      end
     elsif self[:course]
       if amtop
         x.all_of { |a| self._prereq_to_xml(ctx, a) }
       else
         x.course(self[:course][:root] + self[:course][:stem])
       end
+      ctx[:last] = self
     elsif self[:highschool]
       if amtop
         x.all_of { |a| self._prereq_to_xml(ctx, a) }
@@ -296,8 +299,8 @@ module Rota
           end
           if self.prereq_struct and not self.prereq_struct[:exception]
             x.expression do |top|
-              stem, _ = self.code.scan(/^([A-Z]+)([0-9]+)/).first
-              self.prereq_struct._prereq_to_xml({:last => {:course => {:stem => stem}}}, top, true)
+              root, stem = self.code.scan(/^([A-Z]+)([0-9]+)/).first
+              self.prereq_struct._prereq_to_xml({:last => {:course => {:root => root}}}, top, true)
             end
           else
             x.expression_failure(self.prereq_struct[:exception])
@@ -307,8 +310,8 @@ module Rota
           x.text(self.recommended_text)
           if self.recommended_struct and not self.recommended_struct[:exception]
             x.expression do |top|
-              stem, _ = self.code.scan(/^([A-Z]+)([0-9]+)/).first
-              self.recommended_struct._prereq_to_xml({:last => {:course => {:stem => stem}}}, top, true)
+              root, stem = self.code.scan(/^([A-Z]+)([0-9]+)/).first
+              self.recommended_struct._prereq_to_xml({:last => {:course => {:root => root}}}, top, true)
             end
           else
             x.expression_failure(self.recommended_struct[:exception])
