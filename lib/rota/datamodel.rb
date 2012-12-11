@@ -272,7 +272,8 @@ module Rota
       if self.prereq_struct[:exception]
         return {:failure => (self.prereq_struct[:exception] or true)}
       end
-      _clean({}, self.prereq_struct, h)
+      stem, _ = self.code.scan(/^([A-Z]+)([0-9]+)/).first
+      _clean({:last => {:course => {:stem => stem}}}, self.prereq_struct, h)
       h = {:all_of => [h]} if h[:course]
       h
     end
@@ -307,7 +308,8 @@ module Rota
       if self.recommended_struct[:exception]
         return {:failure => (self.recommended_struct[:exception] or true)}
       end
-      _clean({}, self.recommended_struct, h)
+      stem, _ = self.code.scan(/^([A-Z]+)([0-9]+)/).first
+      _clean({:last => {:course => {:stem => stem}}}, self.recommended_struct, h)
       h = {:all_of => [h]} if h[:course]
       h
     end

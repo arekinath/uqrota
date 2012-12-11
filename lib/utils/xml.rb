@@ -296,7 +296,8 @@ module Rota
           end
           if self.prereq_struct and not self.prereq_struct[:exception]
             x.expression do |top|
-              self.prereq_struct._prereq_to_xml({}, top, true)
+              stem, _ = self.code.scan(/^([A-Z]+)([0-9]+)/).first
+              self.prereq_struct._prereq_to_xml({:last => {:course => {:stem => stem}}}, top, true)
             end
           else
             x.expression_failure(self.prereq_struct[:exception])
@@ -306,7 +307,8 @@ module Rota
           x.text(self.recommended_text)
           if self.recommended_struct and not self.recommended_struct[:exception]
             x.expression do |top|
-              self.recommended_struct._prereq_to_xml({}, top, true)
+              stem, _ = self.code.scan(/^([A-Z]+)([0-9]+)/).first
+              self.recommended_struct._prereq_to_xml({:last => {:course => {:stem => stem}}}, top, true)
             end
           else
             x.expression_failure(self.recommended_struct[:exception])
