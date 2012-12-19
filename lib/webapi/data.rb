@@ -202,14 +202,18 @@ class DataService < Sinatra::Base
     content_type :xml
     course = Rota::Course.get(code.upcase)
     return 404 if course.nil?
-    Utils.xml(course)
+    Sinatra::Cache.cache("#{course.code}.xml##{course.version}") do
+      Utils.xml(course)
+    end
   end
 
   get '/course/:code.json' do |code|
     content_type :json
     course = Rota::Course.get(code.upcase)
     return 404 if course.nil?
-    course.to_json(2)
+    Sinatra::Cache.cache("#{course.code}.json##{course.version}") do
+      course.to_json(2)
+    end
   end
 
   get '/course/:code/plans.xml' do |code|
