@@ -34,7 +34,7 @@ module Rota
                                    "A program list has revealed the existence of a new course",
                                    [:course, :program])
 
-    def Program.fetch_list
+    def Program.fetch_list(level=:undergrad)
       list_client = Savon::Client.new do
         wsdl.document = "#{SinetEndpoint}/UQ_CP_SEARCH_REQUEST.1.wsdl"
         wsdl.endpoint = SinetEndpoint
@@ -45,7 +45,7 @@ module Rota
         soap.body = builder.MsgData do |m|
           m.Transaction do |t|
             t.parameters(:class => 'R') do |p|
-              p.LEVEL('UGRD')
+              p.LEVEL({:undergrad => 'UGRD', :postgrad => 'PGCW'}[level])
               p.SEARCHTYPE('PROGRAM')
             end
           end

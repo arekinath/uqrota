@@ -141,7 +141,9 @@ module Rota
 
     class ProgramListTask < SafeRunTask
       def safe_run
-        agent, page = Program.fetch_list
+        agent, page = Program.fetch_list(:undergrad)
+        Program.parse_list(page)
+        agent, page = Program.fetch_list(:postgrad)
         Program.parse_list(page)
       end
 
