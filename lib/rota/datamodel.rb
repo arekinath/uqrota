@@ -209,6 +209,7 @@ module Rota
     property :recommended_expr, Text, :required => false
     property :incompatible_text, String, :length => 512, :required => false
     property :last_update, DateTime
+    property :version, Integer, :default => 0, :required => true
 
     has n, :course_groups, :through => Resource, :constraint => :skip
     has n, :offerings, :constraint => :destroy
@@ -221,6 +222,12 @@ module Rota
     has n, :incompatibilities, 'Incompatibility', :child_key => :source_code, :constraint => :destroy
     has n, :target_incompats, 'Incompatibility', :child_key => :target_code, :constraint => :destroy
     has n, :incompatibles, self, :through => :incompatibilities, :via => :target
+
+    before :save, :incr_version
+
+    def incr_version
+      self.version += 1
+    end
 
     def prereq_struct
       blob = self.prereq_expr
