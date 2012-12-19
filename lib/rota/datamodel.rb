@@ -164,7 +164,7 @@ module Rota
     has n, :plans, :constraint => :destroy
 
     include JSON::Serializable
-    json :attrs => [:name], :children => [:plans]
+    json :attrs => [:name], :children => [:plans], :coreattrs => [:name]
   end
 
   class Plan
