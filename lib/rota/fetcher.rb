@@ -12,9 +12,9 @@ require 'date'
 require 'savon'
 
 HTTPI.log = false
-Savon.configure do |config|
-  config.log = false
-end
+#Savon.configure do |config|
+#  config.log = false
+#end
 
 module Rota
 
