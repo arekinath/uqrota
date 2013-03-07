@@ -189,8 +189,10 @@ module Rota
             end
 
             pcl.xpath('./uq:PlanCourse', ns).each do |cs|
-              off = cs.xpath('./uq:PlanOffering', ns)[0]
-              offs << [off, cs] unless off.nil?
+              soffs = cs.xpath('./uq:PlanOffering', ns)
+              soffs.each do |off|
+                offs << [off, cs]
+              end
             end
 
             offs.each do |off, cs|
