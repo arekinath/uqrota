@@ -12,9 +12,6 @@ require 'date'
 require 'savon'
 
 HTTPI.log = false
-#Savon.configure do |config|
-#  config.log = false
-#end
 
 module Rota
 
@@ -35,22 +32,21 @@ module Rota
                                    [:course, :program])
 
     def Program.fetch_list(level=:undergrad)
-      list_client = Savon::Client.new do
-        wsdl.document = "#{SinetEndpoint}/UQ_CP_SEARCH_REQUEST.1.wsdl"
-        wsdl.endpoint = SinetEndpoint
+      list_client = Savon.client(log: false) do
+        wsdl "#{SinetEndpoint}/UQ_CP_SEARCH_REQUEST.1.wsdl"
+        endpoint SinetEndpoint
       end
 
       builder = Builder::XmlMarkup.new
-      response = list_client.request :uq_cp_search_request do
-        soap.body = builder.MsgData do |m|
-          m.Transaction do |t|
-            t.parameters(:class => 'R') do |p|
-              p.LEVEL({:undergrad => 'UGRD', :postgrad => 'PGCW'}[level])
-              p.SEARCHTYPE('PROGRAM')
-            end
+      message = builder.MsgData do |m|
+        m.Transaction do |t|
+          t.parameters(:class => 'R') do |p|
+            p.LEVEL({:undergrad => 'UGRD', :postgrad => 'PGCW'}[level])
+            p.SEARCHTYPE('PROGRAM')
           end
         end
       end
+      response = list_client.call(:uq_cp_search_request, message: message)
 
       h = response.to_hash
       return response, h[h.keys.first][:msg_data][:transaction][:search_results]
@@ -78,22 +74,21 @@ module Rota
     end
 
     def fetch_courses
-      prog_client = Savon::Client.new do
-        wsdl.document = "#{SinetEndpoint}/UQ_CP_DISPLAY_PRGLIST_REQUEST.1.wsdl"
-        wsdl.endpoint = SinetEndpoint
+      prog_client = Savon.client(log: false) do
+        wsdl "#{SinetEndpoint}/UQ_CP_DISPLAY_PRGLIST_REQUEST.1.wsdl"
+        endpoint SinetEndpoint
       end
 
       builder = Builder::XmlMarkup.new
-      response = prog_client.request :uq_cp_display_prglist_request do
-        soap.body = builder.MsgData do |m|
-          m.Transaction do |t|
-            t.ProgramList(:class => 'R') do |p|
-              p.YEAR(Time.now.year.to_s)
-              p.CODE(self['id'].to_s)
-            end
+      message = builder.MsgData do |m|
+        m.Transaction do |t|
+          t.ProgramList(:class => 'R') do |p|
+            p.YEAR(Time.now.year.to_s)
+            p.CODE(self['id'].to_s)
           end
         end
       end
+      response = prog_client.call(:uq_cp_display_prglist_request, message: message)
 
       h = response.to_xml
       return response, h
@@ -184,8 +179,21 @@ module Rota
             cg.text = cg.text.slice(0,500)
             cg.save
 
+            offs = []
+
+            pcl.xpath('./uq:PlanOr', ns).each do |po|
+              po.xpath('./uq:PlanOrCourse', ns).each do |pocs|
+                oroff = pocs.xpath('./uq:PlanOrOffering', ns)[0]
+                offs << [oroff, pocs] unless oroff.nil?
+              end
+            end
+
             pcl.xpath('./uq:PlanCourse', ns).each do |cs|
               off = cs.xpath('./uq:PlanOffering', ns)[0]
+              offs << [off, cs] unless off.nil?
+            end
+
+            offs.each do |off, cs|
               code = off.xpath('./uq:CODE', ns)[0].text
               title = cs.xpath('./uq:TITLE', ns)[0].text
               units = cs.xpath('./uq:UNITS', ns)[0].text.to_i
@@ -204,6 +212,7 @@ module Rota
               c.course_groups << cg unless c.course_groups.include?(cg)
               c.save
             end
+
           end
         end
       end
@@ -248,29 +257,29 @@ module Rota
   class Course
 
     def Course.fetch_list
-      c = Savon::Client.new do
-        wsdl.document = "#{SinetEndpoint}/UQ_CP_SEARCH_REQUEST.1.wsdl"
-        wsdl.endpoint = SinetEndpoint
+      c = Savon.client(open_timeout: 300, read_timeout: 300, log: false) do
+        wsdl "#{SinetEndpoint}/UQ_CP_SEARCH_REQUEST.1.wsdl"
+        endpoint SinetEndpoint
       end
-      c.http.read_timeout = 300
+
       builder = Builder::XmlMarkup.new
-      response = c.request :uq_cp_search_request do
-        soap.body = builder.MsgData do |m|
-          m.Transaction do |t|
-            t.parameters(:class => 'R') do |p|
-              p.SEARCHTYPE('COURSE')
-              p.CourseParameters(:class => 'R') do |cp|
-                cp.INCLUDE_UNSCHEDULED('TRUE')
-                cp.Semester(:class => 'R') do |s|
-                  scur = Semester.current
-                  s.SEMESTERID(scur.semester_id)
-                  s.YEAR("#{scur.year}")
-                end
+      msg = builder.MsgData do |m|
+        m.Transaction do |t|
+          t.parameters(:class => 'R') do |p|
+            p.SEARCHTYPE('COURSE')
+            p.CourseParameters(:class => 'R') do |cp|
+              cp.INCLUDE_UNSCHEDULED('TRUE')
+              cp.Semester(:class => 'R') do |s|
+                scur = Semester.current
+                s.SEMESTERID(scur.semester_id)
+                s.YEAR("#{scur.year}")
               end
             end
           end
         end
       end
+
+      response = c.call(:uq_cp_search_request, message: msg)
       return response, response.to_xml
     end
 
@@ -308,21 +317,23 @@ module Rota
     end
 
     def fetch_details
-      client = Savon::Client.new do
-        wsdl.document = "#{SinetEndpoint}/UQ_CP_DISPLAY_COURSE_REQUEST.1.wsdl"
-        wsdl.endpoint = SinetEndpoint
+      client = Savon.client(open_timeout: 300, read_timeout: 300, log: false) do
+        wsdl "#{SinetEndpoint}/UQ_CP_DISPLAY_COURSE_REQUEST.1.wsdl"
+        endpoint SinetEndpoint
       end
+
       builder = Builder::XmlMarkup.new
-      response = client.request :uq_cp_display_course_request do
-        soap.body = builder.MsgData do |m|
-          m.Transaction do |t|
-            t.Course(:class => 'R') do |p|
-              p.CODE(self.code)
-              p.YEAR(Time.now.year.to_s)
-            end
+      msg = builder.MsgData do |m|
+        m.Transaction do |t|
+          t.Course(:class => 'R') do |p|
+            p.CODE(self.code)
+            p.YEAR(Time.now.year.to_s)
           end
         end
       end
+
+      response = client.call(:uq_cp_display_course_request, message: msg)
+
       return response, response.to_xml
     end
 

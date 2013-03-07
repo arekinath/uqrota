@@ -54,7 +54,7 @@ module Rota
     json_coreattrs :name, {:number => :semester_id}, :year
 
     def Semester.current
-      Semester.get(Setting.get('current_semester').value)
+      Semester.get(Setting.get('current_semester').value.to_i)
     end
 
     def pred
