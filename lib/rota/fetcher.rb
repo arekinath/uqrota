@@ -32,7 +32,7 @@ module Rota
                                    [:course, :program])
 
     def Program.fetch_list(level=:undergrad)
-      list_client = Savon.client(log: false) do
+      list_client = Savon.client(log: false, ssl_verify_mode: :none) do
         wsdl "#{SinetEndpoint}/UQ_CP_SEARCH_REQUEST.1.wsdl"
         endpoint SinetEndpoint
       end
@@ -74,7 +74,7 @@ module Rota
     end
 
     def fetch_courses
-      prog_client = Savon.client(log: false) do
+      prog_client = Savon.client(log: false, ssl_verify_mode: :none) do
         wsdl "#{SinetEndpoint}/UQ_CP_DISPLAY_PRGLIST_REQUEST.1.wsdl"
         endpoint SinetEndpoint
       end
@@ -257,7 +257,7 @@ module Rota
   class Course
 
     def Course.fetch_list
-      c = Savon.client(open_timeout: 300, read_timeout: 300, log: false) do
+      c = Savon.client(open_timeout: 300, read_timeout: 300, log: false, ssl_verify_mode: :none) do
         wsdl "#{SinetEndpoint}/UQ_CP_SEARCH_REQUEST.1.wsdl"
         endpoint SinetEndpoint
       end
@@ -317,7 +317,7 @@ module Rota
     end
 
     def fetch_details
-      client = Savon.client(open_timeout: 300, read_timeout: 300, log: false) do
+      client = Savon.client(open_timeout: 300, read_timeout: 300, log: false, ssl_verify_mode: :none) do
         wsdl "#{SinetEndpoint}/UQ_CP_DISPLAY_COURSE_REQUEST.1.wsdl"
         endpoint SinetEndpoint
       end
