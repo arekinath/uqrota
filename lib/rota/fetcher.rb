@@ -183,14 +183,14 @@ module Rota
 
             pcl.xpath('./uq:PlanOr', ns).each do |po|
               po.xpath('./uq:PlanOrCourse', ns).each do |pocs|
-                oroff = pocs.xpath('./uq:PlanOrOffering', ns)[0]
-                offs << [oroff, pocs] unless oroff.nil?
+                pocs.xpath('./uq:PlanOrOffering', ns).each do |oroff|
+                  offs << [oroff, pocs]
+                end
               end
             end
 
             pcl.xpath('./uq:PlanCourse', ns).each do |cs|
-              soffs = cs.xpath('./uq:PlanOffering', ns)
-              soffs.each do |off|
+              cs.xpath('./uq:PlanOffering', ns).each do |off|
                 offs << [off, cs]
               end
             end
