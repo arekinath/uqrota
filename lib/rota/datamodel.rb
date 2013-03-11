@@ -150,6 +150,19 @@ module Rota
     property :name, String, :length => 64
 
     has n, :offerings, :constraint => :destroy
+    has n, :programs, :constraint => :destroy
+
+    include JSON::Serializable
+    json :attrs => [:code, :name], :key => [:code]
+  end
+
+  class Faculty
+    include DataMapper::Resource
+
+    property :code, String, :length => 16, :key => true
+    property :name, String, :length => 128
+
+    has n, :programs, :constraint => :destroy
 
     include JSON::Serializable
     json :attrs => [:code, :name], :key => [:code]
@@ -160,24 +173,41 @@ module Rota
 
     property :id, Serial
     property :name, String, :length => 200
+    property :abbrev, String, :length => 32, :required => false
 
     has n, :plans, :constraint => :destroy
+    belongs_to :campus, :required => false
+    belongs_to :faculty, :required => false
+
+    has n, :dualships, 'DualDegreeship', :child_key => :singular_id, :constraint => :destroy
+    has n, :singularships, 'DualDegreeship', :child_key => :dual_id, :constraint => :destroy
+    has n, :duals, 'Program', :through => :dualships, :via => :dual
+    has n, :singulars, 'Program', :through => :singularships, :via => :singular
 
     include JSON::Serializable
-    json :attrs => [:name], :children => [:plans], :coreattrs => [:name]
+    json :attrs => [:name, :abbrev, :campus, :faculty], :children => [:plans, :duals, :singulars], :coreattrs => [:name]
+  end
+
+  class DualDegreeship
+    include DataMapper::Resource
+    property :id, Serial
+
+    belongs_to :singular, 'Program'
+    belongs_to :dual, 'Program'
   end
 
   class Plan
     include DataMapper::Resource
 
     property :id, Serial
+    property :code, String, :length => 32, :index => true
     property :name, String, :length => 200
 
     belongs_to :program
     has n, :course_groups, :constraint => :destroy
 
     include JSON::Serializable
-    json :attrs => [:name], :children => [:course_groups], :parent => :program
+    json :attrs => [:code, :name], :children => [:course_groups], :parent => :program
   end
 
   class CourseGroup

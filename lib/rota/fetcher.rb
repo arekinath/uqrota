@@ -22,14 +22,14 @@ module Rota
                                "New program available",
                                "A new program has become available.",
                                [:program])
+    @@discovprogram = Message.new("3bcfd496-89fd-11e2-ac1f-2f986b71edb5",
+                                  "New program discovered via dual degree",
+                                  "A new program has been discovered via dual/singular degree information.",
+                                  [:program, :src_program])
     @@programname = Message.new("6b6dc097-631f-4622-9d6f-a444e0c06331",
                                 "Program name changed",
                                 "The name of a program has been changed.",
                                 [:program, :old_name])
-    @@proglistdiscov = Message.new("4e6066ad-367f-4acc-a99f-5c0a37604a5a",
-                                   "New course discovered via program list",
-                                   "A program list has revealed the existence of a new course",
-                                   [:course, :program])
 
     def Program.fetch_list(level=:undergrad)
       list_client = Savon.client(log: false, ssl_verify_mode: :none) do
@@ -73,148 +73,215 @@ module Rota
       end
     end
 
-    def fetch_courses
+    def fetch_details
       prog_client = Savon.client(log: false, ssl_verify_mode: :none) do
-        wsdl "#{SinetEndpoint}/UQ_CP_DISPLAY_PRGLIST_REQUEST.1.wsdl"
+        wsdl "#{SinetEndpoint}/UQ_CP_PROGRAM_DISPLAY_REQUEST.1.wsdl"
         endpoint SinetEndpoint
       end
 
       builder = Builder::XmlMarkup.new
       message = builder.MsgData do |m|
         m.Transaction do |t|
-          t.ProgramList(:class => 'R') do |p|
+          t.Program(:class => 'R') do |p|
             p.YEAR(Time.now.year.to_s)
             p.CODE(self['id'].to_s)
           end
         end
       end
-      response = prog_client.call(:uq_cp_display_prglist_request, message: message)
+      response = prog_client.call(:uq_cp_program_display_request, message: message)
 
       h = response.to_xml
       return response, h
     end
 
-    def parse_courses(x)
-      Program.transaction do
-        if self.plans.size > 0
-          if self.plans.course_groups.size > 0
-            self.plans.course_groups.each { |cg| cg.destroy! }
-          end
-          self.plans.each { |pl| pl.destroy! }
-        end
-      end
-
-      defaultplan = Plan.new
-      defaultplan.name = self.name
-      defaultplan.program = self
-
+    def parse_details(x)
       doc = Nokogiri::XML(x)
       ns = doc.root.namespaces
       ns['xmlns:soapenv'] = 'http://schemas.xmlsoap.org/soap/envelope/'
-      ns['xmlns:uq'] = 'http://peoplesoft.com/UQ_CP_DISPLAY_PRGLIST_RESPONSEResponse'
+      ns['xmlns:uq'] = 'http://peoplesoft.com/UQ_CP_PROGRAM_DISPLAY_RESPONSEResponse'
 
-      resp = doc.xpath('/soapenv:Envelope/soapenv:Body/uq:UQ_CP_DISPLAY_PRGLIST_RESPONSE', ns).first
-      orders = resp.xpath('./uq:MsgData/uq:Transaction/uq:ProgramListDetail/uq:Order', ns)
+      resp = doc.xpath('/soapenv:Envelope/soapenv:Body/uq:UQ_CP_PROGRAM_DISPLAY_RESPONSE', ns).first
+      prog = resp.xpath('./uq:MsgData/uq:Transaction/uq:ProgramDetails', ns).first
 
-      orders.each do |order|
-        pl = order.xpath('./uq:PlanListDetail', ns)
-        cl = order.xpath('./uq:CourseListDetail', ns)
+      title = prog.xpath('./uq:TITLE', ns).first.text
+      if self.name != title
+        ChangelogEntry.make($0, @@programname, {:program => self, :old_name => self.name})
+        self.name = title
+      end
 
-        cl.each do |cld|
-          title = cld.xpath('./uq:TITLE', ns)[0].text
-          header = cld.xpath('./uq:HEADER', ns)[0].text
+      abbrev = prog.xpath('./uq:ABBREVIATION', ns).first.text
+      self.abbrev = abbrev
 
-          cg = CourseGroup.new
-          cg.plan = defaultplan
-          t = []
-          t << title if title.size > 0
-          t << header if header.size > 0
-          cg.text = t.join(" - ")
+      campus = prog.xpath('./uq:Campus', ns).first
+      key = campus.xpath('./uq:CAMPUS_KEY', ns).first.text
+      c = nil
+      Campus.transaction do
+        c = Campus.get(key)
+        if c.nil?
+          c = Campus.create(:code => key, :name => campus.xpath('./uq:CAMPUS_VALUE', ns).first.text)
+          c.save
+        end
+      end
+      self.campus = c
 
-          cg.save
-          defaultplan.save
+      fac = prog.xpath('./uq:Faculty', ns).first
+      key = fac.xpath('./uq:FACULTY_KEY', ns).first.text
+      f = nil
+      Faculty.transaction do
+        f = Faculty.get(key)
+        if f.nil?
+          f = Faculty.create(:code => key, :name => fac.xpath('./uq:FACULTY_VALUE', ns).first.text)
+          f.save
+        end
+      end
+      self.faculty = f
 
-          cld.xpath('./uq:Course', ns).each do |cs|
-            off = cs.xpath('./uq:Offering', ns)[0]
-            if not off.nil?
-              code = off.xpath('./uq:CODE', ns)[0].text
-              title = cs.xpath('./uq:TITLE', ns)[0].text
-              units = cs.xpath('./uq:UNITS', ns)[0].text.to_i
+      duals = self.duals.collect { |dl| dl.id }.uniq.sort
+      dls = []
+      dlnames = {}
+      prog.xpath('./uq:RelatedDualDegree', ns).each do |dl|
+        code = dl.xpath('./uq:CODE', ns).first.text.to_i
+        title = dl.xpath('./uq:TITLE', ns).first.text
+        dls << code
+        dlnames[code] = title
+      end
+      dls = dls.uniq.sort
+      toadd = dls - duals
+      toremove = duals - dls
+      DualDegreeship.transaction do
+        toremove.each do |dl|
+          prog = Program.get(dl)
+          dls = DualDegreeship.first(:singular => self, :dual => prog)
+          dls.destroy! if dls
+        end
+        toadd.each do |dl|
+          prog = Program.get(dl)
+          if prog.nil?
+            prog = Program.create(:id => dl, :name => dlnames[dl])
+            prog.save
+            ChangelogEntry.make($0, @@discovprogram, {:program => prog, :src_program => self})
+          end
+          dls = DualDegreeship.create(:singular => self, :dual => prog)
+          dls.save
+        end
+      end
 
-              c = nil
-              Course.transaction do
-                c = Course.get(code)
-                if c.nil?
-                  c = Course.create(:code => code,
-                                    :name => title,
-                                    :units => units)
-                  c.save
-                  ChangelogEntry.make($0, @@proglistdiscov, {:course => c, :program => self})
-                end
-              end
-              c.course_groups << cg unless c.course_groups.include?(cg)
-              c.save
-            end
+      plans = self.plans.collect { |pl| pl.code }.uniq.sort
+      newplans = []
+      plannames = {}
+      prog.xpath('./uq:Plan', ns).each do |pl|
+        code = pl.xpath('./uq:CODE', ns).first.text
+        title = pl.xpath('./uq:TITLE', ns).first.text
+        newplans << code
+        plannames[code] = title
+      end
+      newplans = newplans.uniq.sort
+      toadd = newplans - plans
+      toremove = plans - newplans
+      Plan.transaction do
+        self.plans.select { |pl| pl.code.nil? }.each do |pl|
+          pl.destroy!
+        end
+        toremove.each do |pl|
+          plan = Plan.get(pl)
+          plan.destroy! if plan
+        end
+        toadd.each do |pl|
+          plan = Plan.create(:name => plannames[pl], :code => pl, :program => self)
+          plan.save
+        end
+      end
+
+      self.save
+    end
+  end
+
+  class Plan
+    @@proglistdiscov = Message.new("4e6066ad-367f-4acc-a99f-5c0a37604a5a",
+                                   "New course discovered via program list",
+                                   "A program list has revealed the existence of a new course",
+                                   [:course, :program])
+
+    def fetch_details
+      prog_client = Savon.client(log: false, ssl_verify_mode: :none) do
+        wsdl "#{SinetEndpoint}/UQ_CP_DISPLAY_PLNLIST_REQUEST.1.wsdl"
+        endpoint SinetEndpoint
+      end
+
+      builder = Builder::XmlMarkup.new
+      message = builder.MsgData do |m|
+        m.Transaction do |t|
+          t.PlanList(:class => 'R') do |p|
+            p.YEAR(Time.now.year.to_s)
+            p.CODE(self.code)
           end
         end
+      end
+      response = prog_client.call(:uq_cp_display_plnlist_request, message: message)
 
-        pl.each do |pld|
-          title = pld.xpath('./uq:TITLE', ns)[0].text
+      h = response.to_xml
+      return response, h
+    end
 
-          plan = Plan.new
-          plan.name = title
-          plan.program = self
-          plan.save
+    def parse_details(x)
+      doc = Nokogiri::XML(x)
+      ns = doc.root.namespaces
+      ns['xmlns:soapenv'] = 'http://schemas.xmlsoap.org/soap/envelope/'
+      ns['xmlns:uq'] = 'http://peoplesoft.com/UQ_CP_DISPLAY_PLNLIST_RESPONSEResponse'
 
-          pld.xpath('./uq:PlanCourseList', ns).each do |pcl|
-            title = pcl.xpath('./uq:TITLE', ns)[0].text
-            header = pcl.xpath('./uq:HEADER', ns)[0].text
+      resp = doc.xpath('/soapenv:Envelope/soapenv:Body/uq:UQ_CP_DISPLAY_PLNLIST_RESPONSE', ns).first
+      cls = resp.xpath('./uq:MsgData/uq:Transaction/uq:PlanListDetail/uq:PlanCourseListDetail', ns)
 
-            cg = CourseGroup.new
-            cg.plan = plan
-            t = []
-            t << title if title.size > 0
-            t << header if header.size > 0
-            cg.text = t.join(" - ")
-            cg.text = cg.text.slice(0,500)
-            cg.save
+      CourseGroup.transaction do
+        self.course_groups.each { |cg| cg.destroy! }
 
-            offs = []
+        cls.each do |cl|
+          title = cl.xpath('./uq:TITLE', ns).first.text
+          header = cl.xpath('./uq:HEADER', ns).first.text
 
-            pcl.xpath('./uq:PlanOr', ns).each do |po|
-              po.xpath('./uq:PlanOrCourse', ns).each do |pocs|
-                pocs.xpath('./uq:PlanOrOffering', ns).each do |oroff|
-                  offs << [oroff, pocs]
-                end
+          cg = CourseGroup.new
+          cg.plan = self
+          t = []
+          t << title if title.size > 0
+          t << header if header.size > 0 and header.size < 200
+          cg.text = t.join(" - ")
+          cg.save
+
+          courses = []
+          cl.xpath('./uq:PlanCourse', ns).each do |cs|
+            title = cs.xpath('./uq:TITLE', ns).first.text
+            units = cs.xpath('./uq:UNITS', ns).first.text.to_i
+            cs.xpath('./uq:Offering', ns).each do |off|
+              code = off.xpath('./uq:CODE', ns).first.text
+              courses << [title, units, code]
+            end
+          end
+
+          cl.xpath('./uq:PlanOr', ns).each do |por|
+            por.xpath('./uq:PlanOrCourse', ns).each do |cs|
+              title = cs.xpath('./uq:TITLE', ns).first.text
+              units = cs.xpath('./uq:UNITS', ns).first.text.to_i
+              cs.xpath('./uq:PlanOrOffering', ns).each do |off|
+                code = off.xpath('./uq:CODE', ns).first.text
+                courses << [title, units, code]
               end
             end
+          end
 
-            pcl.xpath('./uq:PlanCourse', ns).each do |cs|
-              cs.xpath('./uq:PlanOffering', ns).each do |off|
-                offs << [off, cs]
+          courses.each do |title, units, code|
+            c = nil
+            Course.transaction do
+              c = Course.get(code)
+              if c.nil?
+                c = Course.create(:code => code,
+                                  :name => title,
+                                  :units => units)
+                c.save
+                ChangelogEntry.make($0, @@proglistdiscov, {:course => c, :program => self.program})
               end
             end
-
-            offs.each do |off, cs|
-              code = off.xpath('./uq:CODE', ns)[0].text
-              title = cs.xpath('./uq:TITLE', ns)[0].text
-              units = cs.xpath('./uq:UNITS', ns)[0].text.to_i
-
-              c = nil
-              Course.transaction do
-                c = Course.get(code)
-                if c.nil?
-                  c = Course.create(:code => code,
-                                    :name => title,
-                                    :units => units)
-                  c.save
-                  ChangelogEntry.make($0, @@proglistdiscov, {:course => c, :program => self})
-                end
-              end
-              c.course_groups << cg unless c.course_groups.include?(cg)
-              c.save
-            end
-
+            c.course_groups << cg unless c.course_groups.include?(cg)
+            c.save
           end
         end
       end

@@ -36,6 +36,7 @@ Available targets:
   * timetables
   * profiles
   * programs
+  * plans
   * buildings
 END
 end
@@ -83,6 +84,8 @@ while (arg = ARGV.shift)
     mode << :profiles
   elsif arg == 'programs'
     mode << :programs
+  elsif arg == 'plans'
+    mode << :plans
   elsif arg == 'buildings'
     mode << :buildings
   else
@@ -101,13 +104,20 @@ if mode.include? :buildings
 end
 
 if mode.include? :programs
-  log "Updating undergraduate program list..."
+  log "Updating program list..."
   UpdateTasks::ProgramListTask.new.run
-  
+
   programs = Program.all
   tasks = programs.collect { |p| UpdateTasks::ProgramTask.new(p) }
   t = TaskRunner.new(tasks, $workers)
   t.run("All Programs update", terminal)
+end
+
+if mode.include? :plans
+  plans = Plan.all
+  tasks = plans.collect { |p| UpdateTasks::PlanTask.new(p) }
+  t = TaskRunner.new(tasks, $workers)
+  t.run("All Plans update", terminal)
 end
 
 if mode.include? :courses
@@ -125,7 +135,7 @@ end
 if mode.include? :timetables
   offerings = Offering.all(:semester => target_semester)
   tasks = offerings.collect { |o| UpdateTasks::TimetableTask.new(o) }
-  
+
   t = TaskRunner.new(tasks, $workers)
   t.run("Timetable update for #{target_semester['id']}/#{target_semester.name}", terminal)
 end

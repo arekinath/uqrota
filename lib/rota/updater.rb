@@ -222,12 +222,29 @@ module Rota
 
       def safe_run
         program = Program.get(@program_id)
-        agent, page = program.fetch_courses
-        program.parse_courses(page)
+        agent, page = program.fetch_details
+        program.parse_details(page)
       end
 
       def to_s
         "Program<#{Program.get(@program_id).name}>"
+      end
+    end
+
+    class PlanTask < SafeRunTask
+      def initialize(plan)
+        @plan_id = plan.id
+      end
+
+      def safe_run
+        plan = Plan.get(@plan_id)
+        agent, page = plan.fetch_details
+        plan.parse_details(page)
+      end
+
+      def to_s
+        p = Plan.get(@plan_id)
+        "Plan<#{p.program.id} / #{p.name}>"
       end
     end
 

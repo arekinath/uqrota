@@ -90,6 +90,19 @@ module Rota
       b.program do |p|
         p.id(self['id'])
         p.name(self.name)
+        b.abbrev(self.abbrev)
+        self.campus.to_xml(p)
+        self.faculty.to_xml(p)
+        p.duals do |dls|
+          self.duals.each do |prog|
+            dls.program { |pp| pp.id(prog.id) }
+          end
+        end
+        p.singulars do |sls|
+          self.singulars.each do |prog|
+            sls.program { |pp| pp.id(prog.id) }
+          end
+        end
         unless opts.include?(:no_children)
           p.plans do |pls|
             self.plans.each do |pl|
@@ -106,6 +119,7 @@ module Rota
       bu.plan do |b|
         b.id(self['id'])
         b.program(self.program['id']) unless opts.include?(:no_program)
+        b.code(self.code)
         b.name(self.name)
         unless opts.include?(:no_children)
           b.groups do |gps|
@@ -232,6 +246,15 @@ module Rota
           w.finish(self.finish_week)
           w.midsem(self.midsem_week)
         end
+      end
+    end
+  end
+
+  class Faculty
+    def to_xml(b, *opts)
+      b.faculty do |fac|
+        fac.code(self.code)
+        fac.name(self.name)
       end
     end
   end
