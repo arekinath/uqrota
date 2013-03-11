@@ -80,14 +80,14 @@ class DataService < Sinatra::Base
 
   get '/plan/:id.xml' do |id|
     content_type :xml
-    plan = Rota::Plan.get(id.to_i)
+    plan = Rota::Plan.get(id)
     return 404 if plan.nil?
     Utils.xml(plan)
   end
 
   get '/plan/:id.json' do |id|
     content_type :json
-    plan = Rota::Plan.get(id.to_i)
+    plan = Rota::Plan.get(id)
     return 404 if plan.nil?
     plan.to_json
   end
