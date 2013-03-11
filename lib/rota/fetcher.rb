@@ -592,8 +592,14 @@ module Rota
           self.finish_week = DateTime.parse(date).strftime('%W').to_i
           state = :idle
         end
-        if state == :start and desc.include?('mid') and desc.include?('semester') and desc.include?('break') and not desc.include?('after') and not desc.include?('classes')
-          self.midsem_week = DateTime.parse(date).strftime('%W').to_i
+        if state == :start and desc.include?('mid') and desc.include?('semester') and desc.include?('classes') and desc.include?('before')
+          self.midsem_week = DateTime.parse(date).strftime('%W').to_i + 1
+        end
+        if state == :start and desc.include?('mid') and desc.include?('semester') and desc.include?('break') and desc.include?('after') and desc.include?('classes')
+          wk = (DateTime.parse(date).strftime('%W').to_i - 1)
+          if self.midsem_week and self.midsem_week != wk
+            self.midsem_week = (wk + self.midsem_week) / 2
+          end
         end
       end
       self.save
