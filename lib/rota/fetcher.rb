@@ -251,7 +251,7 @@ module Rota
           cl.xpath('./uq:PlanCourse', ns).each do |cs|
             title = cs.xpath('./uq:TITLE', ns).first.text
             units = cs.xpath('./uq:UNITS', ns).first.text.to_i
-            cs.xpath('./uq:Offering', ns).each do |off|
+            cs.xpath('./uq:PlanOffering', ns).each do |off|
               code = off.xpath('./uq:CODE', ns).first.text
               courses << [title, units, code]
             end
