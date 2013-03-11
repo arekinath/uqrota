@@ -182,19 +182,16 @@ module Rota
       toadd = newplans - plans
       toremove = plans - newplans
       Plan.transaction do
-        self.plans.select { |pl| pl.code.nil? }.each do |pl|
-          pl.destroy!
-        end
         toremove.each do |pl|
           plan = Plan.get(pl)
           plan.destroy! if plan
         end
         toadd.each do |pl|
           if pl == self.id.to_s
-            plan = Plan.create(:name => self.name, :code => pl, :program => self)
+            plan = Plan.create(:name => self.name, :id => pl, :program => self)
             plan.save
           else
-            plan = Plan.create(:name => plannames[pl], :code => pl, :program => self)
+            plan = Plan.create(:name => plannames[pl], :id => pl, :program => self)
             plan.save
           end
         end
@@ -211,7 +208,7 @@ module Rota
                                    [:course, :program])
 
     def fetch_details
-      if self.code == self.program.id.to_s
+      if self.id == self.program.id.to_s
         fetch_program_list
       else
         fetch_plan_list
@@ -229,7 +226,7 @@ module Rota
         m.Transaction do |t|
           t.ProgramList(:class => 'R') do |p|
             p.YEAR(Time.now.year.to_s)
-            p.CODE(self.code)
+            p.CODE(self.id)
           end
         end
       end
@@ -250,7 +247,7 @@ module Rota
         m.Transaction do |t|
           t.PlanList(:class => 'R') do |p|
             p.YEAR(Time.now.year.to_s)
-            p.CODE(self.code)
+            p.CODE(self.id)
           end
         end
       end
@@ -261,7 +258,7 @@ module Rota
     end
 
     def parse_details(x)
-      if self.code == self.program.id.to_s
+      if self.id == self.program.id.to_s
         parse_program_list(x)
       else
         parse_plan_list(x)

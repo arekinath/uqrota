@@ -199,8 +199,7 @@ module Rota
   class Plan
     include DataMapper::Resource
 
-    property :id, Serial
-    property :code, String, :length => 32, :index => true
+    property :id, String, :length => 32, :key => true
     property :name, String, :length => 200
 
     belongs_to :program

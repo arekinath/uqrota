@@ -119,7 +119,6 @@ module Rota
       bu.plan do |b|
         b.id(self['id'])
         b.program(self.program['id']) unless opts.include?(:no_program)
-        b.code(self.code)
         b.name(self.name)
         unless opts.include?(:no_children)
           b.groups do |gps|
