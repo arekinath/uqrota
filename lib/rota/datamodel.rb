@@ -661,7 +661,7 @@ module Rota
     alias :session= :timetable_session=
 
     include JSON::Serializable
-    json_attrs :date, :taught, :week_number
+    json_attrs :date, :taught, :week_number, :semester_week
     json_parent :session
 
     def update_times
@@ -670,8 +670,17 @@ module Rota
       self.finish = dt.strftime('%s').to_i + 60*(self.session.finish)
     end
 
-    def week_number
-      self.session.group.series.offering.semester.week_of(self.start_dt)
+    def semester_week
+      n = self.session.group.series.offering.semester.week_of(self.start_dt)
+      if n == :before
+        "Before Semester (Week #{self.week_number})"
+      elsif n == :midsem
+        "Mid-semester Week"
+      elsif n == :after
+        "After Semester (Week #{self.week_number})"
+      else
+        "Week #{n}"
+      end
     end
 
     def short_date
