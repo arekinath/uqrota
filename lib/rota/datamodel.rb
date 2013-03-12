@@ -460,6 +460,7 @@ module Rota
 
     include JSON::Serializable
     json_attrs :id, :map_id, :number, :name
+    json_coreattrs :id, :number, :name
 
     def room(r)
       "#{self.name} #{self.number}-#{r}"
@@ -660,13 +661,17 @@ module Rota
     alias :session= :timetable_session=
 
     include JSON::Serializable
-    json_attrs :date, :taught
+    json_attrs :date, :taught, :week_number
     json_parent :session
 
     def update_times
       dt = DateTime.strptime("#{self.date} 00:00:00 +1000", "%Y-%m-%d %H:%M:%S %Z")
       self.start = dt.strftime('%s').to_i + 60*(self.session.start)
       self.finish = dt.strftime('%s').to_i + 60*(self.session.finish)
+    end
+
+    def week_number
+      self.session.group.series.offering.semester.week_of(self.start_dt)
     end
 
     def short_date
