@@ -206,7 +206,7 @@ module Rota
     has n, :course_groups, :constraint => :destroy
 
     include JSON::Serializable
-    json :attrs => [:code, :name], :children => [:course_groups], :parent => :program
+    json :attrs => [:id, :name], :children => [:course_groups], :parent => :program
   end
 
   class CourseGroup

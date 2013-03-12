@@ -43,7 +43,7 @@ class DataService < Sinatra::Base
 
   get '/programs.json' do
     content_type :json
-    Rota::Programs.all.to_a.to_rota_json
+    Rota::Program.all.to_a.to_rota_json
   end
 
   get '/programs/find.json' do
@@ -89,7 +89,7 @@ class DataService < Sinatra::Base
     content_type :json
     plan = Rota::Plan.get(id)
     return 404 if plan.nil?
-    plan.to_json
+    plan.to_json(2)
   end
 
   get '/coursegroup/:id.json' do |id|
