@@ -48,11 +48,11 @@ module JSON
       return nil if level < 0
 
       hash = Hash.new
-      hash[:_class] = self.class.name.split("::").last
+      #hash[:_class] = self.class.name.split("::").last
 
       msgs = self.class.instance_variable_get(:@json_keys).flatten
       msgs << :id if msgs.size == 0
-      hash[:_keys] = msgs.collect { |m| m.to_s }
+      #hash[:_keys] = msgs.collect { |m| m.to_s }
       if level >= 1
         msgs += self.class.instance_variable_get(:@json_attrs).flatten
       else
