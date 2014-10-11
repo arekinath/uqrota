@@ -11,7 +11,7 @@ h2. Information that Rota tracks
 * Programs/plans and the courses they carry
 * Buildings, their names/numbers and links to maps
 
-See also "hierarchy of Rota objects":/arekinath/uqrota/wiki/Object-Hierarchy
+See also "hierarchy of Rota objects":https://github.com/arekinath/uqrota/wiki/Object-Hierarchy
 
 h2. Mailing list
 
@@ -19,7 +19,7 @@ For people interested in UQrota development and discussion, subscribe to the "ma
 
 h2. API
 
-More information in the "wiki":/arekinath/uqrota/wiki/
+More information in the "wiki":https://github.com/arekinath/uqrota/wiki
 
 h2. Dependencies
 
