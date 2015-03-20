@@ -15,7 +15,7 @@ HTTPI.log = false
 
 module Rota
 
-  SinetEndpoint = "https://www.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector"
+  SinetEndpoint = "https://ws.sinet.uq.edu.au/PSIGW/PeopleSoftServiceListeningConnector"
 
   class Program
     @@newprogram = Message.new("854d3d56-0958-487a-b867-479dc9ea00c0",
@@ -102,6 +102,7 @@ module Rota
 
       resp = doc.xpath('/soapenv:Envelope/soapenv:Body/uq:UQ_CP_PROGRAM_DISPLAY_RESPONSE', ns).first
       prog = resp.xpath('./uq:MsgData/uq:Transaction/uq:ProgramDetails', ns).first
+      return if prog.nil?
 
       title = prog.xpath('./uq:TITLE', ns).first.text
       if self.name != title
@@ -166,7 +167,7 @@ module Rota
         end
       end
 
-      plans = self.plans.collect { |pl| pl.code }.uniq.sort
+      plans = self.plans.collect { |pl| pl.id }.uniq.sort
       newplans = []
       plannames = {}
       prog.xpath('./uq:Plan', ns).each do |pl|
@@ -375,7 +376,7 @@ module Rota
         t = page.text
         page.css("a.mapindex-links").each do |a|
           bname = a.text
-          bnum = t.scan(/#{bname}, ([A-Z0-9]+)/)
+          bnum = t.scan(/#{Regexp.escape(bname)}, ([A-Z0-9]+)/)
           bid = a['href'].scan(/id=([0-9]+)/)
           if bid[0] and bid[0][0] and bnum[0] and bnum[0][0]
             bnum, bid = [bnum[0][0], bid[0][0]]
@@ -709,33 +710,40 @@ module Rota
       Fetcher::standard_fetch("http://uq.edu.au/events/calendar_view.php?category_id=16&year=#{self.year}")
     end
 
+    def _desc_match?(d)
+      ((not @ordinal.nil?) and d.include?(@ordinal)) or ((not @title.nil?) and d.include?(@title))
+    end
+
     def parse_dates(page)
-      ordinal = case
-        when self.name.include?('Semester 1'); 'first'
-        when self.name.include?('Semester 2'); 'second'
-        when self.name.include?('Summer'); 'summer'
-        when self.name.include?('Trimester 1'); ''
-        when self.name.include?('Trimester 2'); ''
-        when self.name.include?('Trimester 3'); ''
+      @ordinal, @title = case
+        when self.name.include?('Semester 1'); ['first', 'semester 1']
+        when self.name.include?('Semester 2'); ['second', 'semester 2']
+        when self.name.include?('Summer'); [nil, 'summer']
+        when self.name.include?('Trimester 1'); [nil,nil]
+        when self.name.include?('Trimester 2'); [nil,nil]
+        when self.name.include?('Trimester 3'); [nil,nil]
       end
 
       state = :idle
       page.parser.css("li.event_row").each do |rli|
-        date = rli.css('li.first').first.text.downcase
+        date = DateTime.parse(rli.css('li.first').first.text.downcase)
         desc = rli.css('li.description-calendar-view').first.text.downcase
-        if desc.include?(ordinal) and desc.include?('semester') and (desc.include?('commence') or desc.include?('start') or desc.include?('begin'))
-          self.start_week = DateTime.parse(date).strftime('%W').to_i
+        if state == :idle and _desc_match?(desc) and desc.include?('semester') and (not desc.include?('revision')) and (not desc.include?('sign-on')) and (not desc.include?('examination')) and (desc.include?('commence') or desc.include?('start') or desc.include?('begin')) and (date.year == self.year or (self.name.include?('Summer') and date.year == self.year - 1))
+          self.start_week = date.strftime('%W').to_i
           state = :start
-        end
-        if state == :start and desc.include?(ordinal) and desc.include?('semester') and (desc.include?('end') or desc.include?('finish'))
-          self.finish_week = DateTime.parse(date).strftime('%W').to_i
+        elsif state == :start and _desc_match?(desc) and desc.include?('semester') and (desc.include?('end') or desc.include?('finish'))
+          self.finish_week = date.strftime('%W').to_i
           state = :idle
-        end
-        if state == :start and desc.include?('mid') and desc.include?('semester') and desc.include?('classes') and desc.include?('before')
-          self.midsem_week = DateTime.parse(date).strftime('%W').to_i + 1
-        end
-        if state == :start and desc.include?('mid') and desc.include?('semester') and desc.include?('break') and desc.include?('after') and desc.include?('classes')
-          wk = (DateTime.parse(date).strftime('%W').to_i - 1)
+        elsif state == :start and desc.include?('mid') and desc.include?('semester') and desc.include?('classes') and desc.include?('before') and desc.include?('break')
+          wk = date.strftime('%W').to_i
+          self.midsem_week = wk + 1
+        elsif state == :start and desc.include?('mid') and desc.include?('semester') and desc.include?('break') and desc.include?('after') and desc.include?('classes')
+          wk = (date.strftime('%W').to_i - 1)
+          if self.midsem_week and self.midsem_week != wk
+            self.midsem_week = (wk + self.midsem_week) / 2
+          end
+        elsif state == :start and desc.include?('mid') and desc.include?('semester') and desc.include?('break')
+          wk = self.midsem_week = date.strftime('%W').to_i
           if self.midsem_week and self.midsem_week != wk
             self.midsem_week = (wk + self.midsem_week) / 2
           end
@@ -960,6 +968,15 @@ module Rota
       form.ICXPos = 200
       form.ICYPos = 200
       form.ICResubmit = 0
+      page = agent.submit(form)
+
+      # change to plain timestamps rather than week numbers
+      form = page.form('win0')
+      form.ICAction = 'UQ_DRV_TTBLE_CR_UQ_TBL_DISP_DT_BTN$0'
+      form.ICXPos = 200
+      form.ICYPos = 200
+      form.ICResubmit = 0
+      form.ICChanged = 0
       page = agent.submit(form)
 
       # and we should have the course page!

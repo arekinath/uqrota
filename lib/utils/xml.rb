@@ -91,8 +91,8 @@ module Rota
         p.id(self['id'])
         p.name(self.name)
         b.abbrev(self.abbrev)
-        self.campus.to_xml(p)
-        self.faculty.to_xml(p)
+        self.campus.to_xml(p) unless self.campus.nil?
+        self.faculty.to_xml(p) unless self.faculty.nil?
         p.duals do |dls|
           self.duals.each do |prog|
             dls.program { |pp| pp.id(prog.id) }
