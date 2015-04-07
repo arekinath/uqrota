@@ -514,6 +514,7 @@ module Rota
       DataMapper::Transaction.new.commit do
         name = cd.xpath('./uq:TITLE', ns).first.text
         units = cd.xpath('./uq:UNITS', ns).first.text.to_i
+        duration = cd.xpath('./uq:TOTALSEMESTERS', ns).first.text.to_i
         desc = cd.xpath('./uq:SUMMARY', ns).first.text
         coord = cd.xpath('./uq:COORDINATOR', ns).first.text
         faculty = self.faculty
@@ -545,6 +546,7 @@ module Rota
         self.last_update = DateTime.now
         self.faculty = faculty
         self.school = school
+        self.duration = duration
       end
 
       DataMapper::Transaction.new.commit do

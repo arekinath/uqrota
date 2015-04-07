@@ -11,7 +11,7 @@ class Hash
       x.__send__(prop) do |inx|
         left = self[prop].first[:left]
         self[prop].each do |kid|
-          kid[:left] = left
+          kid[:left] = left unless kid[:left]
           kid._prereq_to_xml(ctx, inx)
         end
       end
@@ -307,9 +307,10 @@ module Rota
     def to_xml(b, *opts)
       b.course do |cs|
         cs.code(self.code)
-        cs.units(self.units)
         cs.name(self.name)
         cs.description(self.description)
+        cs.units(self.units)
+        cs.duration(self.duration)
         cs.coordinator(self.coordinator)
         cs.faculty(self.faculty)
         cs.school(self.school)

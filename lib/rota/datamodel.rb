@@ -227,6 +227,7 @@ module Rota
     property :code, String, :length => 10, :key => true
     property :units, Integer
     property :name, String, :length => 200
+    property :duration, Integer, :default => 1
     property :semesters_offered, String, :length => 20, :required => false
     property :description, Text, :required => false
     property :coordinator, String, :length => 512, :required => false
@@ -357,7 +358,7 @@ module Rota
 
     include JSON::Serializable
     json_key :code
-    json_attrs :units, :name, :description, :coordinator, :faculty, :school, :last_update, :prereqs, :dependents, :incompatibles, {:prereq_struct => :prereq_struct_clean}, {:recommended_struct => :recommended_struct_clean}, :prereq_text, :recommended_text, :incompatible_text
+    json_attrs :name, :description, :units, :duration, :coordinator, :faculty, :school, :last_update, :prereqs, :dependents, :incompatibles, {:prereq_struct => :prereq_struct_clean}, {:recommended_struct => :recommended_struct_clean}, :prereq_text, :recommended_text, :incompatible_text
     json_children :offerings
   end
 
