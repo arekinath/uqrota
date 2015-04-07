@@ -272,7 +272,7 @@ module Rota
         inx = []
         left = s[prop].first[:left]
         s[prop].each do |kid|
-          kid[:left] = left
+          kid[:left] = left unless kid[:left]
           newx = {}
           _clean(ctx, kid, newx)
           inx << newx

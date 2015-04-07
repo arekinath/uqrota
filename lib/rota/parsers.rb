@@ -37,6 +37,8 @@ module Rota
 		rule(:orspec) { (andspec.as(:all_of) | xorspec.as(:one_of) | parenspec).as(:left) >>
 						(space? >> orop >> space? >>
 						(andspec.as(:all_of) | xorspec.as(:one_of) | parenspec).as(:right)).repeat(1) }
+		rule(:orlist) { (courselike.as(:left) >> (space | (space? >> str(',') >> space?))).repeat(1) >> space? >> orop >> space? >> courselike.as(:right) }
+		rule(:andlist) { (courselike.as(:left) >> (space | (space? >> str(',') >> space?))).repeat(1) >> space? >> andop >> space? >> courselike.as(:right) }
 
 		rule(:parenspec) {
 			(str('(') >> space? >> spec >> space? >> str(')')) |
@@ -47,7 +49,9 @@ module Rota
 		}
 
 		rule(:spec) {
+			orlist.as(:any_of) |
 			orspec.as(:any_of) |
+			andlist.as(:all_of) |
 			andspec.as(:all_of) |
 			xorspec.as(:one_of) |
 			parenspec
