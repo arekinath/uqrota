@@ -731,7 +731,7 @@ module Rota
         if state == :idle and _desc_match?(desc) and desc.include?('semester') and (not desc.include?('revision')) and (not desc.include?('sign-on')) and (not desc.include?('examination')) and (desc.include?('commence') or desc.include?('start') or desc.include?('begin')) and (date.year == self.year or (self.name.include?('Summer') and date.year == self.year - 1))
           self.start_week = date.strftime('%W').to_i
           state = :start
-        elsif state == :start and _desc_match?(desc) and desc.include?('semester') and (desc.include?('end') or desc.include?('finish'))
+        elsif state == :start and _desc_match?(desc) and desc.include?('semester') and (desc.include?('end') or desc.include?('finish')) and not (desc.include?('mid-semester') or desc.include?('mid')) and not desc.include?('break')
           self.finish_week = date.strftime('%W').to_i
           state = :idle
         elsif state == :start and desc.include?('mid') and desc.include?('semester') and desc.include?('classes') and desc.include?('before') and desc.include?('break')
